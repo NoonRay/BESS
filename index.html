@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cell to Boardroom — NoonRay Energy Session 18 Practical Demo</title>
+<meta name="description" content="Interactive console for Session 18's practical demo: a live MES walkthrough (station login through Andon escalation) and an AI/analytics exercise (defect-risk scoring, predictive maintenance, SOC/SOH calculation, digital-twin simulation).">
+<style>
+  html, body{ margin:0; padding:0; }
+
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#eef1f5;
+    --page-edge:#e2e7ee;
+    --surface:#ffffff;
+    --surface-2:#f4f6f9;
+    --ink:#13213a;
+    --ink-secondary:#4c5a72;
+    --ink-muted:#8592a6;
+    --border:rgba(19,33,58,0.11);
+    --border-strong:rgba(19,33,58,0.18);
+    --navy:#1b3a6b;
+    --navy-2:#16305a;
+    --navy-3:#0f2440;
+    --navy-tint:#dceaf7;
+    --orange:#f5811f;
+    --orange-ink:#a4530f;
+    --orange-tint:#fde6d0;
+    --green:#6fa83b;
+    --green-ink:#3f6b1f;
+    --warm-tint:#f5e1cb;
+    --good:#0ca30c;
+    --good-tint:#e1f5e1;
+    --warning-fill:#fab219;
+    --warning-ink:#8a5800;
+    --warning-tint:#fef1d6;
+    --critical:#d03b3b;
+    --critical-tint:#fbe2e2;
+    --series-1:#2a78d6;
+    --series-2:#eb6834;
+    --chart-grid:#e4e3db;
+    --chart-axis:#c7c6bb;
+    --shadow-sm:0 1px 2px rgba(15,36,64,0.06);
+    --shadow-md:0 10px 28px rgba(15,36,64,0.09);
+    --radius:16px;
+    --radius-sm:9px;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0b1420;
+      --page-edge:#0d1826;
+      --surface:#132133;
+      --surface-2:#0f1c2c;
+      --ink:#eef2f8;
+      --ink-secondary:#b6c2d8;
+      --ink-muted:#7c8ba5;
+      --border:rgba(255,255,255,0.10);
+      --border-strong:rgba(255,255,255,0.18);
+      --navy:#3f6cad;
+      --navy-tint:#1d3555;
+      --orange:#f5924a;
+      --orange-ink:#ffcda0;
+      --orange-tint:#3a2717;
+      --green:#8fc267;
+      --green-ink:#c7e6ac;
+      --warm-tint:#332711;
+      --good:#3fc93f;
+      --good-tint:#123312;
+      --warning-fill:#fab219;
+      --warning-ink:#ffd98a;
+      --warning-tint:#3a2c0c;
+      --critical:#f2726f;
+      --critical-tint:#3a1414;
+      --series-1:#3987e5;
+      --series-2:#e0763f;
+      --chart-grid:#28323f;
+      --chart-axis:#3a4656;
+      --shadow-sm:0 1px 2px rgba(0,0,0,0.35);
+      --shadow-md:0 14px 32px rgba(0,0,0,0.45);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b1420;
+    --page-edge:#0d1826;
+    --surface:#132133;
+    --surface-2:#0f1c2c;
+    --ink:#eef2f8;
+    --ink-secondary:#b6c2d8;
+    --ink-muted:#7c8ba5;
+    --border:rgba(255,255,255,0.10);
+    --border-strong:rgba(255,255,255,0.18);
+    --navy:#3f6cad;
+    --navy-tint:#1d3555;
+    --orange:#f5924a;
+    --orange-ink:#ffcda0;
+    --orange-tint:#3a2717;
+    --green:#8fc267;
+    --green-ink:#c7e6ac;
+    --warm-tint:#332711;
+    --good:#3fc93f;
+    --good-tint:#123312;
+    --warning-fill:#fab219;
+    --warning-ink:#ffd98a;
+    --warning-tint:#3a2c0c;
+    --critical:#f2726f;
+    --critical-tint:#3a1414;
+    --series-1:#3987e5;
+    --series-2:#e0763f;
+    --chart-grid:#28323f;
+    --chart-axis:#3a4656;
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.35);
+    --shadow-md:0 14px 32px rgba(0,0,0,0.45);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{ font-family:'Source Serif 4',Georgia,'Times New Roman',serif; text-wrap:balance; }
+  .mono{ font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace; font-variant-numeric:tabular-nums; }
+  ::selection{ background:var(--orange-tint); }
+
+  /* ---------- App shell ---------- */
+  .appbar{
+    background:linear-gradient(180deg,var(--navy-2),var(--navy-3));
+    color:#fff;
+    padding:14px 22px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+    border-bottom:1px solid rgba(0,0,0,0.25);
+  }
+  .brand{ display:flex; align-items:center; gap:10px; margin-right:auto; }
+  .brand .mark{
+    width:34px;height:34px;border-radius:9px;
+    background:var(--orange);
+    display:flex;align-items:center;justify-content:center;
+    flex:none;
+  }
+  .brand .mark svg{ width:19px;height:19px; }
+  .brand .name{ font-family:'Source Serif 4',serif; font-weight:700; font-size:16.5px; line-height:1.15; }
+  .brand .name span{ color:#a9c66a; }
+  .brand .sub{ font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#b9c8e2; margin-top:1px; }
+
+  .tabs{ display:flex; gap:6px; background:rgba(255,255,255,0.08); padding:4px; border-radius:11px; }
+  .tab{
+    appearance:none; border:none; cursor:pointer;
+    padding:9px 16px; border-radius:8px;
+    font:600 13.5px 'IBM Plex Sans',sans-serif;
+    color:#d7e0f2; background:transparent;
+    display:flex; flex-direction:column; align-items:flex-start; gap:1px;
+    transition:background .15s ease, color .15s ease;
+  }
+  .tab b{ font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; opacity:.8; font-weight:600; }
+  .tab.active{ background:#fff; color:var(--navy-3); }
+  .tab.active b{ color:var(--orange-ink); opacity:1; }
+
+  .appbar-actions{ display:flex; align-items:center; gap:8px; }
+  .ghost-btn{
+    appearance:none; cursor:pointer; border:1px solid rgba(255,255,255,0.28);
+    background:rgba(255,255,255,0.06); color:#eaf0fb;
+    font:600 12.5px 'IBM Plex Sans',sans-serif;
+    padding:8px 12px; border-radius:8px;
+    display:flex; align-items:center; gap:6px;
+    transition:background .15s ease;
+  }
+  .ghost-btn:hover{ background:rgba(255,255,255,0.16); }
+  .ghost-btn svg{ width:14px;height:14px; }
+
+  .layout{
+    display:grid;
+    grid-template-columns:288px 1fr;
+    gap:20px;
+    max-width:1220px;
+    margin:0 auto;
+    padding:24px 22px 40px;
+  }
+  @media (max-width:880px){
+    .layout{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- Rail ---------- */
+  .rail{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:var(--shadow-sm);
+    height:max-content;
+    position:sticky; top:20px;
+  }
+  .rail h2{ font-size:15px; margin:2px 4px 3px; }
+  .rail .rail-note{ font-size:12px; color:var(--ink-muted); margin:0 4px 14px; line-height:1.45; }
+  .steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .step-item{
+    display:flex; align-items:flex-start; gap:11px;
+    padding:10px 8px; border-radius:10px; cursor:pointer;
+    border:1px solid transparent;
+    transition:background .12s ease;
+  }
+  .step-item:hover{ background:var(--surface-2); }
+  .step-item.current{ background:var(--navy-tint); border-color:var(--border); }
+  .step-num{
+    flex:none; width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font:700 12px 'IBM Plex Sans',sans-serif;
+    background:var(--surface-2); color:var(--ink-muted);
+    border:1.5px solid var(--border-strong);
+    margin-top:1px;
+  }
+  .step-item.current .step-num{ background:var(--orange); color:#fff; border-color:var(--orange); }
+  .step-item.done .step-num{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .step-body b{ display:block; font-size:13.5px; font-weight:600; color:var(--ink); }
+  .step-body span{ display:block; font-size:11.5px; color:var(--ink-muted); margin-top:1px; line-height:1.35; }
+  .step-item.current .step-body b{ color:var(--navy-3); }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]) .step-item.current .step-body b{ color:var(--navy); }
+  }
+  :root[data-theme="dark"] .step-item.current .step-body b{ color:var(--navy); }
+
+  /* ---------- Stage ---------- */
+  .stage-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+    min-height:560px;
+    display:flex; flex-direction:column;
+  }
+  .stage-head{
+    padding:22px 26px 18px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:flex-start; gap:14px;
+  }
+  .stage-head .badge{
+    flex:none; width:42px; height:42px; border-radius:11px;
+    background:var(--navy-tint); color:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stage-head .badge svg{ width:22px; height:22px; }
+  .stage-head .eyebrow{ font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--orange-ink); margin:2px 0 3px; }
+  .stage-head h2{ font-size:23px; margin:0; }
+  .stage-head p{ margin:6px 0 0; color:var(--ink-secondary); font-size:13.5px; max-width:60ch; line-height:1.5; }
+
+  .stage-body{ padding:24px 26px; flex:1; display:flex; flex-direction:column; gap:18px; }
+
+  .stage-foot{
+    padding:14px 26px; border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .stage-foot .prog{ font-size:12px; color:var(--ink-muted); }
+  .foot-btns{ display:flex; gap:8px; }
+  .btn{
+    appearance:none; cursor:pointer; border-radius:9px; border:1px solid transparent;
+    font:600 13.5px 'IBM Plex Sans',sans-serif; padding:10px 18px;
+    display:inline-flex; align-items:center; gap:7px;
+    transition:filter .12s ease, opacity .12s ease;
+  }
+  .btn:disabled{ opacity:.42; cursor:not-allowed; }
+  .btn:not(:disabled):hover{ filter:brightness(1.06); }
+  .btn-primary{ background:var(--orange); color:#fff; }
+  .btn-navy{ background:var(--navy); color:#fff; }
+  .btn-ghost{ background:var(--surface-2); color:var(--ink); border-color:var(--border-strong); }
+  .btn-green{ background:var(--green); color:#fff; }
+  .btn svg{ width:14px; height:14px; }
+  .btn-sm{ padding:7px 12px; font-size:12.5px; }
+
+  /* ---------- Generic content bits ---------- */
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-size:11.5px; font-weight:600; color:var(--ink-secondary); text-transform:uppercase; letter-spacing:.04em; }
+  .field input, .field select{
+    font:500 14px/1.3 'IBM Plex Sans',sans-serif;
+    padding:9px 11px; border-radius:8px; border:1.5px solid var(--border-strong);
+    background:var(--surface); color:var(--ink);
+  }
+  .field input.mono{ font-family:'IBM Plex Mono',monospace; }
+  .field input:focus, .field select:focus{ outline:2px solid var(--orange); outline-offset:1px; }
+  .row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .row > .field{ flex:1; min-width:150px; }
+
+  .panel{ background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px 18px; }
+  .panel-navy{ background:var(--navy); color:#fff; border:none; }
+  .panel-navy .ink-secondary{ color:#c9d6ec; }
+
+  .checklist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .checklist li{ display:flex; align-items:flex-start; gap:9px; font-size:13.5px; opacity:0; transform:translateY(4px); animation:rise .35s ease forwards; }
+  .checklist li:nth-child(1){ animation-delay:.02s; }
+  .checklist li:nth-child(2){ animation-delay:.16s; }
+  .checklist li:nth-child(3){ animation-delay:.30s; }
+  @keyframes rise{ to{ opacity:1; transform:none; } }
+  .checklist svg{ width:16px; height:16px; flex:none; margin-top:1px; color:var(--good); }
+  .checklist b{ color:var(--ink); }
+  .checklist span{ display:block; color:var(--ink-muted); font-size:12px; margin-top:1px; }
+
+  .status-banner{
+    display:flex; align-items:center; gap:10px;
+    padding:11px 14px; border-radius:9px; font-size:13px; font-weight:600;
+  }
+  .status-banner.good{ background:var(--good-tint); color:var(--good); }
+  .status-banner.warn{ background:var(--warning-tint); color:var(--warning-ink); }
+  .status-banner.info{ background:var(--navy-tint); color:var(--navy); }
+  .status-banner svg{ width:17px;height:17px; flex:none; }
+
+  .chip{ display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font:600 11.5px 'IBM Plex Sans'; }
+  .chip-draft{ background:var(--surface-2); color:var(--ink-muted); border:1px solid var(--border-strong); }
+  .chip-released{ background:var(--good-tint); color:var(--good); }
+  .chip-good{ background:var(--good-tint); color:var(--good); }
+  .chip-warn{ background:var(--warning-tint); color:var(--warning-ink); }
+  .chip-critical{ background:var(--critical-tint); color:var(--critical); }
+  .chip-navy{ background:var(--navy-tint); color:var(--navy); }
+
+  .kv-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+  .kv{ }
+  .kv b{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); margin-bottom:3px; }
+  .kv span{ font-size:14.5px; font-weight:600; color:var(--ink); }
+
+  .flow{ display:flex; align-items:center; gap:0; flex-wrap:wrap; }
+  .flow-node{ background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; padding:7px 12px; font:600 12.5px 'IBM Plex Sans'; }
+  .flow-arrow{ color:var(--orange); padding:0 8px; font-size:15px; }
+
+  table.data-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-sm); }
+  table.data-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:600; padding:9px 12px; background:var(--surface-2); border-bottom:1px solid var(--border); white-space:nowrap; }
+  table.data-table td{ padding:9px 12px; border-bottom:1px solid var(--border); white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; font-size:12.5px; }
+  table.data-table tr:last-child td{ border-bottom:none; }
+
+  .timeline{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+  .tl-item{ display:flex; gap:14px; position:relative; padding-bottom:20px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{ content:""; position:absolute; left:15px; top:32px; bottom:0; width:1.5px; background:var(--border-strong); }
+  .tl-item:last-child::before{ display:none; }
+  .tl-dot{ flex:none; width:32px;height:32px; border-radius:50%; background:var(--navy-tint); color:var(--navy); display:flex; align-items:center; justify-content:center; z-index:1; }
+  .tl-dot svg{ width:16px;height:16px; }
+  .tl-body b{ display:block; font-size:13.5px; }
+  .tl-body span{ display:block; font-size:12px; color:var(--ink-muted); margin-top:2px; }
+  .tl-body .tl-time{ font-family:'IBM Plex Mono',monospace; color:var(--ink-secondary); }
+
+  .ladder{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .ladder-step{ border:1.5px solid var(--border-strong); border-radius:var(--radius-sm); padding:14px; text-align:center; background:var(--surface); }
+  .ladder-step.active{ border-color:var(--orange); background:var(--orange-tint); }
+  .ladder-step.done{ border-color:var(--good); background:var(--good-tint); }
+  .ladder-num{ width:26px;height:26px;border-radius:50%; background:var(--surface-2); border:1.5px solid var(--border-strong); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font:700 12px 'IBM Plex Sans'; }
+  .ladder-step.active .ladder-num{ background:var(--orange); color:#fff; border-color:var(--orange); }
+  .ladder-step.done .ladder-num{ background:var(--good); color:#fff; border-color:var(--good); }
+  .ladder-step b{ display:block; font-size:12.5px; margin-bottom:3px; }
+  .ladder-step .ladder-time{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-muted); }
+  .ladder-step button{ margin-top:9px; }
+
+  .timer-big{ font-family:'IBM Plex Mono',monospace; font-size:44px; font-weight:600; letter-spacing:.01em; }
+
+  .slider-row{ display:flex; align-items:center; gap:14px; }
+  input[type="range"]{ flex:1; accent-color:var(--orange); height:4px; }
+  .slider-val{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; min-width:52px; text-align:right; }
+
+  .risk-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .risk-card{ border:1px solid var(--border); border-radius:var(--radius-sm); padding:13px; position:relative; overflow:hidden; background:var(--surface); }
+  .risk-card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--good); }
+  .risk-card.warn::before{ background:var(--warning-fill); }
+  .risk-card.critical::before{ background:var(--critical); }
+  .risk-card .rc-id{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-muted); }
+  .risk-card .rc-score{ font-size:24px; font-weight:700; margin:5px 0 6px; font-family:'IBM Plex Mono',monospace; }
+  .risk-bar{ height:5px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin-bottom:8px; }
+  .risk-bar > i{ display:block; height:100%; background:var(--good); border-radius:999px; }
+  .risk-card.warn .risk-bar > i{ background:var(--warning-fill); }
+  .risk-card.critical .risk-bar > i{ background:var(--critical); }
+
+  .legend-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+  .legend-item{ display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--ink-secondary); cursor:pointer; user-select:none; }
+  .legend-item .sw{ width:13px; height:13px; border-radius:3px; }
+  .legend-item.off{ opacity:.4; }
+
+  .chart-wrap{ position:relative; }
+  .chart-tip{
+    position:absolute; pointer-events:none; background:var(--navy-3); color:#fff;
+    padding:7px 10px; border-radius:7px; font-size:12px; font-family:'IBM Plex Mono',monospace;
+    transform:translate(-50%,-115%); white-space:nowrap; box-shadow:var(--shadow-md); opacity:0; transition:opacity .1s ease;
+    z-index:2;
+  }
+  .chart-tip.show{ opacity:1; }
+
+  .calc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:720px){ .calc-grid{ grid-template-columns:1fr; } }
+  .formula{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:11px 13px; line-height:1.6; overflow-x:auto; }
+  .formula .sub{ color:var(--ink-muted); }
+  .result-tile{ background:var(--navy); color:#fff; border-radius:var(--radius-sm); padding:16px 18px; }
+  .result-tile b{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#b9c8e2; margin-bottom:4px; }
+  .result-tile .val{ font-family:'IBM Plex Mono',monospace; font-size:30px; font-weight:600; }
+  .result-tile .note{ font-size:11.5px; color:#c9d6ec; margin-top:5px; line-height:1.4; }
+
+  .toggle-btns{ display:flex; gap:8px; }
+  .toggle-btn{
+    appearance:none; cursor:pointer; border-radius:9px; padding:9px 15px; font:600 13px 'IBM Plex Sans';
+    border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink-secondary);
+    display:flex; align-items:center; gap:8px;
+  }
+  .toggle-btn .sw{ width:10px;height:10px;border-radius:3px; }
+  .toggle-btn.on{ border-color:currentColor; }
+  .toggle-btn[data-series="gentle"].on{ color:var(--series-1); background:color-mix(in srgb, var(--series-1) 10%, var(--surface)); }
+  .toggle-btn[data-series="fast"].on{ color:var(--series-2); background:color-mix(in srgb, var(--series-2) 10%, var(--surface)); }
+
+  .comparison-row{ display:flex; gap:22px; flex-wrap:wrap; }
+  .comparison-row .kv b{ color:var(--ink-muted); }
+
+  .footnote{ font-size:12px; color:var(--ink-muted); line-height:1.5; }
+
+  @media (prefers-reduced-motion: reduce){
+    .checklist li{ animation:none; opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+<div class="appbar">
+  <div class="brand">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="#fff" stroke="none"/></svg>
+    </div>
+    <div>
+      <div class="name">NoonRay<span> Energy</span></div>
+      <div class="sub">Session 18 · Practical Demo Console</div>
+    </div>
+  </div>
+  <div class="tabs" id="partTabs"></div>
+  <div class="appbar-actions">
+    <button class="ghost-btn" id="resetBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>
+      Reset demo
+    </button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="rail">
+    <h2 id="railTitle"></h2>
+    <p class="rail-note" id="railNote"></p>
+    <ul class="steps" id="stepList"></ul>
+  </div>
+  <div class="stage-card">
+    <div class="stage-head" id="stageHead"></div>
+    <div class="stage-body" id="stageBody"></div>
+    <div class="stage-foot">
+      <div class="prog" id="progLabel"></div>
+      <div class="foot-btns">
+        <button class="btn btn-ghost btn-sm" id="backBtn">Back</button>
+        <button class="btn btn-primary btn-sm" id="nextBtn">Next step →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- icon paths (24x24, stroke) ---------------- */
+  const ICON = {
+    key:'<circle cx="8" cy="15" r="4"/><path d="M10.5 12.5 20 3M17 6l2.5 2.5M14 9l2 2"/>',
+    doc:'<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 12h6M9 16h6M9 8h3"/>',
+    box:'<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>',
+    tree:'<circle cx="6" cy="5" r="2.4"/><circle cx="6" cy="19" r="2.4"/><circle cx="18" cy="12" r="2.4"/><path d="M6 7.4V19M6 12h6.6L18 9.6M6 12h6.6L18 14.4"/>',
+    bell:'<path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6z"/><path d="M10 19a2 2 0 0 0 4 0"/>',
+    grid:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.3"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.3"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.3"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.3"/>',
+    pulse:'<path d="M3 12h4l2 7 4-14 2 7h6"/>',
+    calc:'<rect x="4" y="2.5" width="16" height="19" rx="2.2"/><path d="M7.5 6.5h9M7.5 11h2M7.5 15h2M7.5 19h2M12 11h2M12 15h2M12 19h2M16.5 11h0M16.5 15v4"/>',
+    layers:'<path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5M3 18l9 5 9-5"/>',
+    check:'<path d="M20 6 9 17l-5-5"/>',
+    warn:'<path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5M12 17h.01"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',
+    play:'<path d="M6 4l14 8-14 8z" fill="currentColor" stroke="none"/>',
+    target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+  };
+  function icon(name, cls){
+    return '<svg class="'+(cls||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+(ICON[name]||'')+'</svg>';
+  }
+
+  const $ = (sel, root) => (root||document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root||document).querySelectorAll(sel));
+
+  function fmtTime(d){
+    return d.toLocaleTimeString('en-GB',{hour12:false});
+  }
+  function fmtMMSS(ms){
+    const s = Math.floor(ms/1000);
+    const m = Math.floor(s/60);
+    const r = s%60;
+    return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0');
+  }
+
+  /* ---------------- state ---------------- */
+  const state = {
+    part: 1,
+    stepIdx: {1:0, 2:0},
+    login: { done:false, operator:'OP-2247', station:'Formation Cycler #4', time:null },
+    wo: { released:false, time:null },
+    batch: { readings:[], completed:false },
+    genealogy: { traced:false },
+    andon: { active:false, resolved:false, start:null, responded:null, escalated:null, resolvedAt:null, timerId:null },
+    quality: { threshold:70 },
+    maint: { sensitivity:4.2 },
+    soc: { initial:62, current:-15, time:0.25, cap:75 },
+    soh: { curCap:71.2, origCap:75 },
+    twin: { gentle:true, fast:true },
+  };
+
+  const SPEC = { v:[3.55,3.75], a:[10,14], t:[0,40], m:[18.0,18.8] };
+
+  function freshBatchId(){
+    const n = Math.floor(Math.random()*90)+10;
+    return 'B-24091-'+n;
+  }
+  state.batch.id = freshBatchId();
+
+  const PART1 = [
+    { key:'login', title:'Station Login', note:'Authenticate & validate', icon:'key' },
+    { key:'wo', title:'Work Order', note:'Release WO-88214', icon:'doc' },
+    { key:'batch', title:'Batch Tracking', note:'Log process readings', icon:'box' },
+    { key:'genealogy', title:'Genealogy Trace', note:'Trace a cell record', icon:'tree' },
+    { key:'andon', title:'Andon Trigger', note:'Alert → resolve, timed', icon:'bell' },
+  ];
+  const PART2 = [
+    { key:'quality', title:'Predictive Quality', note:'Defect-risk dashboard', icon:'grid' },
+    { key:'maint', title:'Predictive Maintenance', note:'Vibration trend & RUL', icon:'pulse' },
+    { key:'soc', title:'SOC / SOH Calculator', note:'Coulomb count vs. AI', icon:'calc' },
+    { key:'twin', title:'Digital Twin', note:'Duty-cycle simulation', icon:'layers' },
+  ];
+
+  function steps(){ return state.part===1 ? PART1 : PART2; }
+
+  /* ---------------- shell render ---------------- */
+  function renderTabs(){
+    const el = $('#partTabs');
+    el.innerHTML =
+      '<button class="tab '+(state.part===1?'active':'')+'" data-part="1"><b>Part 1</b>Live MES Walkthrough</button>'+
+      '<button class="tab '+(state.part===2?'active':'')+'" data-part="2"><b>Part 2</b>AI / Analytics &amp; SOC-SOH</button>';
+    $$('.tab', el).forEach(b => b.addEventListener('click', () => { state.part = +b.dataset.part; render(); }));
+  }
+
+  function renderRail(){
+    $('#railTitle').textContent = state.part===1 ? 'Live MES Walkthrough' : 'AI / Analytics & SOC-SOH';
+    $('#railNote').textContent = state.part===1
+      ? 'Five stations, run in order — one login ripples through the whole record.'
+      : 'Four exercises pairing a manual calculation or reading with the AI/model view.';
+    const list = $('#stepList');
+    const idx = state.stepIdx[state.part];
+    list.innerHTML = steps().map((s,i) => {
+      const done = isStepDone(s.key);
+      const cls = i===idx ? 'current' : (done ? 'done' : '');
+      return '<li class="step-item '+cls+'" data-idx="'+i+'">'+
+        '<div class="step-num">'+(done && i!==idx ? icon('check') : (i+1))+'</div>'+
+        '<div class="step-body"><b>'+s.title+'</b><span>'+s.note+'</span></div>'+
+        '</li>';
+    }).join('');
+    $$('.step-item', list).forEach(li => li.addEventListener('click', () => {
+      state.stepIdx[state.part] = +li.dataset.idx; render();
+    }));
+  }
+
+  function isStepDone(key){
+    switch(key){
+      case 'login': return state.login.done;
+      case 'wo': return state.wo.released;
+      case 'batch': return state.batch.completed;
+      case 'genealogy': return state.genealogy.traced;
+      case 'andon': return state.andon.resolved;
+      case 'quality': return true;
+      case 'maint': return true;
+      case 'soc': return true;
+      case 'twin': return true;
+      default: return false;
+    }
+  }
+
+  function currentStepDef(){ return steps()[state.stepIdx[state.part]]; }
+
+  function canAdvance(){
+    const k = currentStepDef().key;
+    if (k==='login') return state.login.done;
+    if (k==='wo') return state.wo.released;
+    if (k==='batch') return state.batch.completed;
+    return true;
+  }
+
+  function renderFoot(){
+    const i = state.stepIdx[state.part], n = steps().length;
+    $('#progLabel').textContent = 'Step '+(i+1)+' of '+n+' · '+(state.part===1?'Part 1':'Part 2');
+    const back = $('#backBtn'), next = $('#nextBtn');
+    back.disabled = (i===0 && state.part===1);
+    next.textContent = (i===n-1) ? (state.part===1 ? 'Continue to Part 2 →' : 'Restart from Part 1') : 'Next step →';
+    next.disabled = !canAdvance();
+  }
+
+  $('#backBtn').addEventListener('click', () => {
+    const i = state.stepIdx[state.part];
+    if (i>0){ state.stepIdx[state.part] = i-1; render(); }
+    else if (state.part===2){ state.part=1; state.stepIdx[1]=PART1.length-1; render(); }
+  });
+  $('#nextBtn').addEventListener('click', () => {
+    const i = state.stepIdx[state.part], n = steps().length;
+    if (i<n-1){ state.stepIdx[state.part]=i+1; render(); }
+    else if (state.part===1){ state.part=2; state.stepIdx[2]=0; render(); }
+    else { state.part=1; state.stepIdx[1]=0; render(); }
+  });
+
+  $('#resetBtn').addEventListener('click', () => {
+    if (state.andon.timerId) clearInterval(state.andon.timerId);
+    Object.assign(state, {
+      part:1, stepIdx:{1:0,2:0},
+      login:{ done:false, operator:'OP-2247', station:'Formation Cycler #4', time:null },
+      wo:{ released:false, time:null },
+      batch:{ readings:[], completed:false, id:freshBatchId() },
+      genealogy:{ traced:false },
+      andon:{ active:false, resolved:false, start:null, responded:null, escalated:null, resolvedAt:null, timerId:null },
+      quality:{ threshold:70 }, maint:{ sensitivity:4.2 },
+      soc:{ initial:62, current:-15, time:0.25, cap:75 }, soh:{ curCap:71.2, origCap:75 },
+      twin:{ gentle:true, fast:true },
+    });
+    render();
+  });
+
+  /* ---------------- stage renderers ---------------- */
+  function setHead(badgeIcon, eyebrow, title, desc){
+    $('#stageHead').innerHTML =
+      '<div class="badge">'+icon(badgeIcon)+'</div>'+
+      '<div><div class="eyebrow">'+eyebrow+'</div><h2>'+title+'</h2><p>'+desc+'</p></div>';
+  }
+
+  const RENDER = {
+    login: renderLogin, wo: renderWO, batch: renderBatch, genealogy: renderGenealogy, andon: renderAndon,
+    quality: renderQuality, maint: renderMaint, soc: renderSOC, twin: renderTwin,
+  };
+
+  function render(){
+    renderTabs(); renderRail(); renderFoot();
+    const def = currentStepDef();
+    RENDER[def.key]();
+  }
+
+  /* ----- Part 1 / Step 1: Station Login ----- */
+  function renderLogin(){
+    setHead('key','Practical Demo · Part 1','Station Login','Log in as an operator — MES validates certification and equipment status before releasing any work.');
+    const b = $('#stageBody');
+    const L = state.login;
+    b.innerHTML =
+      '<div class="row">'+
+        '<div class="field"><label>Operator ID</label><input class="mono" id="opId" value="'+L.operator+'" '+(L.done?'disabled':'')+'></div>'+
+        '<div class="field"><label>Station</label><select id="opStation" '+(L.done?'disabled':'')+'>'+
+          ['Formation Cycler #4','Calendering Line 2','Winding Cell 6'].map(s=>'<option '+(s===L.station?'selected':'')+'>'+s+'</option>').join('')+
+        '</select></div>'+
+        '<div class="field"><label>PIN</label><input type="password" value="••••" disabled></div>'+
+      '</div>'+
+      (!L.done
+        ? '<div><button class="btn btn-primary" id="authBtn">Authenticate</button></div>'
+        : '<div class="panel">'+
+            '<ul class="checklist">'+
+              '<li>'+icon('check')+'<div><b>Operator certified</b><span>Cell Assembly, Level 2 — certification valid to 2027-03-18</span></div></li>'+
+              '<li>'+icon('check')+'<div><b>Equipment status</b><span>'+L.station+' — calibrated, released for production</span></div></li>'+
+              '<li>'+icon('check')+'<div><b>Session opened</b><span class="mono">'+fmtTime(L.time)+' · '+L.operator+'</span></div></li>'+
+            '</ul>'+
+          '</div>'+
+          '<div class="status-banner good">'+icon('check')+'Login validated — work order release is now unlocked.</div>'
+      )+
+      '<p class="footnote">This is exactly what Module A calls MES\'s first job: nobody runs a process step until the operator and the equipment are both confirmed ready.</p>';
+    if (!L.done){
+      $('#opId').addEventListener('input', e => L.operator = e.target.value);
+      $('#opStation').addEventListener('change', e => L.station = e.target.value);
+      $('#authBtn').addEventListener('click', () => {
+        if (!L.operator.trim()) return;
+        L.done = true; L.time = new Date();
+        render();
+      });
+    }
+  }
+
+  /* ----- Part 1 / Step 2: Work Order ----- */
+  function renderWO(){
+    setHead('doc','Practical Demo · Part 1','Work Order','Release the work order — routing, bill of materials, and quality checkpoints travel with it from here on.');
+    const b = $('#stageBody');
+    const W = state.wo;
+    b.innerHTML =
+      '<div class="panel">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">'+
+          '<div><b class="mono" style="font-size:15px;">WO-88214</b></div>'+
+          '<span class="chip '+(W.released?'chip-released':'chip-draft')+'">'+(W.released?icon('check'):'')+(W.released?'Released':'Draft')+'</span>'+
+        '</div>'+
+        '<div class="kv-grid">'+
+          '<div class="kv"><b>Item</b><span>21700 Cylindrical Cell — Grade A</span></div>'+
+          '<div class="kv"><b>Quantity</b><span>4,000 units</span></div>'+
+          '<div class="kv"><b>Line</b><span>'+state.login.station+'</span></div>'+
+          '<div class="kv"><b>Due</b><span>Today · Shift B</span></div>'+
+        '</div>'+
+      '</div>'+
+      '<div>'+
+        '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Routing</label>'+
+        '<div class="flow" style="margin-top:8px;">'+
+          ['Coating','Calendering','Winding','Fill &amp; Formation','Grading'].map((s,i,arr)=>
+            '<span class="flow-node">'+s+'</span>'+(i<arr.length-1?'<span class="flow-arrow">→</span>':'')
+          ).join('')+
+        '</div>'+
+      '</div>'+
+      '<div>'+
+        '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Quality checkpoints</label>'+
+        '<ul style="margin:8px 0 0 18px;font-size:13.5px;line-height:1.9;">'+
+          '<li>Mass loading ±2%</li><li>Electrode thickness ±3 µm</li><li>Formation voltage window 2.5–4.2 V</li>'+
+        '</ul>'+
+      '</div>'+
+      (!W.released
+        ? '<div><button class="btn btn-primary" id="releaseBtn">Release Work Order</button></div>'
+        : '<div class="status-banner good">'+icon('check')+'Released '+fmtTime(W.time)+' by '+state.login.operator+' — dispatched to '+state.login.station+'.</div>'
+      );
+    if (!W.released){
+      $('#releaseBtn').addEventListener('click', () => { W.released = true; W.time = new Date(); render(); });
+    }
+  }
+
+  /* ----- Part 1 / Step 3: Batch Tracking ----- */
+  function renderBatch(){
+    setHead('box','Practical Demo · Part 1','Batch Tracking','Open the batch and record readings against it — every value here becomes a permanent, genealogy-linked record.');
+    const b = $('#stageBody');
+    const B = state.batch;
+    b.innerHTML =
+      '<div class="panel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
+        '<div><b class="mono" style="font-size:15px;">'+B.id+'</b><div class="footnote" style="margin-top:2px;">Linked to WO-88214 · spec: V '+SPEC.v.join('–')+'  · A '+SPEC.a.join('–')+' · T ≤'+SPEC.t[1]+'°C · mass '+SPEC.m.join('–')+' mg/cm²</div></div>'+
+        '<span class="chip '+(B.completed?'chip-released':'chip-draft')+'">'+(B.completed?'Completed':'In process')+'</span>'+
+      '</div>'+
+      (!B.completed ?
+      '<div class="row">'+
+        '<div class="field"><label>Voltage (V)</label><input type="number" step="0.01" id="rV" value="3.65"></div>'+
+        '<div class="field"><label>Current (A)</label><input type="number" step="0.1" id="rA" value="12.0"></div>'+
+        '<div class="field"><label>Temp (°C)</label><input type="number" step="0.5" id="rT" value="32"></div>'+
+        '<div class="field"><label>Mass loading (mg/cm²)</label><input type="number" step="0.1" id="rM" value="18.4"></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;">'+
+        '<button class="btn btn-navy" id="recordBtn">Record reading</button>'+
+        '<button class="btn btn-green" id="completeBtn" '+(B.readings.length? '':'disabled')+'>Complete batch</button>'+
+      '</div>' : ''
+      )+
+      '<div class="table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>V</th><th>A</th><th>°C</th><th>mg/cm²</th><th>Status</th></tr></thead><tbody id="readingBody">'+
+        (B.readings.length ? B.readings.map(rowHtml).join('') : '<tr><td colspan="6" style="font-family:\'IBM Plex Sans\';color:var(--ink-muted);">No readings recorded yet.</td></tr>')+
+      '</tbody></table></div>'+
+      (B.completed ? '<div class="status-banner good">'+icon('check')+B.readings.length+' readings recorded · '+B.readings.filter(r=>r.ok).length+' in spec.</div>' : '');
+
+    function rowHtml(r){
+      return '<tr><td>'+fmtTime(r.time)+'</td><td>'+r.v.toFixed(2)+'</td><td>'+r.a.toFixed(1)+'</td><td>'+r.t.toFixed(1)+'</td><td>'+r.m.toFixed(1)+'</td>'+
+        '<td><span class="chip '+(r.ok?'chip-good':'chip-critical')+'">'+(r.ok?'In spec':'Out of spec')+'</span></td></tr>';
+    }
+    if (!B.completed){
+      $('#recordBtn').addEventListener('click', () => {
+        const v=+$('#rV').value, a=+$('#rA').value, t=+$('#rT').value, m=+$('#rM').value;
+        const ok = v>=SPEC.v[0]&&v<=SPEC.v[1] && a>=SPEC.a[0]&&a<=SPEC.a[1] && t<=SPEC.t[1] && m>=SPEC.m[0]&&m<=SPEC.m[1];
+        B.readings.push({ time:new Date(), v,a,t,m, ok });
+        render();
+      });
+      const cbtn = $('#completeBtn');
+      if (cbtn) cbtn.addEventListener('click', () => { B.completed = true; render(); });
+    }
+  }
+
+  /* ----- Part 1 / Step 4: Genealogy Trace ----- */
+  function renderGenealogy(){
+    setHead('tree','Practical Demo · Part 1','Genealogy Trace','Pull one cell ID and follow its full linked history — forward and backward — in a single search.');
+    const b = $('#stageBody');
+    const G = state.genealogy;
+    const cellId = state.batch.id + '-0143';
+    b.innerHTML =
+      '<div class="row" style="align-items:flex-end;">'+
+        '<div class="field" style="max-width:280px;"><label>Cell / Unit ID</label><input class="mono" id="cellIdInput" value="'+cellId+'"></div>'+
+        '<div><button class="btn btn-primary" id="traceBtn">Trace history</button></div>'+
+      '</div>'+
+      (G.traced ? renderTimeline(cellId) : '');
+    $('#traceBtn').addEventListener('click', () => { G.traced = true; render(); });
+
+    function renderTimeline(id){
+      const lastReading = state.batch.readings[state.batch.readings.length-1];
+      const items = [
+        { i:'key', t:'Station login', d:state.login.operator+' certified & '+state.login.station+' released', time: state.login.time },
+        { i:'doc', t:'Work order released', d:'WO-88214 dispatched to '+state.login.station, time: state.wo.time },
+        { i:'box', t:'Batch opened', d: state.batch.id + (lastReading ? ' — last reading V '+lastReading.v.toFixed(2)+', T '+lastReading.t.toFixed(1)+'°C' : ' — no readings logged yet'), time: lastReading ? lastReading.time : new Date() },
+        { i:'box', t:'Sub-process record', d:'Coating Roll #C-118 · Calendering Pass #2 · Winding Cell #6', time: new Date() },
+        { i:'target', t:'Formation & grading', d:'Formation Channel #4 — capacity-graded A', time: new Date() },
+      ];
+      return '<div class="panel"><ul class="timeline">'+
+        items.map(it => '<li class="tl-item"><div class="tl-dot">'+icon(it.i)+'</div><div class="tl-body"><b>'+it.t+'</b><span>'+it.d+'</span><span class="tl-time">'+ (it.time? fmtTime(it.time):'—') +'</span></div></li>').join('')+
+        '</ul></div>'+
+        '<p class="footnote">Cell <b class="mono">'+id+'</b> traces backward to Electrode Lot EL-2209 and forward to Pack Assembly — this is the exact record a recall or root-cause investigation would pull.</p>';
+    }
+  }
+
+  /* ----- Part 1 / Step 5: Andon Trigger ----- */
+  function renderAndon(){
+    setHead('bell','Practical Demo · Part 1','Andon Trigger','Raise a simulated alert and work the escalation ladder live — the clock never stops until it\'s resolved.');
+    const b = $('#stageBody');
+    const A = state.andon;
+    if (!A.active && !A.resolved){
+      b.innerHTML =
+        '<div class="panel" style="text-align:center;padding:30px 20px;">'+
+          '<p style="margin:0 0 14px;color:var(--ink-secondary);">Ready — '+state.login.station+'</p>'+
+          '<button class="btn btn-primary" style="padding:14px 26px;font-size:15px;" id="raiseBtn">'+icon('bell')+' Raise Andon alert</button>'+
+        '</div>';
+      $('#raiseBtn').addEventListener('click', () => {
+        A.active = true; A.start = new Date(); A.responded = null; A.escalated = null; A.resolvedAt = null;
+        startTimer(); render();
+      });
+      return;
+    }
+    const elapsed = (A.resolvedAt||new Date()) - A.start;
+    b.innerHTML =
+      '<div class="panel-navy panel" style="text-align:center;">'+
+        '<div class="footnote ink-secondary" style="color:#c9d6ec;">Time since alert</div>'+
+        '<div class="timer-big" id="timerDisplay">'+fmtMMSS(elapsed)+'</div>'+
+      '</div>'+
+      '<div class="ladder">'+
+        ladderStep(1,'Alert (Call)', A.start, true, null)+
+        ladderStep(2,'Response', A.responded, !!A.responded, !A.responded && !A.resolvedAt ? '<button class="btn btn-ghost btn-sm" id="respondBtn">Log response</button>' : null)+
+        ladderStep(3,'Escalation', A.escalated, !!A.escalated, !A.escalated && A.responded && !A.resolvedAt ? '<button class="btn btn-ghost btn-sm" id="escalateBtn">Escalate</button>' : null)+
+      '</div>'+
+      (!A.resolvedAt
+        ? '<div><button class="btn btn-green" id="resolveBtn">Resolve alert</button></div>'
+        : resolvedSummary());
+    const rb = $('#respondBtn'); if (rb) rb.addEventListener('click', () => { A.responded = new Date(); render(); });
+    const eb = $('#escalateBtn'); if (eb) eb.addEventListener('click', () => { A.escalated = new Date(); render(); });
+    const sb = $('#resolveBtn'); if (sb) sb.addEventListener('click', () => { A.resolvedAt = new Date(); A.resolved = true; stopTimer(); render(); });
+    const again = $('#raiseAgainBtn'); if (again) again.addEventListener('click', () => { A.active=false; A.resolved=false; render(); });
+
+    function ladderStep(n, label, ts, done, action){
+      const active = !done && !action ? false : (!done);
+      let cls = done ? 'done' : (action ? 'active' : '');
+      return '<div class="ladder-step '+cls+'"><div class="ladder-num">'+(done?icon('check'):n)+'</div><b>'+label+'</b>'+
+        (ts ? '<div class="ladder-time">'+fmtTime(ts)+'</div>' : (action || '<div class="ladder-time">—</div>'))+
+        '</div>';
+    }
+    function resolvedSummary(){
+      const mttr = A.resolvedAt - A.start;
+      const target = 10*60*1000;
+      return '<div class="status-banner '+(mttr<=target?'good':'warn')+'">'+icon(mttr<=target?'check':'warn')+'Resolved — MTTR '+fmtMMSS(mttr)+' (target &lt; 10:00)</div>'+
+        '<div><button class="btn btn-ghost" id="raiseAgainBtn">Raise another alert</button></div>';
+    }
+  }
+  function startTimer(){
+    stopTimer();
+    state.andon.timerId = setInterval(() => {
+      const el = $('#timerDisplay');
+      if (!el || !state.andon.active || state.andon.resolvedAt){ return; }
+      el.textContent = fmtMMSS(new Date() - state.andon.start);
+    }, 1000);
+  }
+  function stopTimer(){ if (state.andon.timerId){ clearInterval(state.andon.timerId); state.andon.timerId=null; } }
+
+  /* ----- Part 2 / Step 1: Predictive Quality ----- */
+  const QUALITY_UNITS = [
+    {id:'C-0141', score:8},{id:'C-0142', score:14},{id:'C-0143', score:19},
+    {id:'C-0144', score:27},{id:'C-0145', score:35},{id:'C-0146', score:44},
+    {id:'C-0147', score:58},{id:'C-0148', score:63},{id:'C-0149', score:77},
+    {id:'C-0150', score:91},
+  ];
+  function renderQuality(){
+    setHead('grid','Practical Demo · Part 2','Predictive Quality Dashboard','Score sample units for defect risk and discuss what should trigger an Andon hold.');
+    const b = $('#stageBody');
+    const th = state.quality.threshold;
+    const holds = QUALITY_UNITS.filter(u=>u.score>=th).length;
+    b.innerHTML =
+      '<div class="panel">'+
+        '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Andon hold threshold</label>'+
+        '<div class="slider-row" style="margin-top:8px;">'+
+          '<input type="range" id="threshSlider" min="20" max="95" value="'+th+'">'+
+          '<span class="slider-val" id="threshVal">'+th+'%</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="risk-grid">'+
+        QUALITY_UNITS.map(u => {
+          const cls = u.score>=th ? 'critical' : (u.score>=th-20 ? 'warn' : '');
+          const label = u.score>=th ? 'Hold' : (u.score>=th-20 ? 'Watch' : 'Good');
+          const chip = u.score>=th ? 'chip-critical' : (u.score>=th-20 ? 'chip-warn' : 'chip-good');
+          return '<div class="risk-card '+cls+'"><div class="rc-id">'+u.id+'</div><div class="rc-score">'+u.score+'%</div>'+
+            '<div class="risk-bar"><i style="width:'+u.score+'%;"></i></div><span class="chip '+chip+'">'+label+'</span></div>';
+        }).join('')+
+      '</div>'+
+      '<p class="footnote" id="holdSummary">'+holds+' of '+QUALITY_UNITS.length+' units would trigger an Andon hold at a '+th+'% threshold. Low-confidence cases still route to a human reviewer, not an automatic scrap decision.</p>';
+    $('#threshSlider').addEventListener('input', e => { state.quality.threshold = +e.target.value; render(); });
+  }
+
+  /* ----- Part 2 / Step 2: Predictive Maintenance ----- */
+  const VIB_DATA = [1.1,1.2,1.3,1.5,1.4,1.6,1.8,1.7,2.0,2.3,2.2,2.6,2.9,3.1,3.4,3.3,3.7,4.0].map((v,i)=>({x:i*3, y:v}));
+  function renderMaint(){
+    setHead('pulse','Practical Demo · Part 2','Predictive Maintenance Signal','Watch a vibration trend drift and estimate Remaining Useful Life against an adjustable sensitivity threshold.');
+    const b = $('#stageBody');
+    const s = state.maint.sensitivity;
+    b.innerHTML =
+      '<div class="panel">'+
+        '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Alert sensitivity (mm/s)</label>'+
+        '<div class="slider-row" style="margin-top:8px;">'+
+          '<input type="range" id="sensSlider" min="3" max="5" step="0.1" value="'+s+'">'+
+          '<span class="slider-val" id="sensVal">'+s.toFixed(1)+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="chart-wrap" id="vibChartWrap"></div>'+
+      '<div class="result-tile" id="rulTile"></div>';
+    mountLineChart($('#vibChartWrap'), {
+      width:640, height:260,
+      xDomain:[0,51], yDomain:[0,5],
+      xTicks:[0,17,34,51], yTicks:[0,1.25,2.5,3.75,5],
+      xLabel:'Cycles (thousands)', yLabel:'Vibration (mm/s)',
+      series:[{ key:'vib', color:'--series-1', data:VIB_DATA, area:true, label:'Vibration' }],
+      threshold: s,
+    });
+    updateRUL();
+    $('#sensSlider').addEventListener('input', e => {
+      state.maint.sensitivity = +e.target.value;
+      $('#sensVal').textContent = state.maint.sensitivity.toFixed(1);
+      mountLineChart($('#vibChartWrap'), {
+        width:640, height:260, xDomain:[0,51], yDomain:[0,5],
+        xTicks:[0,17,34,51], yTicks:[0,1.25,2.5,3.75,5],
+        xLabel:'Cycles (thousands)', yLabel:'Vibration (mm/s)',
+        series:[{ key:'vib', color:'--series-1', data:VIB_DATA, area:true, label:'Vibration' }],
+        threshold: state.maint.sensitivity,
+      });
+      updateRUL();
+    });
+    function updateRUL(){
+      const n = VIB_DATA.length;
+      const tail = VIB_DATA.slice(n-6);
+      const mx = tail.reduce((a,p)=>a+p.x,0)/tail.length;
+      const my = tail.reduce((a,p)=>a+p.y,0)/tail.length;
+      let num=0, den=0;
+      tail.forEach(p=>{ num += (p.x-mx)*(p.y-my); den += (p.x-mx)*(p.x-mx); });
+      const slope = den ? num/den : 0;
+      const intercept = my - slope*mx;
+      const lastX = VIB_DATA[n-1].x, lastY = VIB_DATA[n-1].y;
+      const sens = state.maint.sensitivity;
+      let rulText, sub;
+      if (lastY >= sens){
+        rulText = '0 cycles'; sub = 'Signal has already crossed the sensitivity threshold.';
+      } else if (slope <= 0){
+        rulText = '—'; sub = 'Trend is flat or improving — no crossing projected.';
+      } else {
+        const crossX = (sens - intercept) / slope;
+        const rul = Math.max(0, Math.round((crossX - lastX)) );
+        rulText = '≈ '+ (rul*1000).toLocaleString() +' cycles';
+        sub = 'Projected from the last six readings\' trend line.';
+      }
+      $('#rulTile').innerHTML = '<b>Estimated Remaining Useful Life</b><div class="val">'+rulText+'</div><div class="note">'+sub+'</div>';
+    }
+  }
+
+  /* ----- Part 2 / Step 3: SOC / SOH ----- */
+  function renderSOC(){
+    setHead('calc','Practical Demo · Part 2','SOC / SOH Hands-On Calculator','Calculate State of Charge by Coulomb counting, then compare it against the AI model\'s estimate.');
+    const b = $('#stageBody');
+    const S = state.soc, H = state.soh;
+    b.innerHTML =
+      '<div class="calc-grid">'+
+        '<div class="panel">'+
+          '<b style="font-size:13.5px;">State of Charge — Coulomb counting</b>'+
+          '<div class="row" style="margin-top:12px;">'+
+            '<div class="field"><label>Initial SOC (%)</label><input type="number" id="socInit" value="'+S.initial+'"></div>'+
+            '<div class="field"><label>Current (A, − = discharge)</label><input type="number" id="socCur" value="'+S.current+'"></div>'+
+          '</div>'+
+          '<div class="row">'+
+            '<div class="field"><label>Time (h)</label><input type="number" step="0.01" id="socTime" value="'+S.time+'"></div>'+
+            '<div class="field"><label>Rated capacity (Ah)</label><input type="number" id="socCap" value="'+S.cap+'"></div>'+
+          '</div>'+
+          '<div class="formula" id="socFormula" style="margin-top:12px;"></div>'+
+        '</div>'+
+        '<div style="display:flex;flex-direction:column;gap:14px;">'+
+          '<div class="result-tile" id="socManualTile"></div>'+
+          '<div class="result-tile" id="socAiTile" style="background:var(--orange);"></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="calc-grid">'+
+        '<div class="panel">'+
+          '<b style="font-size:13.5px;">State of Health</b>'+
+          '<div class="row" style="margin-top:12px;">'+
+            '<div class="field"><label>Current max capacity (Ah)</label><input type="number" step="0.1" id="sohCur" value="'+H.curCap+'"></div>'+
+            '<div class="field"><label>Original rated capacity (Ah)</label><input type="number" step="0.1" id="sohOrig" value="'+H.origCap+'"></div>'+
+          '</div>'+
+          '<div class="formula">SOH = Current max capacity ÷ Original rated capacity × 100</div>'+
+        '</div>'+
+        '<div class="result-tile" id="sohTile"></div>'+
+      '</div>';
+    ['socInit','socCur','socTime','socCap'].forEach(id => $('#'+id).addEventListener('input', updateSOC));
+    ['sohCur','sohOrig'].forEach(id => $('#'+id).addEventListener('input', updateSOH));
+    updateSOC(); updateSOH();
+
+    function updateSOC(){
+      S.initial=+$('#socInit').value; S.current=+$('#socCur').value; S.time=+$('#socTime').value; S.cap=+$('#socCap').value;
+      const delta = (S.current * S.time / S.cap) * 100;
+      const manual = Math.max(0, Math.min(100, S.initial + delta));
+      const ai = Math.max(0, Math.min(100, manual - 1.4));
+      $('#socFormula').innerHTML =
+        'SOC_new = SOC_initial + (I × t ÷ Cap) × 100<br>'+
+        '<span class="sub">= '+S.initial+'% + ('+S.current+'A × '+S.time+'h ÷ '+S.cap+'Ah) × 100</span><br>'+
+        '<span class="sub">= '+S.initial+'% + ('+delta.toFixed(1)+'%)</span>';
+      $('#socManualTile').innerHTML = '<b>Manual — Coulomb counting</b><div class="val">'+manual.toFixed(1)+'%</div><div class="note">Simple integration of current over time.</div>';
+      $('#socAiTile').innerHTML = '<b>AI / ML model estimate</b><div class="val">'+ai.toFixed(1)+'%</div><div class="note">Hybrid model corrects for internal-resistance rise as the cell ages — see Module D.</div>';
+    }
+    function updateSOH(){
+      H.curCap=+$('#sohCur').value; H.origCap=+$('#sohOrig').value;
+      const soh = H.origCap ? (H.curCap/H.origCap*100) : 0;
+      let label='Replace', chip='chip-critical';
+      if (soh>=90){ label='Excellent'; chip='chip-good'; }
+      else if (soh>=80){ label='Good'; chip='chip-good'; }
+      else if (soh>=70){ label='Fair'; chip='chip-warn'; }
+      $('#sohTile').innerHTML = '<b>State of Health</b><div class="val">'+soh.toFixed(1)+'%</div><div class="note"><span class="chip '+chip+'" style="margin-top:4px;">'+label+'</span></div>';
+    }
+  }
+
+  /* ----- Part 2 / Step 4: Digital Twin ----- */
+  function renderTwin(){
+    setHead('layers','Practical Demo · Part 2','Digital Twin — Duty-Cycle Simulation','Simulate pack degradation under two duty cycles entirely in software before committing the real asset.');
+    const b = $('#stageBody');
+    const T = state.twin;
+    const gentle = Array.from({length:11},(_,i)=>({x:i*100, y: 100 - 0.012*i*100}));
+    const fast = Array.from({length:11},(_,i)=>({x:i*100, y: 100 - 0.026*i*100}));
+    b.innerHTML =
+      '<div class="toggle-btns">'+
+        '<button class="toggle-btn '+(T.gentle?'on':'')+'" data-series="gentle" id="btnGentle"><span class="sw" style="background:var(--series-1);"></span>Gentle cycling</button>'+
+        '<button class="toggle-btn '+(T.fast?'on':'')+'" data-series="fast" id="btnFast"><span class="sw" style="background:var(--series-2);"></span>Fast charging</button>'+
+      '</div>'+
+      '<div class="chart-wrap" id="twinChartWrap"></div>'+
+      '<div class="comparison-row">'+
+        '<div class="kv"><b>At 1,000 cycles — gentle</b><span>'+gentle[10].y.toFixed(0)+'% SOH</span></div>'+
+        '<div class="kv"><b>At 1,000 cycles — fast</b><span>'+fast[10].y.toFixed(0)+'% SOH</span></div>'+
+        '<div class="kv"><b>Spread</b><span>'+(gentle[10].y-fast[10].y).toFixed(0)+' points, from charging behaviour alone</span></div>'+
+      '</div>';
+    drawTwin();
+    $('#btnGentle').addEventListener('click', () => { T.gentle = !T.gentle; drawTwin(); $('#btnGentle').classList.toggle('on',T.gentle); });
+    $('#btnFast').addEventListener('click', () => { T.fast = !T.fast; drawTwin(); $('#btnFast').classList.toggle('on',T.fast); });
+    function drawTwin(){
+      const series = [];
+      if (T.gentle) series.push({ key:'gentle', color:'--series-1', data:gentle, label:'Gentle cycling' });
+      if (T.fast) series.push({ key:'fast', color:'--series-2', data:fast, label:'Fast charging' });
+      mountLineChart($('#twinChartWrap'), {
+        width:640, height:260, xDomain:[0,1000], yDomain:[65,100],
+        xTicks:[0,250,500,750,1000], yTicks:[65,77.5,90,100],
+        xLabel:'Cycle count', yLabel:'SOH (%)',
+        series, endLabels:true,
+      });
+    }
+  }
+
+  /* ---------------- generic line-chart component ---------------- */
+  function css(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+  function mountLineChart(container, opt){
+    const { width, height, xDomain, yDomain, xTicks, yTicks, xLabel, yLabel, series, threshold, endLabels } = opt;
+    const pad = { l:44, r: endLabels ? 96 : 20, t:14, b:36 };
+    const pw = width - pad.l - pad.r, ph = height - pad.t - pad.b;
+    const sx = x => pad.l + (x - xDomain[0])/(xDomain[1]-xDomain[0]) * pw;
+    const sy = y => pad.t + ph - (y - yDomain[0])/(yDomain[1]-yDomain[0]) * ph;
+
+    let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" style="display:block;overflow:visible;" id="lc-svg">';
+    svg += '<g>';
+    yTicks.forEach(t => {
+      svg += '<line x1="'+pad.l+'" y1="'+sy(t)+'" x2="'+(width-pad.r)+'" y2="'+sy(t)+'" stroke="'+css('--chart-grid')+'" stroke-width="1"/>';
+      svg += '<text x="'+(pad.l-9)+'" y="'+(sy(t)+4)+'" text-anchor="end" font-size="11" font-family="IBM Plex Mono, monospace" fill="'+css('--ink-muted')+'">'+t+'</text>';
+    });
+    xTicks.forEach(t => {
+      svg += '<text x="'+sx(t)+'" y="'+(height-pad.b+20)+'" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="'+css('--ink-muted')+'">'+t+'</text>';
+    });
+    svg += '<line x1="'+pad.l+'" y1="'+(height-pad.b)+'" x2="'+(width-pad.r)+'" y2="'+(height-pad.b)+'" stroke="'+css('--chart-axis')+'" stroke-width="1.2"/>';
+    svg += '<text x="'+(pad.l+pw/2)+'" y="'+(height-4)+'" text-anchor="middle" font-size="11" fill="'+css('--ink-muted')+'" font-family="IBM Plex Sans">'+xLabel+'</text>';
+    svg += '<text x="'+(12)+'" y="'+(pad.t+ph/2)+'" text-anchor="middle" font-size="11" fill="'+css('--ink-muted')+'" font-family="IBM Plex Sans" transform="rotate(-90 12 '+(pad.t+ph/2)+')">'+yLabel+'</text>';
+
+    if (threshold !== undefined){
+      svg += '<line x1="'+pad.l+'" y1="'+sy(threshold)+'" x2="'+(width-pad.r)+'" y2="'+sy(threshold)+'" stroke="'+css('--critical')+'" stroke-width="1.6" stroke-dasharray="5 4"/>';
+      svg += '<text x="'+(width-pad.r+6)+'" y="'+(sy(threshold)+4)+'" font-size="11" font-family="IBM Plex Mono, monospace" fill="'+css('--critical')+'">'+threshold.toFixed(1)+'</text>';
+    }
+
+    series.forEach(s => {
+      const pathD = s.data.map((p,i) => (i===0?'M':'L')+sx(p.x).toFixed(1)+' '+sy(p.y).toFixed(1)).join(' ');
+      if (s.area){
+        const areaD = pathD + ' L'+sx(s.data[s.data.length-1].x).toFixed(1)+' '+(height-pad.b)+' L'+sx(s.data[0].x).toFixed(1)+' '+(height-pad.b)+' Z';
+        svg += '<path d="'+areaD+'" fill="'+css(s.color)+'" opacity="0.10" stroke="none"/>';
+      }
+      svg += '<path d="'+pathD+'" fill="none" stroke="'+css(s.color)+'" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>';
+      const last = s.data[s.data.length-1];
+      svg += '<circle cx="'+sx(last.x)+'" cy="'+sy(last.y)+'" r="3.5" fill="'+css(s.color)+'"/>';
+      if (endLabels){
+        svg += '<text x="'+(sx(last.x)+8)+'" y="'+(sy(last.y)+4)+'" font-size="12" font-weight="600" font-family="IBM Plex Sans" fill="'+css(s.color)+'">'+s.label+'</text>';
+      }
+    });
+    svg += '<rect id="lc-hover" x="'+pad.l+'" y="'+pad.t+'" width="'+pw+'" height="'+ph+'" fill="transparent" style="cursor:crosshair;"/>';
+    svg += '<g id="lc-cross" style="opacity:0;">';
+    svg += '<line id="lc-cross-line" y1="'+pad.t+'" y2="'+(height-pad.b)+'" stroke="'+css('--ink-muted')+'" stroke-width="1" stroke-dasharray="3 3"/>';
+    series.forEach((s,i) => { svg += '<circle id="lc-dot-'+i+'" r="4.5" fill="'+css(s.color)+'" stroke="'+css('--surface')+'" stroke-width="1.5"/>'; });
+    svg += '</g>';
+    svg += '</g></svg>';
+
+    container.innerHTML = svg + '<div class="chart-tip" id="lc-tip"></div>';
+
+    const hoverRect = $('#lc-hover', container);
+    const tip = $('#lc-tip', container);
+    const crossG = $('#lc-cross', container);
+    const crossLine = $('#lc-cross-line', container);
+    hoverRect.addEventListener('mousemove', e => {
+      const svgEl = $('#lc-svg', container);
+      const rect = svgEl.getBoundingClientRect();
+      const scale = width / rect.width;
+      const mx = (e.clientX - rect.left) * scale;
+      const xVal = xDomain[0] + (mx - pad.l)/pw * (xDomain[1]-xDomain[0]);
+      let nearest = series[0].data[0], bestDist = Infinity;
+      series[0].data.forEach(p => { const d = Math.abs(p.x - xVal); if (d<bestDist){ bestDist=d; nearest=p; } });
+      crossG.style.opacity = 1;
+      crossLine.setAttribute('x1', sx(nearest.x)); crossLine.setAttribute('x2', sx(nearest.x));
+      let lines = [];
+      series.forEach((s,i) => {
+        const pt = s.data.find(p => p.x === nearest.x) || s.data.reduce((a,b)=>Math.abs(b.x-nearest.x)<Math.abs(a.x-nearest.x)?b:a);
+        const dot = $('#lc-dot-'+i, container);
+        dot.setAttribute('cx', sx(pt.x)); dot.setAttribute('cy', sy(pt.y));
+        lines.push((s.label?s.label+': ':'') + pt.y.toFixed(2));
+      });
+      tip.innerHTML = xLabel.replace(/\(.*\)/,'').trim()+' '+nearest.x+'<br>'+lines.join('<br>');
+      tip.style.left = sx(nearest.x)+'px';
+      tip.style.top = sy(series[0].data.find(p=>p.x===nearest.x) ? series[0].data.find(p=>p.x===nearest.x).y : series[0].data[0].y)+'px';
+      tip.classList.add('show');
+    });
+    hoverRect.addEventListener('mouseleave', () => { crossG.style.opacity = 0; tip.classList.remove('show'); });
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>
