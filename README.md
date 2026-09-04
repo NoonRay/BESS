@@ -44,10 +44,20 @@ Either option works with zero code changes; the page has no build step and no ex
 
 ## Notes for the trainer
 
-- Use the **Reset demo** button (top right) between class runs to clear all logged-in state, readings, alerts, and calculator inputs.
+- Use the **Reset demo** button (top right) between class runs to clear all logged-in state, readings, alerts, and calculator inputs — it does not change your theme choice.
 - Every step is reachable directly from the left-hand step list — you don't have to move through it in order live, but the numbered flow matches the deck's Demo Plan slides.
-- The page has no backend and stores nothing outside the browser tab, so refreshing the page resets everything — there's no session to lose track of between machines.
-- Works in both light and dark mode (follows the browser/OS setting).
+- A progress bar under the header tracks how many of the 9 steps have real input recorded, so you can see at a glance what's left to demo.
+- Each step ends with a collapsible **Instructor talking point** — a ready-made question to put to the room without breaking flow to think one up.
+- **Station Login** and **Andon Trigger** both have quick-fill buttons that jump straight to the interesting failure paths (an uncertified operator, a station that isn't released, a missed MTTR target) instead of typing them out live.
+- **Batch Tracking** readings that fall out of spec can **Flag Andon** directly from the table row — it jumps to Part 1's Andon step and raises a live alert with the right trigger type pre-selected, demonstrating the loop Module C describes.
+- **Andon Trigger** now has five trigger types (quality, machine, material, safety, data) each with its own target MTTR and escalation path, matching the deck's escalation matrix; resolved alerts accumulate in a session incident log.
+- **Genealogy Trace** can trace backward (to the electrode lot and supplier batch) or forward (to module/pack assembly and shipment) from the same cell ID.
+- **Predictive Maintenance** lets you switch between three machines with different vibration trends (healthy, mid-drift, urgent) to show how the RUL estimate changes.
+- **SOC / SOH Calculator** has one-click preset scenarios and flags when a raw (pre-clamp) calculation would have gone outside 0–100%.
+- **Digital Twin** uses a continuous C-rate slider (rather than two fixed toggles) against dashed gentle/fast reference lines, so you can dial in any duty cycle live.
+- The header icons toggle **theme** (system → light → dark), **fullscreen**, and a **help** dialog listing all of the above plus keyboard shortcuts (← / → move between steps, Esc closes the dialog).
+- The page has no backend and stores nothing outside the browser tab except your theme preference, so refreshing resets the demo — there's no session to lose track of between machines.
+- Works in both light and dark mode (follows the browser/OS setting by default, or your explicit choice from the theme toggle).
 
 ## File structure
 

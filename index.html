@@ -414,6 +414,61 @@
   @media (prefers-reduced-motion: reduce){
     .checklist li{ animation:none; opacity:1; transform:none; }
   }
+
+  /* ---------- Progress bar ---------- */
+  .progress-shell{ background:var(--surface); border-bottom:1px solid var(--border); padding:8px 22px; }
+  .progress-shell-inner{ display:flex; align-items:center; gap:12px; max-width:1220px; margin:0 auto; width:100%; }
+  .progress-track{ flex:1; height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; }
+  .progress-fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--orange),var(--green)); border-radius:999px; transition:width .25s ease; }
+  .progress-label{ font-size:11.5px; font-weight:600; color:var(--ink-muted); white-space:nowrap; }
+
+  /* ---------- Appbar icon buttons ---------- */
+  .icon-btn{
+    appearance:none; cursor:pointer; border:1px solid rgba(255,255,255,0.28);
+    background:rgba(255,255,255,0.06); color:#eaf0fb; border-radius:8px;
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center; flex:none;
+    transition:background .15s ease;
+  }
+  .icon-btn:hover{ background:rgba(255,255,255,0.16); }
+  .icon-btn svg{ width:16px;height:16px; }
+
+  /* ---------- Talking point ---------- */
+  .talkpoint{ border:1px dashed var(--border-strong); border-radius:var(--radius-sm); padding:0 14px; background:var(--surface-2); }
+  .talkpoint summary{ cursor:pointer; list-style:none; padding:10px 0; display:flex; align-items:center; gap:8px; font:600 12.5px 'IBM Plex Sans'; color:var(--ink-secondary); }
+  .talkpoint summary::-webkit-details-marker{ display:none; }
+  .talkpoint summary svg{ width:15px;height:15px; color:var(--orange); flex:none; }
+  .talkpoint summary::after{ content:"+"; margin-left:auto; font-size:16px; color:var(--ink-muted); }
+  .talkpoint[open] summary::after{ content:"\2013"; }
+  .talkpoint p{ margin:0 0 12px 23px; font-size:13px; color:var(--ink-secondary); line-height:1.55; }
+
+  /* ---------- Segmented control ---------- */
+  .seg-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .seg-btn{
+    appearance:none; cursor:pointer; border-radius:9px; padding:9px 13px; font:600 12.5px 'IBM Plex Sans';
+    border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink-secondary); text-align:left;
+  }
+  .seg-btn b{ display:block; font-size:12.5px; }
+  .seg-btn span{ display:block; font-size:10.5px; color:var(--ink-muted); font-weight:500; margin-top:1px; }
+  .seg-btn.on{ border-color:var(--orange); background:var(--orange-tint); color:var(--orange-ink); }
+  .seg-btn.on span{ color:var(--orange-ink); opacity:.8; }
+
+  .quickfill-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .status-banner.bad{ background:var(--critical-tint); color:var(--critical); }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(9,15,26,0.55); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .modal-backdrop[hidden]{ display:none; }
+  .modal{ background:var(--surface); border-radius:var(--radius); max-width:520px; width:100%; box-shadow:var(--shadow-md); padding:24px; max-height:85vh; overflow-y:auto; }
+  .modal h3{ margin:0; font-size:19px; }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px; }
+  .modal ul{ margin:0; padding-left:18px; font-size:13.5px; color:var(--ink-secondary); line-height:1.85; }
+  .modal .kbd{ font-family:'IBM Plex Mono',monospace; background:var(--surface-2); border:1px solid var(--border-strong); border-radius:5px; padding:1px 6px; font-size:11.5px; }
+  .close-x{ appearance:none; cursor:pointer; border:none; background:var(--surface-2); width:28px; height:28px; border-radius:8px; color:var(--ink-muted); flex:none; font-size:14px; }
+  .close-x:hover{ color:var(--ink); }
+
+  @media (max-width:600px){
+    .tabs{ order:3; width:100%; }
+  }
 </style>
 </head>
 <body>
@@ -429,10 +484,41 @@
   </div>
   <div class="tabs" id="partTabs"></div>
   <div class="appbar-actions">
+    <button class="icon-btn" id="helpBtn" title="Help &amp; shortcuts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg>
+    </button>
+    <button class="icon-btn" id="themeBtn" title="Toggle theme"></button>
+    <button class="icon-btn" id="fullscreenBtn" title="Toggle fullscreen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6"/></svg>
+    </button>
     <button class="ghost-btn" id="resetBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>
       Reset demo
     </button>
+  </div>
+</div>
+
+<div class="progress-shell">
+  <div class="progress-shell-inner">
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-label" id="progOverall">0 / 9 steps complete</div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="helpModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+    <div class="modal-head">
+      <h3 id="helpModalTitle">Using this console</h3>
+      <button class="close-x" id="helpCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <ul>
+      <li>Click any step in the left rail to jump to it directly — you don't have to run the parts in order live.</li>
+      <li>Each step ends with a collapsible <b>Instructor talking point</b> — a suggested question to put to the room.</li>
+      <li>The quick-fill buttons on Station Login and Andon Trigger show the failure paths (rejected login, missed target) without slow manual typing.</li>
+      <li>An out-of-spec batch reading can <b>Flag Andon</b> directly — it jumps straight to Part 1's Andon step and raises a live alert, closing the loop the way Module C describes.</li>
+      <li><b>Reset demo</b> clears every logged-in state, reading, alert and calculator input for the next class — it does not change your theme choice.</li>
+      <li>Keyboard: <span class="kbd">←</span> / <span class="kbd">→</span> move between steps; <span class="kbd">Esc</span> closes this dialog.</li>
+    </ul>
   </div>
 </div>
 
@@ -475,6 +561,9 @@
     info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',
     play:'<path d="M6 4l14 8-14 8z" fill="currentColor" stroke="none"/>',
     target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+    sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
+    moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+    monitor:'<rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 20h8M12 17v3"/>',
   };
   function icon(name, cls){
     return '<svg class="'+(cls||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+(ICON[name]||'')+'</svg>';
@@ -496,18 +585,23 @@
   /* ---------------- state ---------------- */
   const state = {
     part: 1,
+    theme: 'system',
     stepIdx: {1:0, 2:0},
-    login: { done:false, operator:'OP-2247', station:'Formation Cycler #4', time:null },
-    wo: { released:false, time:null },
+    login: { done:false, rejected:false, rejectReason:'', certText:'', operator:'OP-2247', station:'Formation Cycler #4', time:null },
+    wo: { released:false, bom:false, time:null },
     batch: { readings:[], completed:false },
-    genealogy: { traced:false },
-    andon: { active:false, resolved:false, start:null, responded:null, escalated:null, resolvedAt:null, timerId:null },
-    quality: { threshold:70 },
-    maint: { sensitivity:4.2 },
-    soc: { initial:62, current:-15, time:0.25, cap:75 },
+    genealogy: { traced:false, direction:'backward', selectedId:null },
+    andon: { active:false, resolved:false, type:'quality', log:[], start:null, responded:null, escalated:null, resolvedAt:null, timerId:null },
+    quality: { threshold:70, units:null, touched:false },
+    maint: { sensitivity:4.2, machine:'form4', touched:false },
+    soc: { initial:62, current:-15, time:0.25, cap:75, touched:false },
     soh: { curCap:71.2, origCap:75 },
-    twin: { gentle:true, fast:true },
+    twin: { crate:1.0, touched:false },
   };
+  try {
+    const savedTheme = localStorage.getItem('ctb-theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') state.theme = savedTheme;
+  } catch(e){}
 
   const SPEC = { v:[3.55,3.75], a:[10,14], t:[0,40], m:[18.0,18.8] };
 
@@ -516,6 +610,50 @@
     return 'B-24091-'+n;
   }
   state.batch.id = freshBatchId();
+
+  /* ---------------- demo reference data ---------------- */
+  const OPERATOR_DIRECTORY = {
+    'OP-2247': { name:'A. Devaraj', cert:'Cell Assembly, Level 2', valid:true, expiry:'2027-03-18' },
+    'OP-1190': { name:'R. Kumar', cert:'Cell Assembly, Level 1 (not yet upgraded)', valid:false, expiry:null },
+  };
+  const STATIONS = {
+    'Formation Cycler #4': { released:true },
+    'Calendering Line 2': { released:true },
+    'Winding Cell 6': { released:false, reason:'awaiting post-PM calibration sign-off' },
+  };
+  const BOM_ITEMS = [
+    { item:'Electrode foil (Al/Cu)', qty:'4,000 sheets', onHand:'12,400' },
+    { item:'Separator film', qty:'4,000 m', onHand:'18,200 m' },
+    { item:'Electrolyte', qty:'620 L', onHand:'1,050 L' },
+    { item:'Can / pouch', qty:'4,000 ea', onHand:'9,600 ea' },
+    { item:'Terminal & cap assembly', qty:'4,000 sets', onHand:'11,000 sets' },
+  ];
+  const ANDON_TYPES = {
+    quality: { label:'Quality', example:'Vision system flags a defect', owner:'Line quality tech', targetMin:5, escalate:'shift supervisor @ 15 min' },
+    machine: { label:'Machine fault', example:'PLC over-temperature interlock trips', owner:'Maintenance tech', targetMin:10, escalate:'area engineer @ 30 min' },
+    material: { label:'Material shortage', example:'Component or electrolyte lot runs out', owner:'Material handler', targetMin:15, escalate:'planner/supervisor @ 30 min' },
+    safety: { label:'Safety', example:'E-stop or safety interlock activated', owner:'Any operator / safety officer', targetMin:0, escalate:'plant safety lead, immediately' },
+    data: { label:'Data / System', example:'MES or SCADA connectivity lost', owner:'IT/OT support', targetMin:10, escalate:'IT manager @ 20 min' },
+  };
+  const SOC_PRESETS = [
+    { label:'15-min fast discharge', initial:62, current:-40, time:0.25, cap:75 },
+    { label:'1-hour gentle charge', initial:35, current:18, time:1, cap:75 },
+    { label:'Deep discharge test', initial:80, current:-60, time:0.5, cap:75 },
+  ];
+  const TALK = {
+    login: 'MES\'s first job is proving readiness before releasing any work. Ask the class: what should happen if either the operator or the equipment check fails?',
+    wo: 'The work order is where ERP\'s plan (what to make, by when) hands off to MES\'s execution. Ask: what would go wrong if operators worked from a printed traveller instead of a live work order?',
+    batch: 'Every reading recorded here becomes part of the batch — and, downstream, the cell genealogy — record. Ask the class which of these readings they\'d want an AI model watching most closely, and why.',
+    genealogy: 'This is the exact record a recall or root-cause investigation pulls. Ask: how far back would you trace to find a bad electrode-coating roll — and how far forward to find every cell it touched?',
+    andon: 'The MTTR clock starts the instant the alert fires, not when someone happens to notice it. Ask the class what a rising MTTR trend over a week would tell a plant manager.',
+    quality: 'Low-confidence cases route to a human reviewer, not an automatic scrap decision. Ask: why does that distinction matter for trust in the system?',
+    maint: 'RUL estimates sharpen as more failure history accumulates across machines. Ask: what happens to this number if maintenance is deferred past the threshold anyway?',
+    soc: 'The AI model\'s correction accounts for internal-resistance rise that simple Coulomb counting can\'t see. Ask: why would that gap widen as the cell ages?',
+    twin: 'The twin runs every "what-if" duty cycle entirely in software before the real asset ever sees the stress. Ask: what\'s the cost of a wrong simulation, versus testing the same question on a live BESS?',
+  };
+  function talkpoint(key){
+    return '<details class="talkpoint"><summary>'+icon('info')+'Instructor talking point</summary><p>'+TALK[key]+'</p></details>';
+  }
 
   const PART1 = [
     { key:'login', title:'Station Login', note:'Authenticate & validate', icon:'key' },
@@ -568,11 +706,11 @@
       case 'wo': return state.wo.released;
       case 'batch': return state.batch.completed;
       case 'genealogy': return state.genealogy.traced;
-      case 'andon': return state.andon.resolved;
-      case 'quality': return true;
-      case 'maint': return true;
-      case 'soc': return true;
-      case 'twin': return true;
+      case 'andon': return state.andon.log.length > 0;
+      case 'quality': return state.quality.touched;
+      case 'maint': return state.maint.touched;
+      case 'soc': return state.soc.touched;
+      case 'twin': return state.twin.touched;
       default: return false;
     }
   }
@@ -612,14 +750,14 @@
     if (state.andon.timerId) clearInterval(state.andon.timerId);
     Object.assign(state, {
       part:1, stepIdx:{1:0,2:0},
-      login:{ done:false, operator:'OP-2247', station:'Formation Cycler #4', time:null },
-      wo:{ released:false, time:null },
+      login:{ done:false, rejected:false, rejectReason:'', certText:'', operator:'OP-2247', station:'Formation Cycler #4', time:null },
+      wo:{ released:false, bom:false, time:null },
       batch:{ readings:[], completed:false, id:freshBatchId() },
-      genealogy:{ traced:false },
-      andon:{ active:false, resolved:false, start:null, responded:null, escalated:null, resolvedAt:null, timerId:null },
-      quality:{ threshold:70 }, maint:{ sensitivity:4.2 },
-      soc:{ initial:62, current:-15, time:0.25, cap:75 }, soh:{ curCap:71.2, origCap:75 },
-      twin:{ gentle:true, fast:true },
+      genealogy:{ traced:false, direction:'backward', selectedId:null },
+      andon:{ active:false, resolved:false, type:'quality', log:[], start:null, responded:null, escalated:null, resolvedAt:null, timerId:null },
+      quality:{ threshold:70, units:randomQualityUnits(), touched:false }, maint:{ sensitivity:4.2, machine:'form4', touched:false },
+      soc:{ initial:62, current:-15, time:0.25, cap:75, touched:false }, soh:{ curCap:71.2, origCap:75 },
+      twin:{ crate:1.0, touched:false },
     });
     render();
   });
@@ -637,9 +775,17 @@
   };
 
   function render(){
-    renderTabs(); renderRail(); renderFoot();
+    renderTabs(); renderRail(); renderFoot(); renderProgress();
     const def = currentStepDef();
     RENDER[def.key]();
+  }
+
+  function renderProgress(){
+    const all = PART1.concat(PART2);
+    const done = all.filter(s => isStepDone(s.key)).length;
+    const pct = Math.round(done/all.length*100);
+    const fill = $('#progFill'); if (fill) fill.style.width = pct+'%';
+    const lbl = $('#progOverall'); if (lbl) lbl.textContent = done+' / '+all.length+' steps complete';
   }
 
   /* ----- Part 1 / Step 1: Station Login ----- */
@@ -647,32 +793,54 @@
     setHead('key','Practical Demo · Part 1','Station Login','Log in as an operator — MES validates certification and equipment status before releasing any work.');
     const b = $('#stageBody');
     const L = state.login;
+    const showForm = !L.done || L.rejected;
     b.innerHTML =
+      (showForm ? '<div class="quickfill-row">'+
+        '<button class="btn btn-ghost btn-sm" id="qfGood">Try: certified operator</button>'+
+        '<button class="btn btn-ghost btn-sm" id="qfBadOperator">Try: uncertified operator</button>'+
+        '<button class="btn btn-ghost btn-sm" id="qfBadStation">Try: station not released</button>'+
+      '</div>' : '')+
       '<div class="row">'+
-        '<div class="field"><label>Operator ID</label><input class="mono" id="opId" value="'+L.operator+'" '+(L.done?'disabled':'')+'></div>'+
-        '<div class="field"><label>Station</label><select id="opStation" '+(L.done?'disabled':'')+'>'+
-          ['Formation Cycler #4','Calendering Line 2','Winding Cell 6'].map(s=>'<option '+(s===L.station?'selected':'')+'>'+s+'</option>').join('')+
+        '<div class="field"><label>Operator ID</label><input class="mono" id="opId" value="'+L.operator+'" '+(showForm?'':'disabled')+'></div>'+
+        '<div class="field"><label>Station</label><select id="opStation" '+(showForm?'':'disabled')+'>'+
+          Object.keys(STATIONS).map(s=>'<option '+(s===L.station?'selected':'')+'>'+s+'</option>').join('')+
         '</select></div>'+
         '<div class="field"><label>PIN</label><input type="password" value="••••" disabled></div>'+
       '</div>'+
-      (!L.done
-        ? '<div><button class="btn btn-primary" id="authBtn">Authenticate</button></div>'
+      (L.rejected ? '<div class="status-banner bad">'+icon('warn')+L.rejectReason+'</div>' : '')+
+      (showForm
+        ? '<div><button class="btn btn-primary" id="authBtn">'+(L.rejected?'Try authenticate again':'Authenticate')+'</button></div>'
         : '<div class="panel">'+
             '<ul class="checklist">'+
-              '<li>'+icon('check')+'<div><b>Operator certified</b><span>Cell Assembly, Level 2 — certification valid to 2027-03-18</span></div></li>'+
+              '<li>'+icon('check')+'<div><b>Operator certified</b><span>'+L.certText+'</span></div></li>'+
               '<li>'+icon('check')+'<div><b>Equipment status</b><span>'+L.station+' — calibrated, released for production</span></div></li>'+
               '<li>'+icon('check')+'<div><b>Session opened</b><span class="mono">'+fmtTime(L.time)+' · '+L.operator+'</span></div></li>'+
             '</ul>'+
           '</div>'+
           '<div class="status-banner good">'+icon('check')+'Login validated — work order release is now unlocked.</div>'
       )+
-      '<p class="footnote">This is exactly what Module A calls MES\'s first job: nobody runs a process step until the operator and the equipment are both confirmed ready.</p>';
-    if (!L.done){
+      '<p class="footnote">This is exactly what Module A calls MES\'s first job: nobody runs a process step until the operator and the equipment are both confirmed ready.</p>'+
+      talkpoint('login');
+    if (showForm){
+      $('#qfGood').addEventListener('click', () => { L.operator='OP-2247'; L.station='Formation Cycler #4'; L.rejected=false; render(); });
+      $('#qfBadOperator').addEventListener('click', () => { L.operator='OP-1190'; L.station='Formation Cycler #4'; L.rejected=false; render(); });
+      $('#qfBadStation').addEventListener('click', () => { L.operator='OP-2247'; L.station='Winding Cell 6'; L.rejected=false; render(); });
       $('#opId').addEventListener('input', e => L.operator = e.target.value);
       $('#opStation').addEventListener('change', e => L.station = e.target.value);
       $('#authBtn').addEventListener('click', () => {
         if (!L.operator.trim()) return;
-        L.done = true; L.time = new Date();
+        const op = OPERATOR_DIRECTORY[L.operator.trim().toUpperCase()];
+        const st = STATIONS[L.station];
+        if (!op){
+          L.rejected = true; L.rejectReason = 'Access denied — "'+L.operator+'" is not in the certification roster for this line.';
+        } else if (!op.valid){
+          L.rejected = true; L.rejectReason = 'Access denied — '+op.name+' ('+L.operator+') holds "'+op.cert+'", which does not cover this station.';
+        } else if (!st.released){
+          L.rejected = true; L.rejectReason = 'Access denied — '+L.station+' is not released: '+st.reason+'.';
+        } else {
+          L.rejected = false; L.done = true; L.time = new Date();
+          L.certText = op.cert+' — certification valid to '+op.expiry;
+        }
         render();
       });
     }
@@ -705,6 +873,12 @@
         '</div>'+
       '</div>'+
       '<div>'+
+        '<button class="btn btn-ghost btn-sm" id="bomToggle">'+(W.bom?'Hide':'Show')+' bill of materials</button>'+
+        (W.bom ? '<div class="table-wrap" style="margin-top:10px;"><table class="data-table"><thead><tr><th>Component</th><th>Required</th><th>On hand</th></tr></thead><tbody>'+
+          BOM_ITEMS.map(it=>'<tr><td style="font-family:\'IBM Plex Sans\';">'+it.item+'</td><td>'+it.qty+'</td><td>'+it.onHand+'</td></tr>').join('')+
+        '</tbody></table></div>' : '')+
+      '</div>'+
+      '<div>'+
         '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Quality checkpoints</label>'+
         '<ul style="margin:8px 0 0 18px;font-size:13.5px;line-height:1.9;">'+
           '<li>Mass loading ±2%</li><li>Electrode thickness ±3 µm</li><li>Formation voltage window 2.5–4.2 V</li>'+
@@ -713,17 +887,26 @@
       (!W.released
         ? '<div><button class="btn btn-primary" id="releaseBtn">Release Work Order</button></div>'
         : '<div class="status-banner good">'+icon('check')+'Released '+fmtTime(W.time)+' by '+state.login.operator+' — dispatched to '+state.login.station+'.</div>'
-      );
+      )+
+      talkpoint('wo');
+    $('#bomToggle').addEventListener('click', () => { W.bom = !W.bom; render(); });
     if (!W.released){
       $('#releaseBtn').addEventListener('click', () => { W.released = true; W.time = new Date(); render(); });
     }
   }
 
   /* ----- Part 1 / Step 3: Batch Tracking ----- */
+  function randomReading(){
+    const jig = (base, span) => +(base + (Math.random()*2-1)*span).toFixed(2);
+    let v = jig(3.65, 0.08), a = jig(12, 1.6), t = jig(30, 6), m = jig(18.4, 0.3);
+    if (Math.random() < 0.3) t = jig(45, 4);
+    return { v, a, t, m };
+  }
   function renderBatch(){
     setHead('box','Practical Demo · Part 1','Batch Tracking','Open the batch and record readings against it — every value here becomes a permanent, genealogy-linked record.');
     const b = $('#stageBody');
     const B = state.batch;
+    const passCount = B.readings.filter(r=>r.ok).length;
     b.innerHTML =
       '<div class="panel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
         '<div><b class="mono" style="font-size:15px;">'+B.id+'</b><div class="footnote" style="margin-top:2px;">Linked to WO-88214 · spec: V '+SPEC.v.join('–')+'  · A '+SPEC.a.join('–')+' · T ≤'+SPEC.t[1]+'°C · mass '+SPEC.m.join('–')+' mg/cm²</div></div>'+
@@ -736,59 +919,108 @@
         '<div class="field"><label>Temp (°C)</label><input type="number" step="0.5" id="rT" value="32"></div>'+
         '<div class="field"><label>Mass loading (mg/cm²)</label><input type="number" step="0.1" id="rM" value="18.4"></div>'+
       '</div>'+
-      '<div style="display:flex;gap:8px;">'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
         '<button class="btn btn-navy" id="recordBtn">Record reading</button>'+
+        '<button class="btn btn-ghost" id="randomBtn">Randomize &amp; record</button>'+
         '<button class="btn btn-green" id="completeBtn" '+(B.readings.length? '':'disabled')+'>Complete batch</button>'+
       '</div>' : ''
       )+
-      '<div class="table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>V</th><th>A</th><th>°C</th><th>mg/cm²</th><th>Status</th></tr></thead><tbody id="readingBody">'+
-        (B.readings.length ? B.readings.map(rowHtml).join('') : '<tr><td colspan="6" style="font-family:\'IBM Plex Sans\';color:var(--ink-muted);">No readings recorded yet.</td></tr>')+
+      (B.readings.length ? '<div class="panel" style="display:flex;gap:26px;flex-wrap:wrap;">'+
+        '<div class="kv"><b>Readings</b><span>'+B.readings.length+'</span></div>'+
+        '<div class="kv"><b>In spec</b><span>'+passCount+' / '+B.readings.length+'</span></div>'+
+        '<div class="kv"><b>Pass rate</b><span>'+Math.round(passCount/B.readings.length*100)+'%</span></div>'+
+      '</div>' : '')+
+      '<div class="table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>V</th><th>A</th><th>°C</th><th>mg/cm²</th><th>Status</th><th>Action</th></tr></thead><tbody id="readingBody">'+
+        (B.readings.length ? B.readings.map(rowHtml).join('') : '<tr><td colspan="7" style="font-family:\'IBM Plex Sans\';color:var(--ink-muted);">No readings recorded yet.</td></tr>')+
       '</tbody></table></div>'+
-      (B.completed ? '<div class="status-banner good">'+icon('check')+B.readings.length+' readings recorded · '+B.readings.filter(r=>r.ok).length+' in spec.</div>' : '');
+      (B.completed ? '<div class="status-banner good">'+icon('check')+B.readings.length+' readings recorded · '+passCount+' in spec.</div>' : '')+
+      talkpoint('batch');
 
-    function rowHtml(r){
+    function rowHtml(r, idx){
       return '<tr><td>'+fmtTime(r.time)+'</td><td>'+r.v.toFixed(2)+'</td><td>'+r.a.toFixed(1)+'</td><td>'+r.t.toFixed(1)+'</td><td>'+r.m.toFixed(1)+'</td>'+
-        '<td><span class="chip '+(r.ok?'chip-good':'chip-critical')+'">'+(r.ok?'In spec':'Out of spec')+'</span></td></tr>';
+        '<td><span class="chip '+(r.ok?'chip-good':'chip-critical')+'">'+(r.ok?'In spec':'Out of spec')+'</span></td>'+
+        '<td>'+(!r.ok && !r.flagged ? '<button class="btn btn-ghost btn-sm flag-andon-btn" data-idx="'+idx+'">Flag Andon</button>' : (r.flagged ? '<span class="footnote">Flagged →</span>' : ''))+'</td>'+
+        '</tr>';
+    }
+    function evalOk(v,a,t,m){
+      return v>=SPEC.v[0]&&v<=SPEC.v[1] && a>=SPEC.a[0]&&a<=SPEC.a[1] && t<=SPEC.t[1] && m>=SPEC.m[0]&&m<=SPEC.m[1];
     }
     if (!B.completed){
       $('#recordBtn').addEventListener('click', () => {
         const v=+$('#rV').value, a=+$('#rA').value, t=+$('#rT').value, m=+$('#rM').value;
-        const ok = v>=SPEC.v[0]&&v<=SPEC.v[1] && a>=SPEC.a[0]&&a<=SPEC.a[1] && t<=SPEC.t[1] && m>=SPEC.m[0]&&m<=SPEC.m[1];
-        B.readings.push({ time:new Date(), v,a,t,m, ok });
+        B.readings.push({ time:new Date(), v,a,t,m, ok:evalOk(v,a,t,m) });
+        render();
+      });
+      $('#randomBtn').addEventListener('click', () => {
+        const r = randomReading();
+        B.readings.push({ time:new Date(), v:r.v, a:r.a, t:r.t, m:r.m, ok:evalOk(r.v,r.a,r.t,r.m) });
         render();
       });
       const cbtn = $('#completeBtn');
       if (cbtn) cbtn.addEventListener('click', () => { B.completed = true; render(); });
     }
+    $$('.flag-andon-btn', b).forEach(btn => btn.addEventListener('click', () => flagAndon(+btn.dataset.idx)));
+  }
+  function flagAndon(idx){
+    const r = state.batch.readings[idx];
+    r.flagged = true;
+    state.andon.type = 'quality';
+    state.andon.active = true; state.andon.resolved = false;
+    state.andon.start = new Date(); state.andon.responded = null; state.andon.escalated = null; state.andon.resolvedAt = null;
+    state.part = 1; state.stepIdx[1] = 4;
+    startTimer();
+    render();
   }
 
   /* ----- Part 1 / Step 4: Genealogy Trace ----- */
+  const SAMPLE_CELL_IDS = ['B-24088-31-0007', 'B-24095-12-0288'];
   function renderGenealogy(){
     setHead('tree','Practical Demo · Part 1','Genealogy Trace','Pull one cell ID and follow its full linked history — forward and backward — in a single search.');
     const b = $('#stageBody');
     const G = state.genealogy;
     const cellId = state.batch.id + '-0143';
+    const ids = [cellId, ...SAMPLE_CELL_IDS];
+    if (!G.selectedId) G.selectedId = cellId;
     b.innerHTML =
       '<div class="row" style="align-items:flex-end;">'+
-        '<div class="field" style="max-width:280px;"><label>Cell / Unit ID</label><input class="mono" id="cellIdInput" value="'+cellId+'"></div>'+
+        '<div class="field" style="max-width:280px;"><label>Cell / Unit ID</label>'+
+          '<select class="mono" id="cellIdInput">'+ids.map(id => '<option value="'+id+'"'+(id===G.selectedId?' selected':'')+'>'+id+'</option>').join('')+'</select>'+
+        '</div>'+
         '<div><button class="btn btn-primary" id="traceBtn">Trace history</button></div>'+
       '</div>'+
-      (G.traced ? renderTimeline(cellId) : '');
+      (G.traced ? (
+        '<div class="seg-row" style="margin-top:14px;">'+
+          '<button class="seg-btn '+(G.direction==='backward'?'on':'')+'" id="dirBack"><b>◀ Backward</b><span>Where this cell came from</span></button>'+
+          '<button class="seg-btn '+(G.direction==='forward'?'on':'')+'" id="dirFwd"><b>Forward ▶</b><span>Where this cell went</span></button>'+
+        '</div>'+
+        renderTimeline(G.selectedId, G.direction)
+      ) : '') +
+      talkpoint('genealogy');
+    $('#cellIdInput').addEventListener('change', e => { G.selectedId = e.target.value; render(); });
     $('#traceBtn').addEventListener('click', () => { G.traced = true; render(); });
+    const db = $('#dirBack'); if (db) db.addEventListener('click', () => { G.direction = 'backward'; render(); });
+    const df = $('#dirFwd'); if (df) df.addEventListener('click', () => { G.direction = 'forward'; render(); });
 
-    function renderTimeline(id){
+    function renderTimeline(id, direction){
       const lastReading = state.batch.readings[state.batch.readings.length-1];
-      const items = [
-        { i:'key', t:'Station login', d:state.login.operator+' certified & '+state.login.station+' released', time: state.login.time },
-        { i:'doc', t:'Work order released', d:'WO-88214 dispatched to '+state.login.station, time: state.wo.time },
+      const backwardItems = [
+        { i:'target', t:'Electrode lot & supplier batch', d:'Electrode Lot EL-2209 · Supplier batch SB-7741 — incoming QC passed', time: new Date(Date.now()-9*3600*1000) },
+        { i:'box', t:'Sub-process rolls', d:'Coating Roll #C-118 · Calendering Pass #2 · Winding Cell #6', time: new Date(Date.now()-6*3600*1000) },
         { i:'box', t:'Batch opened', d: state.batch.id + (lastReading ? ' — last reading V '+lastReading.v.toFixed(2)+', T '+lastReading.t.toFixed(1)+'°C' : ' — no readings logged yet'), time: lastReading ? lastReading.time : new Date() },
-        { i:'box', t:'Sub-process record', d:'Coating Roll #C-118 · Calendering Pass #2 · Winding Cell #6', time: new Date() },
-        { i:'target', t:'Formation & grading', d:'Formation Channel #4 — capacity-graded A', time: new Date() },
+        { i:'doc', t:'Work order released', d:'WO-88214 dispatched to '+state.login.station, time: state.wo.time },
+        { i:'key', t:'Station login', d:state.login.operator+' certified & '+state.login.station+' released', time: state.login.time },
       ];
-      return '<div class="panel"><ul class="timeline">'+
+      const forwardItems = [
+        { i:'target', t:'Formation & grading', d:'Formation Channel #4 — capacity-graded A', time: new Date() },
+        { i:'grid', t:'Module assembly', d:'Module line M-2 — 14 cells matched by capacity grade into Module MOD-55031', time: new Date(Date.now()+2*3600*1000) },
+        { i:'box', t:'Pack assembly', d:'Pack line P-1 — 6 modules built into Pack PK-19042', time: new Date(Date.now()+8*3600*1000) },
+        { i:'doc', t:'Shipment / customer order', d:'Sales order SO-30871 — shipped to commissioning site, Site NRE-East-4', time: new Date(Date.now()+96*3600*1000) },
+      ];
+      const items = direction==='backward' ? backwardItems : forwardItems;
+      return '<div class="panel" style="margin-top:12px;"><ul class="timeline">'+
         items.map(it => '<li class="tl-item"><div class="tl-dot">'+icon(it.i)+'</div><div class="tl-body"><b>'+it.t+'</b><span>'+it.d+'</span><span class="tl-time">'+ (it.time? fmtTime(it.time):'—') +'</span></div></li>').join('')+
         '</ul></div>'+
-        '<p class="footnote">Cell <b class="mono">'+id+'</b> traces backward to Electrode Lot EL-2209 and forward to Pack Assembly — this is the exact record a recall or root-cause investigation would pull.</p>';
+        '<p class="footnote">Cell <b class="mono">'+id+'</b> — showing the '+(direction==='backward'?'backward trace to Electrode Lot EL-2209':'forward trace to shipment')+'. Switch direction above; this is the exact record a recall or root-cause investigation would pull.</p>';
     }
   }
 
@@ -798,38 +1030,55 @@
     const b = $('#stageBody');
     const A = state.andon;
     if (!A.active && !A.resolved){
+      const t = ANDON_TYPES[A.type];
       b.innerHTML =
-        '<div class="panel" style="text-align:center;padding:30px 20px;">'+
-          '<p style="margin:0 0 14px;color:var(--ink-secondary);">Ready — '+state.login.station+'</p>'+
-          '<button class="btn btn-primary" style="padding:14px 26px;font-size:15px;" id="raiseBtn">'+icon('bell')+' Raise Andon alert</button>'+
-        '</div>';
+        '<div class="seg-row">'+
+          Object.keys(ANDON_TYPES).map(k => {
+            const d = ANDON_TYPES[k];
+            return '<button class="seg-btn '+(A.type===k?'on':'')+'" data-type="'+k+'"><b>'+d.label+'</b><span>target &lt; '+d.targetMin+' min</span></button>';
+          }).join('')+
+        '</div>'+
+        '<div class="panel" style="text-align:center;padding:30px 20px;margin-top:12px;">'+
+          '<p style="margin:0 0 4px;color:var(--ink-secondary);">'+t.example+'</p>'+
+          '<p style="margin:0 0 14px;font-size:12px;color:var(--ink-muted);">Owner: '+t.owner+' · Ready — '+state.login.station+'</p>'+
+          '<button class="btn btn-primary" style="padding:14px 26px;font-size:15px;" id="raiseBtn">'+icon('bell')+' Raise '+t.label+' Andon alert</button>'+
+        '</div>'+
+        (A.log.length ? logTable() : '') +
+        talkpoint('andon');
+      $$('.seg-btn', b).forEach(btn => btn.addEventListener('click', () => { A.type = btn.dataset.type; render(); }));
       $('#raiseBtn').addEventListener('click', () => {
         A.active = true; A.start = new Date(); A.responded = null; A.escalated = null; A.resolvedAt = null;
         startTimer(); render();
       });
       return;
     }
+    const t = ANDON_TYPES[A.type];
     const elapsed = (A.resolvedAt||new Date()) - A.start;
     b.innerHTML =
       '<div class="panel-navy panel" style="text-align:center;">'+
-        '<div class="footnote ink-secondary" style="color:#c9d6ec;">Time since alert</div>'+
+        '<div class="footnote ink-secondary" style="color:#c9d6ec;">'+t.label+' alert · time since alert</div>'+
         '<div class="timer-big" id="timerDisplay">'+fmtMMSS(elapsed)+'</div>'+
       '</div>'+
       '<div class="ladder">'+
         ladderStep(1,'Alert (Call)', A.start, true, null)+
         ladderStep(2,'Response', A.responded, !!A.responded, !A.responded && !A.resolvedAt ? '<button class="btn btn-ghost btn-sm" id="respondBtn">Log response</button>' : null)+
-        ladderStep(3,'Escalation', A.escalated, !!A.escalated, !A.escalated && A.responded && !A.resolvedAt ? '<button class="btn btn-ghost btn-sm" id="escalateBtn">Escalate</button>' : null)+
+        ladderStep(3,'Escalation', A.escalated, !!A.escalated, !A.escalated && A.responded && !A.resolvedAt ? '<button class="btn btn-ghost btn-sm" id="escalateBtn">Escalate → '+t.escalate+'</button>' : null)+
       '</div>'+
       (!A.resolvedAt
         ? '<div><button class="btn btn-green" id="resolveBtn">Resolve alert</button></div>'
-        : resolvedSummary());
+        : resolvedSummary())+
+      (A.log.length ? logTable() : '');
     const rb = $('#respondBtn'); if (rb) rb.addEventListener('click', () => { A.responded = new Date(); render(); });
     const eb = $('#escalateBtn'); if (eb) eb.addEventListener('click', () => { A.escalated = new Date(); render(); });
-    const sb = $('#resolveBtn'); if (sb) sb.addEventListener('click', () => { A.resolvedAt = new Date(); A.resolved = true; stopTimer(); render(); });
+    const sb = $('#resolveBtn'); if (sb) sb.addEventListener('click', () => {
+      A.resolvedAt = new Date(); A.resolved = true; stopTimer();
+      const mttr = A.resolvedAt - A.start;
+      A.log.unshift({ type:A.type, start:A.start, mttr, targetMin:t.targetMin, pass: mttr <= t.targetMin*60*1000 });
+      render();
+    });
     const again = $('#raiseAgainBtn'); if (again) again.addEventListener('click', () => { A.active=false; A.resolved=false; render(); });
 
     function ladderStep(n, label, ts, done, action){
-      const active = !done && !action ? false : (!done);
       let cls = done ? 'done' : (action ? 'active' : '');
       return '<div class="ladder-step '+cls+'"><div class="ladder-num">'+(done?icon('check'):n)+'</div><b>'+label+'</b>'+
         (ts ? '<div class="ladder-time">'+fmtTime(ts)+'</div>' : (action || '<div class="ladder-time">—</div>'))+
@@ -837,9 +1086,16 @@
     }
     function resolvedSummary(){
       const mttr = A.resolvedAt - A.start;
-      const target = 10*60*1000;
-      return '<div class="status-banner '+(mttr<=target?'good':'warn')+'">'+icon(mttr<=target?'check':'warn')+'Resolved — MTTR '+fmtMMSS(mttr)+' (target &lt; 10:00)</div>'+
+      const target = t.targetMin*60*1000;
+      return '<div class="status-banner '+(mttr<=target?'good':'warn')+'">'+icon(mttr<=target?'check':'warn')+'Resolved — MTTR '+fmtMMSS(mttr)+' (target &lt; '+t.targetMin+':00)</div>'+
         '<div><button class="btn btn-ghost" id="raiseAgainBtn">Raise another alert</button></div>';
+    }
+    function logTable(){
+      return '<div class="panel" style="margin-top:14px;"><b style="font-size:12.5px;">Incident log — this session</b>'+
+        '<table class="data-table" style="margin-top:8px;"><thead><tr><th>Type</th><th>Raised</th><th>MTTR</th><th>Target</th><th>Result</th></tr></thead><tbody>'+
+        A.log.map(l => '<tr><td>'+ANDON_TYPES[l.type].label+'</td><td>'+fmtTime(l.start)+'</td><td>'+fmtMMSS(l.mttr)+'</td><td>&lt; '+l.targetMin+':00</td>'+
+          '<td><span class="chip '+(l.pass?'chip-good':'chip-critical')+'">'+(l.pass?'On target':'Missed target')+'</span></td></tr>').join('')+
+        '</tbody></table></div>';
     }
   }
   function startTimer(){
@@ -853,27 +1109,42 @@
   function stopTimer(){ if (state.andon.timerId){ clearInterval(state.andon.timerId); state.andon.timerId=null; } }
 
   /* ----- Part 2 / Step 1: Predictive Quality ----- */
-  const QUALITY_UNITS = [
-    {id:'C-0141', score:8},{id:'C-0142', score:14},{id:'C-0143', score:19},
-    {id:'C-0144', score:27},{id:'C-0145', score:35},{id:'C-0146', score:44},
-    {id:'C-0147', score:58},{id:'C-0148', score:63},{id:'C-0149', score:77},
-    {id:'C-0150', score:91},
-  ];
+  function randomQualityUnits(){
+    let n = 4180 + Math.floor(Math.random()*20);
+    const count = 10;
+    const scores = [8,14,19,27,35,44,58,63,77,91].map(base => {
+      const jig = Math.max(2, Math.min(98, Math.round(base + (Math.random()*16-8))));
+      return jig;
+    }).sort((a,b)=>a-b);
+    return scores.map((s,i) => ({ id:'C-'+(n+i).toString().padStart(4,'0'), score:s }));
+  }
   function renderQuality(){
     setHead('grid','Practical Demo · Part 2','Predictive Quality Dashboard','Score sample units for defect risk and discuss what should trigger an Andon hold.');
     const b = $('#stageBody');
+    if (!state.quality.units) state.quality.units = randomQualityUnits();
+    const units = state.quality.units;
     const th = state.quality.threshold;
-    const holds = QUALITY_UNITS.filter(u=>u.score>=th).length;
+    const holds = units.filter(u=>u.score>=th).length;
     b.innerHTML =
       '<div class="panel">'+
-        '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Andon hold threshold</label>'+
-        '<div class="slider-row" style="margin-top:8px;">'+
-          '<input type="range" id="threshSlider" min="20" max="95" value="'+th+'">'+
-          '<span class="slider-val" id="threshVal">'+th+'%</span>'+
+        '<div class="row" style="align-items:flex-end;justify-content:space-between;flex-wrap:wrap;">'+
+          '<div style="flex:1;min-width:220px;">'+
+            '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Andon hold threshold</label>'+
+            '<div class="slider-row" style="margin-top:8px;">'+
+              '<input type="range" id="threshSlider" min="20" max="95" value="'+th+'">'+
+              '<span class="slider-val" id="threshVal">'+th+'%</span>'+
+            '</div>'+
+          '</div>'+
+          '<button class="btn btn-ghost btn-sm" id="regenBtn">'+icon('bell')+' Regenerate sample</button>'+
         '</div>'+
       '</div>'+
+      '<div class="legend-row footnote" style="margin:2px 0 2px;">'+
+        '<span><span class="chip chip-good">Good</span> score &lt; '+(th-20)+'%</span>'+
+        '<span><span class="chip chip-warn">Watch</span> '+(th-20)+'–'+(th-1)+'%</span>'+
+        '<span><span class="chip chip-critical">Hold</span> ≥ '+th+'%</span>'+
+      '</div>'+
       '<div class="risk-grid">'+
-        QUALITY_UNITS.map(u => {
+        units.map(u => {
           const cls = u.score>=th ? 'critical' : (u.score>=th-20 ? 'warn' : '');
           const label = u.score>=th ? 'Hold' : (u.score>=th-20 ? 'Watch' : 'Good');
           const chip = u.score>=th ? 'chip-critical' : (u.score>=th-20 ? 'chip-warn' : 'chip-good');
@@ -881,57 +1152,71 @@
             '<div class="risk-bar"><i style="width:'+u.score+'%;"></i></div><span class="chip '+chip+'">'+label+'</span></div>';
         }).join('')+
       '</div>'+
-      '<p class="footnote" id="holdSummary">'+holds+' of '+QUALITY_UNITS.length+' units would trigger an Andon hold at a '+th+'% threshold. Low-confidence cases still route to a human reviewer, not an automatic scrap decision.</p>';
-    $('#threshSlider').addEventListener('input', e => { state.quality.threshold = +e.target.value; render(); });
+      '<p class="footnote" id="holdSummary">'+holds+' of '+units.length+' units would trigger an Andon hold at a '+th+'% threshold. Low-confidence cases still route to a human reviewer, not an automatic scrap decision.</p>'+
+      talkpoint('quality');
+    $('#threshSlider').addEventListener('input', e => { state.quality.threshold = +e.target.value; state.quality.touched = true; render(); });
+    $('#regenBtn').addEventListener('click', () => { state.quality.units = randomQualityUnits(); state.quality.touched = true; render(); });
   }
 
   /* ----- Part 2 / Step 2: Predictive Maintenance ----- */
-  const VIB_DATA = [1.1,1.2,1.3,1.5,1.4,1.6,1.8,1.7,2.0,2.3,2.2,2.6,2.9,3.1,3.4,3.3,3.7,4.0].map((v,i)=>({x:i*3, y:v}));
+  const MACHINES = {
+    form4: { label:'Formation Cycler #4', data:[1.1,1.15,1.1,1.2,1.15,1.2,1.25,1.2,1.3,1.25,1.3,1.35,1.3,1.35,1.4,1.35,1.4,1.4].map((v,i)=>({x:i*3, y:v})) },
+    cal2: { label:'Calendering Line 2', data:[1.1,1.2,1.3,1.5,1.4,1.6,1.8,1.7,2.0,2.3,2.2,2.6,2.9,3.1,3.4,3.3,3.7,4.0].map((v,i)=>({x:i*3, y:v})) },
+    wind6: { label:'Winding Cell 6', data:[1.4,1.6,1.9,2.3,2.6,3.0,3.3,3.6,3.9,4.1,4.3,4.5,4.6,4.7,4.75,4.8,4.85,4.9].map((v,i)=>({x:i*3, y:v})) },
+  };
   function renderMaint(){
     setHead('pulse','Practical Demo · Part 2','Predictive Maintenance Signal','Watch a vibration trend drift and estimate Remaining Useful Life against an adjustable sensitivity threshold.');
     const b = $('#stageBody');
     const s = state.maint.sensitivity;
+    const m = MACHINES[state.maint.machine];
     b.innerHTML =
       '<div class="panel">'+
-        '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Alert sensitivity (mm/s)</label>'+
-        '<div class="slider-row" style="margin-top:8px;">'+
-          '<input type="range" id="sensSlider" min="3" max="5" step="0.1" value="'+s+'">'+
-          '<span class="slider-val" id="sensVal">'+s.toFixed(1)+'</span>'+
+        '<div class="row" style="flex-wrap:wrap;">'+
+          '<div class="field" style="max-width:260px;"><label>Machine</label>'+
+            '<select id="machineSelect">'+Object.keys(MACHINES).map(k => '<option value="'+k+'"'+(k===state.maint.machine?' selected':'')+'>'+MACHINES[k].label+'</option>').join('')+'</select>'+
+          '</div>'+
+          '<div style="flex:1;min-width:220px;">'+
+            '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Alert sensitivity (mm/s)</label>'+
+            '<div class="slider-row" style="margin-top:8px;">'+
+              '<input type="range" id="sensSlider" min="3" max="5" step="0.1" value="'+s+'">'+
+              '<span class="slider-val" id="sensVal">'+s.toFixed(1)+'</span>'+
+            '</div>'+
+          '</div>'+
         '</div>'+
       '</div>'+
       '<div class="chart-wrap" id="vibChartWrap"></div>'+
-      '<div class="result-tile" id="rulTile"></div>';
-    mountLineChart($('#vibChartWrap'), {
-      width:640, height:260,
-      xDomain:[0,51], yDomain:[0,5],
-      xTicks:[0,17,34,51], yTicks:[0,1.25,2.5,3.75,5],
-      xLabel:'Cycles (thousands)', yLabel:'Vibration (mm/s)',
-      series:[{ key:'vib', color:'--series-1', data:VIB_DATA, area:true, label:'Vibration' }],
-      threshold: s,
-    });
+      '<div class="result-tile" id="rulTile"></div>'+
+      talkpoint('maint');
+    drawChart();
     updateRUL();
+    $('#machineSelect').addEventListener('change', e => { state.maint.machine = e.target.value; state.maint.touched = true; render(); });
     $('#sensSlider').addEventListener('input', e => {
       state.maint.sensitivity = +e.target.value;
+      state.maint.touched = true;
       $('#sensVal').textContent = state.maint.sensitivity.toFixed(1);
+      drawChart();
+      updateRUL();
+    });
+    function drawChart(){
       mountLineChart($('#vibChartWrap'), {
         width:640, height:260, xDomain:[0,51], yDomain:[0,5],
         xTicks:[0,17,34,51], yTicks:[0,1.25,2.5,3.75,5],
         xLabel:'Cycles (thousands)', yLabel:'Vibration (mm/s)',
-        series:[{ key:'vib', color:'--series-1', data:VIB_DATA, area:true, label:'Vibration' }],
+        series:[{ key:'vib', color:'--series-1', data:MACHINES[state.maint.machine].data, area:true, label:'Vibration' }],
         threshold: state.maint.sensitivity,
       });
-      updateRUL();
-    });
+    }
     function updateRUL(){
-      const n = VIB_DATA.length;
-      const tail = VIB_DATA.slice(n-6);
+      const data = MACHINES[state.maint.machine].data;
+      const n = data.length;
+      const tail = data.slice(n-6);
       const mx = tail.reduce((a,p)=>a+p.x,0)/tail.length;
       const my = tail.reduce((a,p)=>a+p.y,0)/tail.length;
       let num=0, den=0;
       tail.forEach(p=>{ num += (p.x-mx)*(p.y-my); den += (p.x-mx)*(p.x-mx); });
       const slope = den ? num/den : 0;
       const intercept = my - slope*mx;
-      const lastX = VIB_DATA[n-1].x, lastY = VIB_DATA[n-1].y;
+      const lastX = data[n-1].x, lastY = data[n-1].y;
       const sens = state.maint.sensitivity;
       let rulText, sub;
       if (lastY >= sens){
@@ -942,7 +1227,7 @@
         const crossX = (sens - intercept) / slope;
         const rul = Math.max(0, Math.round((crossX - lastX)) );
         rulText = '≈ '+ (rul*1000).toLocaleString() +' cycles';
-        sub = 'Projected from the last six readings\' trend line.';
+        sub = 'Projected from '+MACHINES[state.maint.machine].label+'\'s last six readings\' trend line.';
       }
       $('#rulTile').innerHTML = '<b>Estimated Remaining Useful Life</b><div class="val">'+rulText+'</div><div class="note">'+sub+'</div>';
     }
@@ -956,7 +1241,12 @@
     b.innerHTML =
       '<div class="calc-grid">'+
         '<div class="panel">'+
-          '<b style="font-size:13.5px;">State of Charge — Coulomb counting</b>'+
+          '<div class="row" style="align-items:center;justify-content:space-between;">'+
+            '<b style="font-size:13.5px;">State of Charge — Coulomb counting</b>'+
+          '</div>'+
+          '<div class="seg-row" style="margin:10px 0 2px;">'+
+            SOC_PRESETS.map((p,i) => '<button class="seg-btn" data-i="'+i+'"><b>'+p.label+'</b><span>'+p.initial+'% → '+p.current+'A · '+p.time+'h</span></button>').join('')+
+          '</div>'+
           '<div class="row" style="margin-top:12px;">'+
             '<div class="field"><label>Initial SOC (%)</label><input type="number" id="socInit" value="'+S.initial+'"></div>'+
             '<div class="field"><label>Current (A, − = discharge)</label><input type="number" id="socCur" value="'+S.current+'"></div>'+
@@ -982,21 +1272,28 @@
           '<div class="formula">SOH = Current max capacity ÷ Original rated capacity × 100</div>'+
         '</div>'+
         '<div class="result-tile" id="sohTile"></div>'+
-      '</div>';
-    ['socInit','socCur','socTime','socCap'].forEach(id => $('#'+id).addEventListener('input', updateSOC));
+      '</div>'+
+      talkpoint('soc');
+    ['socInit','socCur','socTime','socCap'].forEach(id => $('#'+id).addEventListener('input', () => { state.soc.touched = true; updateSOC(); }));
     ['sohCur','sohOrig'].forEach(id => $('#'+id).addEventListener('input', updateSOH));
+    $$('.seg-btn', b).forEach(btn => btn.addEventListener('click', () => {
+      Object.assign(S, SOC_PRESETS[+btn.dataset.i]); state.soc.touched = true; render();
+    }));
     updateSOC(); updateSOH();
 
     function updateSOC(){
       S.initial=+$('#socInit').value; S.current=+$('#socCur').value; S.time=+$('#socTime').value; S.cap=+$('#socCap').value;
       const delta = (S.current * S.time / S.cap) * 100;
-      const manual = Math.max(0, Math.min(100, S.initial + delta));
-      const ai = Math.max(0, Math.min(100, manual - 1.4));
+      const rawManual = S.initial + delta;
+      const manual = Math.max(0, Math.min(100, rawManual));
+      const rawAi = manual - 1.4;
+      const ai = Math.max(0, Math.min(100, rawAi));
       $('#socFormula').innerHTML =
         'SOC_new = SOC_initial + (I × t ÷ Cap) × 100<br>'+
         '<span class="sub">= '+S.initial+'% + ('+S.current+'A × '+S.time+'h ÷ '+S.cap+'Ah) × 100</span><br>'+
         '<span class="sub">= '+S.initial+'% + ('+delta.toFixed(1)+'%)</span>';
-      $('#socManualTile').innerHTML = '<b>Manual — Coulomb counting</b><div class="val">'+manual.toFixed(1)+'%</div><div class="note">Simple integration of current over time.</div>';
+      const clampNote = (rawManual<0 || rawManual>100) ? '<br><span style="color:var(--warning-ink);">Clamped from raw '+rawManual.toFixed(1)+'% — a real BMS would flag this as fully charged/discharged, not an out-of-range reading.</span>' : '';
+      $('#socManualTile').innerHTML = '<b>Manual — Coulomb counting</b><div class="val">'+manual.toFixed(1)+'%</div><div class="note">Simple integration of current over time.'+clampNote+'</div>';
       $('#socAiTile').innerHTML = '<b>AI / ML model estimate</b><div class="val">'+ai.toFixed(1)+'%</div><div class="note">Hybrid model corrects for internal-resistance rise as the cell ages — see Module D.</div>';
     }
     function updateSOH(){
@@ -1011,36 +1308,57 @@
   }
 
   /* ----- Part 2 / Step 4: Digital Twin ----- */
+  function customCurve(crate){
+    const coeff = 0.006 + (0.030-0.006) * (crate-0.5)/1.5;
+    return Array.from({length:11},(_,i)=>({x:i*100, y: Math.max(35, 100 - coeff*i*100)}));
+  }
   function renderTwin(){
-    setHead('layers','Practical Demo · Part 2','Digital Twin — Duty-Cycle Simulation','Simulate pack degradation under two duty cycles entirely in software before committing the real asset.');
+    setHead('layers','Practical Demo · Part 2','Digital Twin — Duty-Cycle Simulation','Simulate pack degradation under a chosen duty cycle entirely in software before committing the real asset.');
     const b = $('#stageBody');
     const T = state.twin;
-    const gentle = Array.from({length:11},(_,i)=>({x:i*100, y: 100 - 0.012*i*100}));
-    const fast = Array.from({length:11},(_,i)=>({x:i*100, y: 100 - 0.026*i*100}));
+    const gentleRef = Array.from({length:11},(_,i)=>({x:i*100, y: 100 - 0.012*i*100}));
+    const fastRef = Array.from({length:11},(_,i)=>({x:i*100, y: 100 - 0.026*i*100}));
     b.innerHTML =
-      '<div class="toggle-btns">'+
-        '<button class="toggle-btn '+(T.gentle?'on':'')+'" data-series="gentle" id="btnGentle"><span class="sw" style="background:var(--series-1);"></span>Gentle cycling</button>'+
-        '<button class="toggle-btn '+(T.fast?'on':'')+'" data-series="fast" id="btnFast"><span class="sw" style="background:var(--series-2);"></span>Fast charging</button>'+
+      '<div class="panel">'+
+        '<div class="row" style="align-items:center;justify-content:space-between;flex-wrap:wrap;">'+
+          '<label style="font-size:11.5px;font-weight:600;color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.04em;">Charge rate (C-rate)</label>'+
+          '<div class="seg-row">'+
+            '<button class="btn btn-ghost btn-sm" id="presetGentle">Jump to gentle (0.5C)</button>'+
+            '<button class="btn btn-ghost btn-sm" id="presetFast">Jump to fast (2.0C)</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="slider-row" style="margin-top:8px;">'+
+          '<input type="range" id="crateSlider" min="0.5" max="2.0" step="0.1" value="'+T.crate+'">'+
+          '<span class="slider-val" id="crateVal">'+T.crate.toFixed(1)+'C</span>'+
+        '</div>'+
       '</div>'+
       '<div class="chart-wrap" id="twinChartWrap"></div>'+
-      '<div class="comparison-row">'+
-        '<div class="kv"><b>At 1,000 cycles — gentle</b><span>'+gentle[10].y.toFixed(0)+'% SOH</span></div>'+
-        '<div class="kv"><b>At 1,000 cycles — fast</b><span>'+fast[10].y.toFixed(0)+'% SOH</span></div>'+
-        '<div class="kv"><b>Spread</b><span>'+(gentle[10].y-fast[10].y).toFixed(0)+' points, from charging behaviour alone</span></div>'+
-      '</div>';
+      '<div class="comparison-row" id="twinCompare"></div>'+
+      talkpoint('twin');
     drawTwin();
-    $('#btnGentle').addEventListener('click', () => { T.gentle = !T.gentle; drawTwin(); $('#btnGentle').classList.toggle('on',T.gentle); });
-    $('#btnFast').addEventListener('click', () => { T.fast = !T.fast; drawTwin(); $('#btnFast').classList.toggle('on',T.fast); });
+    $('#crateSlider').addEventListener('input', e => {
+      T.crate = +e.target.value; T.touched = true; $('#crateVal').textContent = T.crate.toFixed(1)+'C'; drawTwin();
+    });
+    $('#presetGentle').addEventListener('click', () => { T.crate = 0.5; T.touched = true; $('#crateSlider').value = 0.5; $('#crateVal').textContent = '0.5C'; drawTwin(); });
+    $('#presetFast').addEventListener('click', () => { T.crate = 2.0; T.touched = true; $('#crateSlider').value = 2.0; $('#crateVal').textContent = '2.0C'; drawTwin(); });
+
     function drawTwin(){
-      const series = [];
-      if (T.gentle) series.push({ key:'gentle', color:'--series-1', data:gentle, label:'Gentle cycling' });
-      if (T.fast) series.push({ key:'fast', color:'--series-2', data:fast, label:'Fast charging' });
+      const yours = customCurve(T.crate);
       mountLineChart($('#twinChartWrap'), {
-        width:640, height:260, xDomain:[0,1000], yDomain:[65,100],
-        xTicks:[0,250,500,750,1000], yTicks:[65,77.5,90,100],
+        width:640, height:260, xDomain:[0,1000], yDomain:[30,100],
+        xTicks:[0,250,500,750,1000], yTicks:[30,50,65,77.5,90,100],
         xLabel:'Cycle count', yLabel:'SOH (%)',
-        series, endLabels:true,
+        series:[
+          { key:'gentleRef', color:'--series-1', data:gentleRef, label:'Gentle ref (0.5C)', reference:true },
+          { key:'fastRef', color:'--series-2', data:fastRef, label:'Fast ref (2.0C)', reference:true },
+          { key:'yours', color:'--green', data:yours, label:'Your setting ('+T.crate.toFixed(1)+'C)', endLabels:true },
+        ],
+        endLabels:true,
       });
+      $('#twinCompare').innerHTML =
+        '<div class="kv"><b>Your setting at 1,000 cycles</b><span>'+yours[10].y.toFixed(0)+'% SOH ('+T.crate.toFixed(1)+'C)</span></div>'+
+        '<div class="kv"><b>Gentle reference</b><span>'+gentleRef[10].y.toFixed(0)+'% SOH (0.5C)</span></div>'+
+        '<div class="kv"><b>Fast reference</b><span>'+fastRef[10].y.toFixed(0)+'% SOH (2.0C)</span></div>';
     }
   }
 
@@ -1075,15 +1393,20 @@
 
     series.forEach(s => {
       const pathD = s.data.map((p,i) => (i===0?'M':'L')+sx(p.x).toFixed(1)+' '+sy(p.y).toFixed(1)).join(' ');
-      if (s.area){
-        const areaD = pathD + ' L'+sx(s.data[s.data.length-1].x).toFixed(1)+' '+(height-pad.b)+' L'+sx(s.data[0].x).toFixed(1)+' '+(height-pad.b)+' Z';
-        svg += '<path d="'+areaD+'" fill="'+css(s.color)+'" opacity="0.10" stroke="none"/>';
-      }
-      svg += '<path d="'+pathD+'" fill="none" stroke="'+css(s.color)+'" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>';
       const last = s.data[s.data.length-1];
-      svg += '<circle cx="'+sx(last.x)+'" cy="'+sy(last.y)+'" r="3.5" fill="'+css(s.color)+'"/>';
-      if (endLabels){
-        svg += '<text x="'+(sx(last.x)+8)+'" y="'+(sy(last.y)+4)+'" font-size="12" font-weight="600" font-family="IBM Plex Sans" fill="'+css(s.color)+'">'+s.label+'</text>';
+      if (s.reference){
+        svg += '<path d="'+pathD+'" fill="none" stroke="'+css(s.color)+'" stroke-width="1.5" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>';
+        svg += '<text x="'+(sx(last.x)+8)+'" y="'+(sy(last.y)+4)+'" font-size="10.5" font-weight="500" font-family="IBM Plex Sans" fill="'+css(s.color)+'" opacity="0.85">'+s.label+'</text>';
+      } else {
+        if (s.area){
+          const areaD = pathD + ' L'+sx(s.data[s.data.length-1].x).toFixed(1)+' '+(height-pad.b)+' L'+sx(s.data[0].x).toFixed(1)+' '+(height-pad.b)+' Z';
+          svg += '<path d="'+areaD+'" fill="'+css(s.color)+'" opacity="0.10" stroke="none"/>';
+        }
+        svg += '<path d="'+pathD+'" fill="none" stroke="'+css(s.color)+'" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>';
+        svg += '<circle cx="'+sx(last.x)+'" cy="'+sy(last.y)+'" r="3.5" fill="'+css(s.color)+'"/>';
+        if (endLabels || s.endLabels){
+          svg += '<text x="'+(sx(last.x)+8)+'" y="'+(sy(last.y)+4)+'" font-size="12" font-weight="600" font-family="IBM Plex Sans" fill="'+css(s.color)+'">'+s.label+'</text>';
+        }
       }
     });
     svg += '<rect id="lc-hover" x="'+pad.l+'" y="'+pad.t+'" width="'+pw+'" height="'+ph+'" fill="transparent" style="cursor:crosshair;"/>';
@@ -1124,6 +1447,47 @@
     hoverRect.addEventListener('mouseleave', () => { crossG.style.opacity = 0; tip.classList.remove('show'); });
   }
 
+  /* ---------------- appbar: theme, fullscreen, help, keyboard nav ---------------- */
+  function applyTheme(){
+    const root = document.documentElement;
+    if (state.theme === 'light') root.setAttribute('data-theme','light');
+    else if (state.theme === 'dark') root.setAttribute('data-theme','dark');
+    else root.removeAttribute('data-theme');
+    try { localStorage.setItem('ctb-theme', state.theme); } catch(e){}
+    const btn = $('#themeBtn');
+    if (btn){
+      const iconName = state.theme === 'light' ? 'sun' : (state.theme === 'dark' ? 'moon' : 'monitor');
+      const label = state.theme === 'light' ? 'Light theme (click for dark)' : (state.theme === 'dark' ? 'Dark theme (click for system)' : 'System theme (click for light)');
+      btn.innerHTML = icon(iconName);
+      btn.title = label;
+    }
+  }
+  $('#themeBtn').addEventListener('click', () => {
+    state.theme = state.theme === 'system' ? 'light' : (state.theme === 'light' ? 'dark' : 'system');
+    applyTheme();
+  });
+
+  $('#fullscreenBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  });
+
+  const helpModal = $('#helpModal');
+  function openHelp(){ helpModal.hidden = false; }
+  function closeHelp(){ helpModal.hidden = true; }
+  $('#helpBtn').addEventListener('click', openHelp);
+  $('#helpCloseBtn').addEventListener('click', closeHelp);
+  helpModal.addEventListener('click', e => { if (e.target === helpModal) closeHelp(); });
+
+  document.addEventListener('keydown', e => {
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    if (e.key === 'Escape' && !helpModal.hidden){ closeHelp(); return; }
+    if (e.key === 'ArrowRight'){ $('#nextBtn').click(); }
+    else if (e.key === 'ArrowLeft'){ $('#backBtn').click(); }
+  });
+
+  applyTheme();
   render();
 })();
 </script>
