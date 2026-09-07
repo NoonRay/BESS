@@ -203,7 +203,7 @@
   .tl-time { font-family: 'IBM Plex Mono'; font-size: 12px; color: var(--ink-secondary); background: var(--surface-2); padding: 2px 8px; border-radius: 6px; display: inline-block; }
 
   /* Interactive Elements */
-  .talkpoint { background: var(--surface-2); border: 1px dashed var(--border-strong); border-radius: 12px; padding: 4px 20px; }
+  .talkpoint { background: var(--surface-2); border: 1px dashed var(--border-strong); border-radius: 12px; padding: 4px 20px; margin-top: 24px;}
   .talkpoint summary { padding: 12px 0; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink-secondary); display: flex; align-items: center; gap: 10px; list-style: none; }
   .talkpoint summary::-webkit-details-marker { display: none; }
   .talkpoint p { padding: 0 0 16px 26px; margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
@@ -214,8 +214,6 @@
 
   /* Charts */
   .chart-container { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: var(--surface); position: relative; }
-  .chart-tip { position: absolute; background: var(--navy-3); color: #fff; padding: 8px 12px; border-radius: 8px; font-family: 'IBM Plex Mono'; font-size: 13px; transform: translate(-50%, -120%); pointer-events: none; opacity: 0; transition: opacity 0.15s; box-shadow: var(--shadow-lg); z-index: 10; white-space: nowrap; }
-  .chart-tip.show { opacity: 1; }
 
   /* Modal */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
@@ -230,6 +228,12 @@
   /* Utilities */
   .pulsing-btn { animation: btnPulse 2s infinite; }
   @keyframes btnPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+  
+  ul.checklist { list-style:none; padding:0; margin:0; }
+  ul.checklist li { display:flex; gap:10px; margin-bottom:12px; }
+  ul.checklist li svg { width:20px; height:20px; color:var(--good); }
+  ul.checklist li b { display:block; font-size:15px; }
+  ul.checklist li span { font-size:13.5px; color:var(--ink-muted); }
 </style>
 </head>
 <body>
@@ -324,10 +328,12 @@
     check: '<path d="M20 6 9 17l-5-5"/>',
     warn: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5M12 17h.01"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',
+    refresh: '<path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
     moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>'
   };
   function getIcon(name) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`; }
+  window.getIcon = getIcon; // Expose for inline handlers
 
   // --- Data & State ---
   const DEMO = {
@@ -343,8 +349,21 @@
     soh: { cur: 71.2, orig: 75 },
     twin: { crate: 1.0 }
   };
+  window.DEMO = DEMO; // Crucial for HTML inline click handlers to access the state
 
   const STATIONS = ['Formation Cycler #4', 'Calendering Line 2', 'Winding Cell 6'];
+  const BOM_ITEMS = [
+    { item:'Electrode foil (Al/Cu)', qty:'4,000 sheets', onHand:'12,400' },
+    { item:'Separator film', qty:'4,000 m', onHand:'18,200 m' },
+    { item:'Electrolyte', qty:'620 L', onHand:'1,050 L' },
+    { item:'Can / pouch', qty:'4,000 ea', onHand:'9,600 ea' }
+  ];
+  const ANDON_TYPES = {
+    quality: { label:'Quality', example:'Vision system flags a defect', owner:'Line quality tech', targetMin:5, escalate:'shift supervisor @ 15 min' },
+    machine: { label:'Machine fault', example:'PLC over-temperature interlock trips', owner:'Maintenance tech', targetMin:10, escalate:'area engineer @ 30 min' },
+    material: { label:'Material shortage', example:'Component or electrolyte lot runs out', owner:'Material handler', targetMin:15, escalate:'planner/supervisor @ 30 min' },
+    safety: { label:'Safety', example:'E-stop or safety interlock activated', owner:'Any operator / safety officer', targetMin:0, escalate:'plant safety lead, immediately' }
+  };
   const TALK = {
     login: "MES's first job is proving readiness before releasing work. What happens if the equipment check fails?",
     wo: "The work order is where ERP's plan hands off to MES execution. What goes wrong if operators use printed paper?",
@@ -368,19 +387,25 @@
     2: [
       { id: 'qual', icon: 'grid', title: 'Predictive Quality', desc: 'Review AI defect risk scores and adjust thresholds.' },
       { id: 'maint', icon: 'pulse', title: 'Predictive Maintenance', desc: 'Analyze vibration drift and estimate RUL.' },
-      { id: 'soc', icon: 'calc', title: 'SOC / SOH', desc: 'Compare manual Coulomb counting vs AI hybrid models.' },
+      { id: 'soc', icon: 'calc', title: 'SOC / SOH Calculator', desc: 'Compare manual Coulomb counting vs AI hybrid models.' },
       { id: 'twin', icon: 'layers', title: 'Digital Twin', desc: 'Simulate degradation under aggressive C-rates.' }
     ]
   };
 
-  // --- Core Render Loop ---
+  // --- Helper Functions ---
   function $(id) { return document.getElementById(id); }
+  function fmtMMSS(ms){ const s=Math.floor(ms/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  window.getTalk = function(key) {
+    return `<details class="talkpoint"><summary>${getIcon('info')} Instructor talking point</summary><p>${TALK[key]}</p></details>`;
+  };
 
+  // --- Core Render Loop ---
   function render() {
     renderSidebar();
     renderStage();
     updateProgress();
   }
+  window.render = render; // Expose render globally for HTML inline handlers
 
   function renderSidebar() {
     $('tabNav').innerHTML = `
@@ -466,7 +491,7 @@
           <div class="field"><label>Station</label><select id="lSt">${STATIONS.map(s=>`<option ${s===L.station?'selected':''}>${s}</option>`).join('')}</select></div>
         </div>
         ${L.err ? `<div class="status-banner bad" style="margin-top:20px;">${getIcon('warn')} ${L.err}</div>` : ''}
-        <div style="margin-top:24px;"><button class="btn btn-primary" onclick="doLogin()">Authenticate</button></div>
+        <div style="margin-top:24px;"><button class="btn btn-primary" onclick="doLogin()">Authenticate Login</button></div>
       `;
     } else {
       html += `
@@ -477,7 +502,7 @@
             <li>${getIcon('check')}<div><b>Session Active</b><span class="mono">${L.time}</span></div></li>
           </ul>
         </div>
-        <div class="status-banner good" style="margin-top:20px;">${getIcon('check')} Login successful. Work order execution unlocked.</div>
+        <div class="status-banner good" style="margin-top:20px;">${getIcon('check')} Login validated. Work order release unlocked.</div>
       `;
     }
     container.innerHTML = html + getTalk('login');
@@ -500,9 +525,9 @@
           <span class="chip ${W.done?'chip-good':'chip-draft'}">${W.done? getIcon('check')+' Released' : 'Draft'}</span>
         </div>
         <div class="grid-row" style="margin-bottom:20px;">
-          <div class="field"><label>Product</label><span style="font-weight:600">21700 Cylindrical Cell</span></div>
-          <div class="field"><label>Target</label><span class="mono">4,000 units</span></div>
-          <div class="field"><label>Line</label><span>${DEMO.login.station}</span></div>
+          <div class="field"><label>Product</label><span style="font-weight:600; font-size:15px;">21700 Cylindrical Cell</span></div>
+          <div class="field"><label>Target</label><span class="mono" style="font-size:15px;">4,000 units</span></div>
+          <div class="field"><label>Line</label><span style="font-size:15px;">${DEMO.login.station}</span></div>
         </div>
         <button class="btn btn-ghost" onclick="DEMO.wo.showBom=!DEMO.wo.showBom; render()">
           ${W.showBom?'Hide':'Show'} Bill of Materials
@@ -510,7 +535,7 @@
         ${W.showBom ? `
           <div class="table-wrap" style="margin-top:16px;">
             <table class="data-table">
-              <tr><th>Item</th><th>Required</th><th>Inventory</th></tr>
+              <tr><th>Item Component</th><th>Required</th><th>Available Inventory</th></tr>
               ${BOM_ITEMS.map(i=>`<tr><td>${i.item}</td><td>${i.qty}</td><td>${i.onHand}</td></tr>`).join('')}
             </table>
           </div>
@@ -518,7 +543,7 @@
       </div>
       ${!W.done 
         ? `<div style="margin-top:10px;"><button class="btn btn-primary" onclick="DEMO.wo.done=true; DEMO.wo.time=new Date().toLocaleTimeString(); render()">Release Order to Floor</button></div>`
-        : `<div class="status-banner good">${getIcon('check')} Order released at ${W.time}. Production active.</div>`
+        : `<div class="status-banner good">${getIcon('check')} Order released at ${W.time}. Production routing locked.</div>`
       }
       ${getTalk('wo')}
     `;
@@ -531,27 +556,27 @@
     container.innerHTML = `
       <div class="panel" style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <b class="mono" style="font-size:18px;">${B.id}</b>
-          <div style="color:var(--ink-muted); font-size:13px; margin-top:4px;">Spec: V: 3.55-3.75 | Temp &lt; 40&deg;C</div>
+          <b class="mono" style="font-size:20px;">${B.id}</b>
+          <div style="color:var(--ink-muted); font-size:13px; margin-top:4px;">Validation Spec: Voltage 3.55-3.75 V &nbsp;|&nbsp; Temp &lt; 40&deg;C</div>
         </div>
-        <span class="chip ${B.done?'chip-good':'chip-draft'}">${B.done?'Batch Closed':'Open'}</span>
+        <span class="chip ${B.done?'chip-good':'chip-draft'}">${B.done?'Batch Closed':'In Process'}</span>
       </div>
       
       ${!B.done ? `
       <div class="grid-row" style="margin-top:20px;">
-        <div class="field"><label>Voltage (V)</label><input id="bv" type="number" step="0.01" value="3.65"></div>
-        <div class="field"><label>Temp (&deg;C)</label><input id="bt" type="number" step="0.1" value="32.0"></div>
+        <div class="field"><label>Cell Voltage (V)</label><input id="bv" type="number" step="0.01" value="3.65"></div>
+        <div class="field"><label>Surface Temp (&deg;C)</label><input id="bt" type="number" step="0.1" value="32.0"></div>
       </div>
       <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="btn btn-navy" onclick="addReading(false)">Log Reading</button>
-        <button class="btn btn-ghost" onclick="addReading(true)">Auto-generate</button>
+        <button class="btn btn-navy" onclick="addReading(false)">Log Manual Reading</button>
+        <button class="btn btn-ghost" onclick="addReading(true)">Auto-generate Sample</button>
         <button class="btn btn-green" onclick="DEMO.batch.done=true; render()" ${B.data.length===0?'disabled':''}>Close Batch</button>
       </div>` : ''}
       
       ${B.data.length > 0 ? `
       <div class="table-wrap" style="margin-top:24px;">
         <table class="data-table">
-          <tr><th>Time</th><th>Voltage</th><th>Temp</th><th>Status</th><th>Action</th></tr>
+          <tr><th>Timestamp</th><th>Voltage (V)</th><th>Temp (&deg;C)</th><th>Quality Status</th><th>Corrective Action</th></tr>
           ${B.data.map((r,i) => `
             <tr>
               <td>${r.t}</td><td>${r.v}</td><td>${r.temp}</td>
@@ -585,29 +610,29 @@
     container.innerHTML = `
       <div class="panel grid-row" style="align-items: flex-end;">
         <div class="field" style="flex:2;">
-          <label>Cell ID</label>
-          <input class="mono" value="${cid}" readonly>
+          <label>Target Cell ID</label>
+          <input class="mono" value="${cid}" readonly style="font-size:18px;">
         </div>
-        <button class="btn btn-primary" onclick="DEMO.tree.done=true; render()" style="height:48px;">Execute Trace</button>
+        <button class="btn btn-primary" onclick="DEMO.tree.done=true; render()" style="height:52px; padding:0 32px;">Execute Database Trace</button>
       </div>
       
       ${T.done ? `
       <div style="display:flex; gap:10px; margin-top:24px; margin-bottom:20px;">
-        <button class="btn ${T.dir==='backward'?'btn-navy':'btn-ghost'}" onclick="DEMO.tree.dir='backward'; render()">&larr; Backward Trace (Origin)</button>
-        <button class="btn ${T.dir==='forward'?'btn-navy':'btn-ghost'}" onclick="DEMO.tree.dir='forward'; render()">Forward Trace (Destination) &rarr;</button>
+        <button class="btn ${T.dir==='backward'?'btn-navy':'btn-ghost'}" onclick="DEMO.tree.dir='backward'; render()">&#8592; Backward Trace (Origin)</button>
+        <button class="btn ${T.dir==='forward'?'btn-navy':'btn-ghost'}" onclick="DEMO.tree.dir='forward'; render()">Forward Trace (Destination) &#8594;</button>
       </div>
       
       <div class="panel">
         <ul class="timeline">
           ${T.dir === 'backward' ? `
-            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Electrode Lot EL-2209</b><span>Supplier batch SB-7741</span><span class="tl-time">-9 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Coating Roll #C-118</b><span>Machine Line 1</span><span class="tl-time">-6 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Cell Formation</b><span>${cid} created in ${DEMO.batch.id}</span><span class="tl-time">Current</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Electrode Lot EL-2209</b><span>Supplier batch SB-7741 QC Passed</span><span class="tl-time">-9 hours</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Coating Roll #C-118</b><span>Processed on Machine Line 1</span><span class="tl-time">-6 hours</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Cell Formation</b><span>${cid} indexed to ${DEMO.batch.id}</span><span class="tl-time">Current</span></div></li>
           ` : `
-            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Cell Formation</b><span>${cid} graded A</span><span class="tl-time">Current</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Module Assembly</b><span>Matched into Module MOD-55031</span><span class="tl-time">+2 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Pack Integration</b><span>Pack PK-19042</span><span class="tl-time">+8 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('check')}</div><div class="tl-body"><b>Shipment</b><span>Deployed to Site NRE-East-4</span><span class="tl-time">+4 days</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Cell Formation</b><span>${cid} graded Tier A</span><span class="tl-time">Current</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Module Assembly</b><span>Matched via impedance to Module MOD-55031</span><span class="tl-time">+2 hours</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Pack Integration</b><span>Assigned to Pack PK-19042</span><span class="tl-time">+8 hours</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('check')}</div><div class="tl-body"><b>Dispatch Shipment</b><span>Deployed to Site NRE-East-4</span><span class="tl-time">+4 days</span></div></li>
           `}
         </ul>
       </div>
@@ -626,9 +651,9 @@
               <button class="btn ${A.type===k?'btn-navy':'btn-ghost'}" style="flex:1; justify-content:center;" onclick="DEMO.andon.type='${k}'; render()">${ANDON_TYPES[k].label}</button>
             `).join('')}
           </div>
-          <div style="background:var(--surface); padding:20px; border-radius:12px; border:1px solid var(--border); text-align:center;">
-            <p style="color:var(--ink-secondary); font-size:15px;">Target Response: <b>&lt; ${ANDON_TYPES[A.type].targetMin} mins</b></p>
-            <button class="btn btn-primary pulsing-btn" style="background:var(--critical); font-size:18px; padding:16px 32px; margin-top:10px;" onclick="triggerAndon()">
+          <div style="background:var(--surface); padding:30px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+            <p style="color:var(--ink-secondary); font-size:16px; margin-bottom:12px;">Resolution Target: <b>&lt; ${ANDON_TYPES[A.type].targetMin} mins</b></p>
+            <button class="btn btn-primary pulsing-btn" style="background:var(--critical); font-size:18px; padding:16px 32px;" onclick="triggerAndon()">
               ${getIcon('bell')} Pull Andon Cord
             </button>
           </div>
@@ -640,25 +665,25 @@
       let elapsed = A.end ? (A.end - A.start) : (new Date() - A.start);
       container.innerHTML = `
         <div class="panel-navy panel" style="text-align:center;">
-          <div style="color:var(--navy-tint); text-transform:uppercase; letter-spacing:0.1em; font-size:13px; font-weight:700;">Live Incident: ${ANDON_TYPES[A.type].label}</div>
+          <div style="color:var(--navy-tint); text-transform:uppercase; letter-spacing:0.1em; font-size:14px; font-weight:700;">Live Incident: ${ANDON_TYPES[A.type].label}</div>
           <div class="big-timer" id="aTimer">${fmtMMSS(elapsed)}</div>
         </div>
         
         <div style="display:flex; gap:16px; margin: 24px 0;">
-          <div class="panel" style="flex:1; text-align:center; border-color:${A.resp? 'var(--good)' : 'var(--orange)'}">
-            <h3 style="margin-bottom:10px;">1. Response</h3>
-            ${!A.resp ? `<button class="btn btn-primary" onclick="DEMO.andon.resp=new Date(); render()">Acknowledge</button>` : `<div style="color:var(--good); font-weight:600;">${getIcon('check')} Ack at ${A.resp.toLocaleTimeString()}</div>`}
+          <div class="panel" style="flex:1; text-align:center; border-color:${A.resp? 'var(--good)' : 'var(--orange)'}; border-width:2px;">
+            <h3 style="margin-bottom:12px;">Step 1: First Response</h3>
+            ${!A.resp ? `<button class="btn btn-primary" onclick="DEMO.andon.resp=new Date(); render()">Acknowledge Issue</button>` : `<div style="color:var(--good); font-weight:600; font-size:15px;">${getIcon('check')} Ack at ${A.resp.toLocaleTimeString()}</div>`}
           </div>
-          <div class="panel" style="flex:1; text-align:center; border-color:${A.esc? 'var(--warning-fill)' : 'var(--border)'}">
-            <h3 style="margin-bottom:10px;">2. Escalation</h3>
+          <div class="panel" style="flex:1; text-align:center; border-color:${A.esc? 'var(--warning-fill)' : 'var(--border)'}; border-width:2px;">
+            <h3 style="margin-bottom:12px;">Step 2: Escalation</h3>
             ${A.resp && !A.esc && !A.done ? `<button class="btn btn-ghost" onclick="DEMO.andon.esc=new Date(); render()">Escalate to Supervisor</button>` : ''}
-            ${A.esc ? `<div style="color:var(--warning-ink); font-weight:600;">Escalated at ${A.esc.toLocaleTimeString()}</div>` : (!A.resp ? '<span style="color:var(--ink-muted)">Awaiting Ack</span>':'<span style="color:var(--ink-muted)">Optional</span>')}
+            ${A.esc ? `<div style="color:var(--warning-ink); font-weight:600; font-size:15px;">Escalated at ${A.esc.toLocaleTimeString()}</div>` : (!A.resp ? '<span style="color:var(--ink-muted)">Awaiting Acknowledgment</span>':'<span style="color:var(--ink-muted)">Optional</span>')}
           </div>
         </div>
         
         ${!A.done ? 
-          `<div style="text-align:center;"><button class="btn btn-green" style="font-size:16px; padding:14px 40px;" onclick="resolveAndon()">Resolve Incident</button></div>` : 
-          `<div class="status-banner good" style="justify-content:center;">Incident closed. MTTR logged successfully. <button class="btn btn-ghost" style="margin-left:16px;" onclick="DEMO.andon.active=false; render()">New Incident</button></div>`
+          `<div style="text-align:center;"><button class="btn btn-green" style="font-size:17px; padding:16px 48px;" onclick="resolveAndon()">Resolve Incident</button></div>` : 
+          `<div class="status-banner good" style="justify-content:center; font-size:16px;">Incident successfully closed. MTTR logged. <button class="btn btn-ghost" style="margin-left:20px;" onclick="DEMO.andon.active=false; render()">Raise New Incident</button></div>`
         }
         ${renderAndonLog()}
       `;
@@ -686,11 +711,11 @@
     return `
       <div class="table-wrap" style="margin-top:24px;">
         <table class="data-table">
-          <tr><th>Incident</th><th>Time</th><th>MTTR</th><th>Result</th></tr>
+          <tr><th>Incident Type</th><th>Timestamp</th><th>Recorded MTTR</th><th>System Result</th></tr>
           ${DEMO.andon.log.map(l => `
             <tr>
               <td>${l.type}</td><td>${l.start.toLocaleTimeString()}</td><td class="mono">${fmtMMSS(l.mttr)}</td>
-              <td><span class="chip ${l.pass?'chip-good':'chip-critical'}">${l.pass?'Met Target':'Missed Target'}</span></td>
+              <td><span class="chip ${l.pass?'chip-good':'chip-critical'}">${l.pass?'Met Target KPI':'Missed Target'}</span></td>
             </tr>
           `).join('')}
         </table>
@@ -713,28 +738,28 @@
             <span class="slider-val">${q.th}%</span>
           </div>
         </div>
-        <button class="btn btn-ghost" onclick="generateQualData(); render()">${getIcon('refresh-cw')} Resample</button>
+        <button class="btn btn-ghost" onclick="generateQualData(); render()">${getIcon('refresh')} Resample Units</button>
       </div>
       
-      <div style="display:flex; gap:16px; margin: 16px 0; font-size:13px; font-weight:600;">
-        <span style="color:var(--good)">&#9632; Pass (&lt;${q.th-15}%)</span>
-        <span style="color:var(--warning-fill)">&#9632; Review (${q.th-15}-${q.th-1}%)</span>
-        <span style="color:var(--critical)">&#9632; Auto-Hold (&ge;${q.th}%)</span>
+      <div style="display:flex; gap:20px; margin: 20px 0; font-size:14px; font-weight:600;">
+        <span style="color:var(--good)">&#9632; Pass Line (&lt;${q.th-15}%)</span>
+        <span style="color:var(--warning-fill)">&#9632; Human Review (${q.th-15}-${q.th-1}%)</span>
+        <span style="color:var(--critical)">&#9632; Auto-Hold Action (&ge;${q.th}%)</span>
       </div>
       
-      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:16px;">
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:16px;">
         ${q.items.map(u => {
           let state = u.score >= q.th ? 'critical' : (u.score >= q.th-15 ? 'warning' : 'good');
           let color = state==='critical' ? 'var(--critical)' : (state==='warning' ? 'var(--warning-fill)' : 'var(--good)');
           return `
-            <div style="border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--surface); border-top: 4px solid ${color};">
-              <div class="mono" style="font-size:12px; color:var(--ink-muted); margin-bottom:8px;">${u.id}</div>
-              <div class="mono" style="font-size:28px; font-weight:700; color:var(--ink);">${u.score}%</div>
+            <div style="border:1px solid var(--border); border-radius:12px; padding:20px 16px; background:var(--surface); border-top: 5px solid ${color}; text-align:center;">
+              <div class="mono" style="font-size:13px; color:var(--ink-muted); margin-bottom:8px;">${u.id}</div>
+              <div class="mono" style="font-size:32px; font-weight:700; color:var(--ink);">${u.score}%</div>
             </div>
           `;
         }).join('')}
       </div>
-      <p style="margin-top:20px; font-weight:600; color:var(--ink-secondary);">Result: ${holds} of ${q.items.length} units flagged for immediate hold.</p>
+      <p style="margin-top:20px; font-weight:600; font-size:15px; color:var(--ink-secondary);">Analytics Result: ${holds} of ${q.items.length} units flagged for immediate hold isolation.</p>
       ${getTalk('qual')}
     `;
   }
@@ -751,7 +776,7 @@
     container.innerHTML = `
       <div class="panel grid-row">
         <div class="field">
-          <label>Machine Selection</label>
+          <label>Monitored Asset</label>
           <select disabled><option>Formation Cycler #4 (Active Drift)</option></select>
         </div>
         <div style="flex:2;">
@@ -763,18 +788,17 @@
         </div>
       </div>
       
-      <div class="chart-container" id="maintChart" style="height:300px; margin: 24px 0;"></div>
+      <div class="chart-container" id="maintChart" style="height:320px; margin: 24px 0;"></div>
       
       <div class="panel-navy panel" style="text-align:center;">
-        <h3 style="color:var(--navy-tint); font-size:14px; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">AI Estimated Remaining Useful Life</h3>
-        <div class="mono" style="font-size:36px; font-weight:700;">${calcRUL(data, M.sens)} Cycles</div>
+        <h3 style="color:var(--navy-tint); font-size:14px; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px;">AI Estimated Remaining Useful Life (RUL)</h3>
+        <div class="mono" style="font-size:42px; font-weight:700;">${calcRUL(data, M.sens)} Cycles</div>
       </div>
       ${getTalk('maint')}
     `;
     setTimeout(() => drawSimpleLineChart('maintChart', data, M.sens), 10);
   }
   function calcRUL(data, threshold) {
-    // Very simple linear projection of last 3 points
     let slope = (data[data.length-1] - data[data.length-3]) / 2;
     if(slope <= 0 || data[data.length-1] >= threshold) return "0";
     let remaining = (threshold - data[data.length-1]) / slope;
@@ -784,7 +808,7 @@
   function drawSoc(container) {
     const S = DEMO.soc;
     let manualSoc = Math.min(100, Math.max(0, S.init + (S.cur * S.time / S.cap)*100));
-    let aiSoc = Math.min(100, Math.max(0, manualSoc - 1.8)); // Simulating degradation offset
+    let aiSoc = Math.min(100, Math.max(0, manualSoc - 1.8));
     
     container.innerHTML = `
       <div class="grid-row" style="margin-bottom:20px;">
@@ -795,20 +819,20 @@
       
       <div class="grid-row">
         <div class="panel" style="flex:1;">
-          <h3 style="margin-bottom:16px;">Telemetry Inputs</h3>
-          <div class="field" style="margin-bottom:12px;"><label>Initial SOC (%)</label><input type="number" value="${S.init}" oninput="DEMO.soc.init=parseFloat(this.value); render()"></div>
-          <div class="field" style="margin-bottom:12px;"><label>Current (A)</label><input type="number" value="${S.cur}" oninput="DEMO.soc.cur=parseFloat(this.value); render()"></div>
-          <div class="field"><label>Time (Hours)</label><input type="number" step="0.1" value="${S.time}" oninput="DEMO.soc.time=parseFloat(this.value); render()"></div>
+          <h3 style="margin-bottom:16px;">Live Telemetry Variables</h3>
+          <div class="field" style="margin-bottom:16px;"><label>Initial SOC (%)</label><input type="number" value="${S.init}" oninput="DEMO.soc.init=parseFloat(this.value); render()"></div>
+          <div class="field" style="margin-bottom:16px;"><label>Current Draw (A)</label><input type="number" value="${S.cur}" oninput="DEMO.soc.cur=parseFloat(this.value); render()"></div>
+          <div class="field"><label>Duration (Hours)</label><input type="number" step="0.1" value="${S.time}" oninput="DEMO.soc.time=parseFloat(this.value); render()"></div>
         </div>
         
-        <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:20px;">
           <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-            <div style="font-size:12px; font-weight:700; color:var(--ink-secondary); text-transform:uppercase; margin-bottom:8px;">Manual Coulomb Count</div>
-            <div class="mono" style="font-size:42px; font-weight:700;">${manualSoc.toFixed(1)}%</div>
+            <div style="font-size:13px; font-weight:700; color:var(--ink-secondary); text-transform:uppercase; margin-bottom:8px;">Manual Coulomb Count</div>
+            <div class="mono" style="font-size:48px; font-weight:700;">${manualSoc.toFixed(1)}%</div>
           </div>
           <div class="panel-navy panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; background:var(--orange);">
-            <div style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.8); text-transform:uppercase; margin-bottom:8px;">AI Hybrid Model Estimate</div>
-            <div class="mono" style="font-size:42px; font-weight:700;">${aiSoc.toFixed(1)}%</div>
+            <div style="font-size:13px; font-weight:700; color:rgba(255,255,255,0.8); text-transform:uppercase; margin-bottom:8px;">AI Hybrid Model Correction</div>
+            <div class="mono" style="font-size:48px; font-weight:700;">${aiSoc.toFixed(1)}%</div>
           </div>
         </div>
       </div>
@@ -822,18 +846,17 @@
     container.innerHTML = `
       <div class="panel grid-row" style="align-items:center;">
         <div style="flex:1;">
-          <label style="font-weight:700; font-size:12px; color:var(--ink-secondary); text-transform:uppercase;">Simulated C-Rate (Charge Intensity)</label>
+          <label style="font-weight:700; font-size:12px; color:var(--ink-secondary); text-transform:uppercase;">Simulated C-Rate Injection</label>
           <div class="slider-row" style="margin-top:10px;">
             <input type="range" min="0.5" max="3.0" step="0.1" value="${T.crate}" oninput="DEMO.twin.crate=this.value; render()">
             <span class="slider-val">${parseFloat(T.crate).toFixed(1)}C</span>
           </div>
         </div>
       </div>
-      <div class="chart-container" id="twinChart" style="height:350px; margin: 24px 0;"></div>
+      <div class="chart-container" id="twinChart" style="height:360px; margin: 24px 0;"></div>
       ${getTalk('twin')}
     `;
     
-    // Generate simple degradation curve based on C-rate
     let base = 100;
     let data = [base];
     let degFactor = 0.5 + (parseFloat(T.crate) * 0.8);
@@ -844,7 +867,7 @@
     setTimeout(() => drawSimpleLineChart('twinChart', data, 70, true), 10);
   }
 
-  // --- Ultra-Simple SVG Chart Renderer (No Libraries) ---
+  // --- Ultra-Simple SVG Chart Renderer ---
   function drawSimpleLineChart(id, data, threshold, isSoh = false) {
     const el = $(id);
     if(!el) return;
@@ -863,22 +886,18 @@
     el.innerHTML = `
       <svg width="100%" height="100%" style="overflow:visible;">
         <g transform="translate(20, 20)">
-          <!-- Grid -->
           <line x1="0" y1="${h}" x2="${w}" y2="${h}" stroke="var(--chart-axis)" stroke-width="2"/>
           <line x1="0" y1="0" x2="0" y2="${h}" stroke="var(--chart-axis)" stroke-width="2"/>
           
-          <!-- Threshold -->
           <line x1="0" y1="${thY}" x2="${w}" y2="${thY}" stroke="var(--critical)" stroke-width="2" stroke-dasharray="6,4"/>
-          <text x="${w+5}" y="${thY+4}" fill="var(--critical)" font-size="12" font-family="IBM Plex Mono">${parseFloat(threshold).toFixed(1)}</text>
+          <text x="${w+10}" y="${thY+5}" fill="var(--critical)" font-size="14" font-weight="600" font-family="IBM Plex Mono">${parseFloat(threshold).toFixed(1)}</text>
           
-          <!-- Line -->
           <path d="M ${pts}" fill="none" stroke="var(--series-1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           
-          <!-- Points -->
           ${data.map((val, i) => {
             let x = (i / Math.max(1, data.length-1)) * w;
             let y = h - ((val - minVal) / (maxVal - minVal)) * h;
-            return `<circle cx="${x}" cy="${y}" r="5" fill="var(--surface)" stroke="var(--series-1)" stroke-width="3"/>`;
+            return `<circle cx="${x}" cy="${y}" r="6" fill="var(--surface)" stroke="var(--series-1)" stroke-width="3"/>`;
           }).join('')}
         </g>
       </svg>
@@ -908,6 +927,24 @@
     else document.exitFullscreen().catch(()=>{});
   };
   
+  $('btnReset').onclick = () => {
+    stopAndonTimer();
+    Object.assign(DEMO, {
+      part: 1, idx: {1:0, 2:0},
+      login: { done: false, user: 'OP-2247', station: 'Formation Cycler #4', err: '', time: null },
+      wo: { done: false, showBom: false, time: null },
+      batch: { id: 'B-'+Math.floor(10000+Math.random()*90000), done: false, data: [] },
+      tree: { done: false, id: null, dir: 'backward' },
+      andon: { active: false, done: false, type: 'quality', start: null, resp: null, esc: null, end: null, log: [], timer: null },
+      qual: { th: 75, items: [] },
+      maint: { sens: 4.0, mac: 'form4' },
+      soc: { init: 62, cur: -15, time: 0.25, cap: 75 },
+      soh: { cur: 71.2, orig: 75 },
+      twin: { crate: 1.0 }
+    });
+    render();
+  };
+
   function applyTheme() {
     const root = document.documentElement;
     if(DEMO.theme === 'light') root.setAttribute('data-theme', 'light');
@@ -937,6 +974,5 @@
 
 })();
 </script>
-
 </body>
 </html>
