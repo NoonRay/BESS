@@ -1,15 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cell to Boardroom — NoonRay Energy</title>
+<meta name="description" content="Interactive full-screen console for Session 18 practical demo.">
+<style>
+  /* ---------------- Reset & Fonts ---------------- */
+  html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; }
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  /* ---------------- Color Variables ---------------- */
+  :root {
+    --bg: #eef1f5;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --ink: #0f172a;
+    --ink-secondary: #475569;
+    --ink-muted: #64748b;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --navy: #1e3a8a;
+    --navy-2: #172554;
+    --navy-3: #0b1120;
+    --navy-tint: #eff6ff;
+    --orange: #ea580c;
+    --orange-ink: #9a3412;
+    --orange-tint: #ffedd5;
+    --green: #16a34a;
+    --good: #22c55e;
+    --good-tint: #dcfce7;
+    --warning-fill: #f59e0b;
+    --warning-ink: #92400e;
+    --warning-tint: #fef3c7;
+    --critical: #ef4444;
+    --critical-tint: #fee2e2;
+    --ai-purple: #8b5cf6;
+    --ai-purple-tint: #ede9fe;
+    --chart-axis: #94a3b8;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 8px 20px -4px rgba(0,0,0,0.08);
+    color-scheme: light;
+  }
+  
+  [data-theme="dark"] {
+    --bg: #0b1120;
+    --surface: #151e2e;
+    --surface-2: #1e293b;
+    --ink: #f8fafc;
+    --ink-secondary: #cbd5e1;
+    --ink-muted: #94a3b8;
+    --border: #334155;
+    --border-strong: #475569;
+    --navy: #60a5fa;
+    --navy-tint: #1e3a8a;
+    --orange: #f97316;
+    --orange-ink: #fdba74;
+    --orange-tint: #7c2d12;
+    --green: #4ade80;
+    --good: #22c55e;
+    --good-tint: #064e3b;
+    --warning-fill: #fbbf24;
+    --warning-ink: #fde68a;
+    --warning-tint: #78350f;
+    --critical: #f87171;
+    --critical-tint: #7f1d1d;
+    --ai-purple: #a78bfa;
+    --ai-purple-tint: #2e1065;
+    --chart-axis: #475569;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex; flex-direction: column;
+    transition: background 0.3s, color 0.3s;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  h1, h2, h3 { font-family: 'Source Serif 4', serif; margin: 0; }
+  
+  /* Prevent SVG icon blow-ups */
+  svg { flex-shrink: 0; max-width: 100%; max-height: 100%; }
+
+  /* ---------------- App Header ---------------- */
+  .appbar {
+    height: 64px; background: linear-gradient(135deg, var(--navy-3), var(--navy-2));
+    color: #fff; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 10;
+  }
+  .brand-zone { display: flex; align-items: center; gap: 12px; }
+  .brand-logo { width: 32px; height: 32px; background: var(--orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .brand-logo svg { width: 18px; height: 18px; }
+  .brand-text h1 { font-size: 17px; font-weight: 700; line-height: 1.1; }
+  .brand-text h1 span { color: #a3e635; }
+  .brand-text .sub { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #cbd5e1; font-weight: 600; }
+
+  .live-clock { display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono'; font-size: 13px; color: #cbd5e1; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+  .live-indicator { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+  .appbar-actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .icon-btn:hover { background: rgba(255,255,255,0.2); }
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  /* ---------------- Main Layout ---------------- */
+  .prog-bar { height: 4px; background: var(--border); width: 100%; flex-shrink: 0; }
+  .prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--orange), var(--green)); transition: width 0.4s ease; }
+
+  .main-wrapper { display: flex; flex: 1; overflow: hidden; }
+  
+  .sidebar { width: 300px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 5; }
+  .sidebar-tabs { display: flex; padding: 12px 16px; border-bottom: 1px solid var(--border); gap: 6px; }
+  .tab { flex: 1; padding: 10px 8px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--ink-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
+  .tab.active { background: var(--navy-tint); color: var(--navy); border-color: var(--border); }
+  .tab span { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  
+  .sidebar-steps { flex: 1; overflow-y: auto; padding: 16px; }
+  .step-item { display: flex; gap: 12px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; margin-bottom: 4px; }
+  .step-item:hover { background: var(--surface-2); }
+  .step-item.current { background: var(--navy-tint); border-color: var(--border); box-shadow: var(--shadow-sm); transform: translateX(2px); }
+  .step-num { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; color: var(--ink-muted); }
+  .step-num svg { width: 14px; height: 14px; }
+  .step-item.current .step-num { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .step-item.done .step-num { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .step-text b { display: block; font-size: 13.5px; color: var(--ink); margin-bottom: 2px; }
+  .step-text span { display: block; font-size: 11.5px; color: var(--ink-muted); line-height: 1.3; }
+
+  .stage-area { flex: 1; overflow-y: auto; padding: 24px 32px; display: flex; flex-direction: column; align-items: center; }
+  .stage-card { width: 100%; max-width: 1020px; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; min-height: 500px; animation: fadeUp 0.3s ease-out; }
+  
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .stage-head { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; gap: 16px; align-items: flex-start; }
+  .stage-badge { width: 40px; height: 40px; border-radius: 8px; background: var(--navy-tint); color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stage-badge svg { width: 20px; height: 20px; }
+  .stage-badge.ai-badge { background: var(--ai-purple-tint); color: var(--ai-purple); }
+  .stage-title .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; display: block; }
+  .stage-title h2 { font-size: 22px; color: var(--ink); margin-bottom: 4px; }
+  .stage-title p { margin: 0; font-size: 13.5px; color: var(--ink-secondary); line-height: 1.5; }
+
+  .stage-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .stage-foot { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 12px 12px; display: flex; justify-content: space-between; align-items: center; }
+  
+  /* ---------------- Compact UI Components ---------------- */
+  .btn { appearance: none; border: none; font-family: inherit; font-weight: 600; font-size: 13px; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: filter 0.2s; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn:not(:disabled):hover { filter: brightness(1.08); }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-navy { background: var(--navy); color: #fff; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-purple { background: var(--ai-purple); color: #fff; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--ink); }
+  .btn svg { width: 14px; height: 14px; }
+
+  .panel { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .panel-navy { background: var(--navy); color: #fff; border: none; }
+  
+  .grid-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
+  .field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-secondary); }
+  .field input, .field select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 14px; font-family: inherit; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--orange); }
+  
+  .status-banner { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; animation: fadeUp 0.2s ease-out; }
+  .status-banner.good { background: var(--good-tint); color: var(--good); border: 1px solid rgba(34, 197, 94, 0.2); }
+  .status-banner.warn { background: var(--warning-tint); color: var(--warning-ink); border: 1px solid rgba(245, 158, 11, 0.2); }
+  .status-banner.bad { background: var(--critical-tint); color: var(--critical); border: 1px solid rgba(239, 68, 68, 0.2); }
+  .status-banner svg { width: 16px; height: 16px; }
+  
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .chip-good { background: var(--good-tint); color: var(--good); }
+  .chip-critical { background: var(--critical-tint); color: var(--critical); }
+  .chip-draft { background: var(--border); color: var(--ink-secondary); }
+  
+  table.data-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+  .data-table th { background: var(--surface-2); padding: 8px 12px; font-size: 11px; text-transform: uppercase; color: var(--ink-secondary); border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 8px 12px; font-size: 13px; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono'; }
+  .data-table tr:last-child td { border-bottom: none; }
+  
+  /* Timeline */
+  .timeline { list-style: none; padding: 0; margin: 0; }
+  .tl-item { display: flex; gap: 14px; position: relative; padding-bottom: 16px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before { content: ""; position: absolute; left: 13px; top: 28px; bottom: 0; width: 2px; background: var(--border-strong); }
+  .tl-item:last-child::before { display: none; }
+  .tl-dot { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--navy-tint); color: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 2; border: 2px solid var(--surface); }
+  .tl-dot svg { width: 14px; height: 14px; }
+  .tl-body b { display: block; font-size: 13.5px; margin-bottom: 2px; }
+  .tl-body span { display: block; font-size: 12px; color: var(--ink-muted); margin-bottom: 2px; }
+  
+  /* Compact Talkpoints */
+  .talkpoint { background: transparent; border: 1px dashed var(--border-strong); border-radius: 6px; padding: 8px 12px; margin-top: auto; }
+  .talkpoint summary { cursor: pointer; font-weight: 600; font-size: 12px; color: var(--ink-muted); display: flex; align-items: center; gap: 6px; list-style: none; }
+  .talkpoint summary::-webkit-details-marker { display: none; }
+  .talkpoint summary svg { width: 14px; height: 14px; }
+  .talkpoint p { padding: 6px 0 0 0; margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink-secondary); border-top: 1px dashed var(--border); margin-top: 6px; }
+
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  input[type="range"] { flex: 1; height: 4px; accent-color: var(--orange); }
+  .slider-val { font-family: 'IBM Plex Mono'; font-size: 14px; font-weight: 600; min-width: 40px; text-align: right; }
+
+  /* ---------------- Camera Vision Cards ---------------- */
+  .ai-vision-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); position: relative; cursor: pointer; transition: transform 0.15s, border-color 0.2s; }
+  .ai-vision-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .ai-vision-img { height: 104px; background: #0c121e; position: relative; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
+  .ai-meta { padding: 10px 12px; }
+  .ai-meta .score { font-family: 'IBM Plex Mono'; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .ai-meta .desc { font-size: 11px; color: var(--ink-secondary); font-weight: 600; text-transform: uppercase; }
+
+  .chart-container { width: 100%; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); position: relative; overflow:hidden;}
+  
+  ul.checklist { list-style:none; padding:0; margin:0; }
+  ul.checklist li { display:flex; gap:8px; margin-bottom:8px; }
+  ul.checklist li svg { width:16px; height:16px; color:var(--good); }
+  ul.checklist li b { display:block; font-size:13.5px; }
+  ul.checklist li span { font-size:12px; color:var(--ink-muted); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+  .modal-overlay[hidden] { display: none; }
+  .modal-content { background: var(--surface); width: 100%; max-width: 520px; border-radius: 12px; padding: 24px; box-shadow: var(--shadow-lg); }
+  .modal-content h3 { font-size: 18px; margin: 0; }
+  .modal-content ul { line-height: 1.6; font-size: 13.5px; color: var(--ink-secondary); padding-left: 20px; margin-top: 16px; }
+  .kbd { font-family: 'IBM Plex Mono'; background: var(--surface-2); border: 1px solid var(--border-strong); padding: 2px 6px; border-radius: 4px; font-size: 11px; color: var(--ink); }
+
+  .big-timer { font-family: 'IBM Plex Mono'; font-size: 40px; font-weight: 700; text-align: center; margin: 8px 0; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="appbar">
+  <div class="brand-zone">
+    <div class="brand-logo" id="headerLogo"></div>
+    <div class="brand-text">
+      <h1>NoonRay<span> Energy</span></h1>
+      <div class="sub">MES &amp; Analytics Console</div>
+    </div>
+  </div>
+  
+  <div class="live-clock">
+    <div class="live-indicator"></div>
+    <span id="clockTime">--:--:--</span>
+  </div>
+
+  <div class="appbar-actions">
+    <button class="icon-btn" data-action="toggleHelp" title="Keyboard Shortcuts" id="btnHelp"></button>
+    <button class="icon-btn" data-action="toggleTheme" title="Toggle Theme" id="btnTheme"></button>
+    <button class="icon-btn" data-action="toggleFull" title="Full Screen" id="btnFull"></button>
+    <button class="btn btn-ghost" data-action="resetDemo" style="border-color: rgba(255,255,255,0.2); color: #fff; font-size: 12px; padding: 6px 12px;">Reset</button>
+  </div>
+</header>
+<div class="prog-bar"><div class="prog-fill" id="mainProgress"></div></div>
+
+<!-- Layout -->
+<main class="main-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-tabs" id="tabNav"></div>
+    <div class="sidebar-steps" id="stepNav"></div>
+  </aside>
+
+  <!-- Stage -->
+  <section class="stage-area">
+    <div class="stage-card">
+      <div class="stage-head" id="stageHead"></div>
+      <div class="stage-body" id="stageBody"></div>
+      <div class="stage-foot">
+        <span class="foot-progress" id="footProgress" style="font-size: 12px; color: var(--ink-muted); font-weight:600;"></span>
+        <div style="display:flex; gap: 8px;">
+          <button class="btn btn-ghost" data-action="prevStep" id="btnPrev">Back</button>
+          <button class="btn btn-primary" data-action="nextStep" id="btnNext">Next Step &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Help Modal -->
+<div class="modal-overlay" id="helpModal" hidden>
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3>Using this Console</h3>
+      <button class="icon-btn" data-action="toggleHelp" style="color:var(--ink); background:var(--surface-2); border:none; width:28px; height:28px;">✕</button>
+    </div>
+    <ul>
+      <li>Use the <b>Sidebar</b> to jump freely between steps.</li>
+      <li>Expand the <b>Instructor Talking Point</b> at the bottom of each step for discussion prompts.</li>
+      <li>Clicking <b>Flag Andon</b> on an out-of-spec batch reading automatically jumps to the Andon section and starts the timer.</li>
+      <li>In <b>AI Predictive Quality</b>, click on any optical scan card to inspect the CNN Grad-CAM activation view.</li>
+      <li>Keyboard: Use <span class="kbd">&larr;</span> and <span class="kbd">&rarr;</span> to navigate steps. Press <span class="kbd">Esc</span> to close this modal.</li>
+      <li>Click <b>Reset</b> in the header to clear all data for the next class session.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- CNN Inspection Modal -->
+<div class="modal-overlay" id="cnnModal" hidden>
+  <div class="modal-content" style="max-width: 580px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+      <h3 id="cnnModalTitle">CNN Anomaly Inspection</h3>
+      <button class="icon-btn" data-action="closeCnnModal" style="color:var(--ink); background:var(--surface-2); border:none; width:28px; height:28px;">✕</button>
+    </div>
+    <div id="cnnModalBody"></div>
+  </div>
+</div>
+
 <script>
 (function initApp() {
   "use strict";
 
-  // --- 1. Clock Fix (Runs immediately, then every second) ---
+  // --- 1. Immediate Clock Initializer ---
   function updateClock() {
     const clockEl = document.getElementById('clockTime');
     if (clockEl) {
-      clockEl.textContent = new Date().toLocaleTimeString('en-US', {hour12: false});
+      const now = new Date();
+      clockEl.textContent = now.toLocaleTimeString('en-US', {hour12: false});
     }
   }
-  updateClock(); // Initial call so it doesn't show --:--:--
+  updateClock();
   setInterval(updateClock, 1000);
 
   // --- 2. Icons ---
@@ -35,7 +347,7 @@
   };
   function getIcon(name) { return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`; }
 
-  // --- 3. Data & State ---
+  // --- 3. State ---
   const DEMO = {
     part: 1, idx: {1:0, 2:0}, theme: 'system',
     login: { done: false, user: 'OP-2247', station: 'Formation Cycler #4', err: '', time: null },
@@ -65,10 +377,10 @@
     batch: "Every reading becomes part of the permanent cell genealogy. Which of these readings is most critical?",
     tree: "This is the exact record a recall pulls. How fast could you do this backward trace with paper logs?",
     andon: "The MTTR clock starts instantly. What would a rising MTTR trend over a week tell the plant manager?",
-    qual: "Notice how the Computer Vision model provides a confidence score and a bounding box, not just a binary pass/fail. Why is this explicit classification crucial for continuous model retraining?",
-    maint: "The solid line is historical sensor data; the dashed line is the Machine Learning forecast. How does forecasting an anomaly *before* it crosses the threshold change maintenance scheduling?",
-    soc: "Physics-based Coulomb counting (top) assumes a perfect battery. The Neural Network (bottom) accounts for non-linear capacity fade (hidden internal resistance). Over years, which one protects the warranty?",
-    twin: "We are running a Neural Network Degradation Simulator. We can test abusive C-rates in software to find the breaking point without destroying a physical BESS asset."
+    qual: "Notice how the Computer Vision model provides a confidence score and bounding box. Why is pixel classification crucial for continuous model retraining?",
+    maint: "The solid line is historical sensor data; the dashed line is the Machine Learning forecast. How does forecasting an anomaly change maintenance scheduling?",
+    soc: "Physics-based Coulomb counting (top) assumes a pristine battery. The Neural Network (bottom) accounts for non-linear capacity fade hidden by resistance drift.",
+    twin: "We are running a Neural Network Degradation Simulator. We can test abusive C-rates in software to find breaking points without destroying a physical BESS asset."
   };
 
   const STEPS = {
@@ -88,6 +400,7 @@
   };
 
   function $(id) { return document.getElementById(id); }
+  function fmtMMSS(ms){ const s=Math.floor(ms/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
   function getTalk(key) {
     return `<details class="talkpoint"><summary>${getIcon('info')} Instructor Talking Point</summary><p>${TALK[key]}</p></details>`;
   }
@@ -96,7 +409,7 @@
     if(DEMO.andon.timer) { clearInterval(DEMO.andon.timer); DEMO.andon.timer = null; }
   }
 
-  // --- 4. Core Render Loop ---
+  // --- 4. Render Engine ---
   function render() {
     renderSidebar();
     renderStage();
@@ -168,8 +481,7 @@
     $('mainProgress').style.width = (done/total*100) + '%';
   }
 
-  // --- 5. Views (Part 1: MES Base) ---
-
+  // --- 5. Part 1 Views ---
   function drawLogin(container) {
     const L = DEMO.login;
     let html = '';
@@ -261,7 +573,7 @@
             <tr>
               <td>${r.t}</td><td>${r.v}</td><td>${r.temp}</td>
               <td><span class="chip ${r.ok?'chip-good':'chip-critical'}">${r.ok?'In Spec':'Out of Spec'}</span></td>
-              <td>${!r.ok ? `<button class="btn btn-ghost" style="padding:4px 8px; font-size:11px; color:var(--critical); border-color:var(--critical-tint);" data-action="flagAndonBatch">Flag Andon</button>` : '-'}</td>
+              <td>${!r.ok ? `<button class="btn btn-ghost" style="padding:4px 8px; font-size:11px; color:var(--critical); border-color:var(--critical-tint);" data-action="flagAndon">Flag Andon</button>` : '-'}</td>
             </tr>
           `).join('')}
         </table>
@@ -345,13 +657,108 @@
     }
   }
 
-  // --- 6. Views (Part 2: AI Enhancements) ---
-  
+  // --- 6. Dynamic AOI Camera Scanner Renderer ---
+  function renderCellScanSvg(id, score, isCrit, defect) {
+    // Generates a simulated AOI Camera scan feed of a cylindrical battery cell top terminal
+    let bbox = '';
+    let defectOverlay = '';
+    
+    if (isCrit) {
+      if (defect.includes('Burr')) {
+        // Jagged burr on top-right casing rim
+        defectOverlay = `
+          <path d="M 68 28 L 74 24 L 71 31 L 76 29 L 70 36 Z" fill="#ef4444" stroke="#f87171" stroke-width="1"/>
+          <circle cx="71" cy="29" r="7" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2,2"/>
+        `;
+        bbox = `<rect x="58" y="16" width="28" height="26" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <text x="60" y="13" fill="#ef4444" font-size="8" font-family="IBM Plex Mono" font-weight="700">BURR_0.4mm</text>`;
+      } else if (defect.includes('Micro-short')) {
+        // Hairline crack/short between cap and outer wall
+        defectOverlay = `
+          <path d="M 42 38 L 48 44 L 46 48 L 54 52" fill="none" stroke="#ef4444" stroke-width="2"/>
+          <line x1="43" y1="40" x2="52" y2="44" stroke="#fbbf24" stroke-width="1.5"/>
+        `;
+        bbox = `<rect x="36" y="32" width="24" height="26" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <text x="38" y="29" fill="#ef4444" font-size="8" font-family="IBM Plex Mono" font-weight="700">SHORT_GAP</text>`;
+      } else if (defect.includes('Splatter')) {
+        // Laser weld bead splatter
+        defectOverlay = `
+          <circle cx="34" cy="36" r="2.2" fill="#ef4444"/>
+          <circle cx="38" cy="32" r="1.8" fill="#ef4444"/>
+          <circle cx="32" cy="42" r="1.5" fill="#ef4444"/>
+        `;
+        bbox = `<rect x="26" y="26" width="22" height="24" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <text x="26" y="23" fill="#ef4444" font-size="8" font-family="IBM Plex Mono" font-weight="700">SPATTER</text>`;
+      } else {
+        // Particulate contamination on terminal
+        defectOverlay = `
+          <circle cx="50" cy="48" r="3" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
+          <line x1="44" y1="48" x2="56" y2="48" stroke="#ef4444" stroke-width="1"/>
+          <line x1="50" y1="42" x2="50" y2="54" stroke="#ef4444" stroke-width="1"/>
+        `;
+        bbox = `<rect x="40" y="38" width="20" height="20" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <text x="42" y="35" fill="#ef4444" font-size="8" font-family="IBM Plex Mono" font-weight="700">PARTICLE</text>`;
+      }
+    } else {
+      // Nominal cell with targeting corner brackets
+      bbox = `
+        <path d="M 22 28 L 22 22 L 28 22" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+        <path d="M 78 28 L 78 22 L 72 22" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+        <path d="M 22 76 L 22 82 L 28 82" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+        <path d="M 78 76 L 78 82 L 72 82" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+        <circle cx="50" cy="52" r="2" fill="#22c55e" opacity="0.7"/>
+      `;
+    }
+
+    return `
+      <svg viewBox="0 0 100 104" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+        <!-- Dark Viewfinder Grid -->
+        <rect width="100" height="104" fill="#080e18"/>
+        <line x1="0" y1="52" x2="100" y2="52" stroke="#1e293b" stroke-width="0.7" stroke-dasharray="2,3"/>
+        <line x1="50" y1="0" x2="50" y2="104" stroke="#1e293b" stroke-width="0.7" stroke-dasharray="2,3"/>
+
+        <!-- Battery Cell Top Geometry -->
+        <!-- Outer Crimp Rim -->
+        <circle cx="50" cy="52" r="38" fill="#1e293b" stroke="#475569" stroke-width="2.5"/>
+        <circle cx="50" cy="52" r="34" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+        
+        <!-- Laser Weld Seam -->
+        <circle cx="50" cy="52" r="27" fill="none" stroke="#64748b" stroke-width="1.8" stroke-dasharray="3,1.5"/>
+        
+        <!-- Center Positive Terminal Cap -->
+        <circle cx="50" cy="52" r="16" fill="#334155" stroke="#94a3b8" stroke-width="1.5"/>
+        <circle cx="50" cy="52" r="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        
+        <!-- Vent Slits -->
+        <rect x="48" y="37" width="4" height="3" rx="1" fill="#080e18"/>
+        <rect x="48" y="64" width="4" height="3" rx="1" fill="#080e18"/>
+        <rect x="35" y="50" width="3" height="4" rx="1" fill="#080e18"/>
+        <rect x="62" y="50" width="3" height="4" rx="1" fill="#080e18"/>
+
+        <!-- Defect / Target Overlays -->
+        ${defectOverlay}
+        ${bbox}
+
+        <!-- Camera HUD Header -->
+        <text x="6" y="12" fill="#64748b" font-size="7" font-family="IBM Plex Mono">CAM_0${(parseInt(id.slice(-1))%4)+1}</text>
+        <text x="94" y="12" text-anchor="end" fill="${isCrit?'#ef4444':'#22c55e'}" font-size="7" font-family="IBM Plex Mono" font-weight="700">${isCrit?'FAIL':'PASS'}</text>
+      </svg>
+    `;
+  }
+
+  // --- 7. Part 2 Views ---
   function drawQual(container) {
-    if(DEMO.qual.items.length===0) {
-      DEMO.qual.items = Array.from({length:8}, (_,i) => ({
-        id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*40 + 55)
-      })).sort((a,b) => b.score - a.score);
+    if(DEMO.qual.items.length === 0) {
+      DEMO.qual.items = [
+        { id: 'IMG-2994', score: 94, defect: 'Anomaly: Burr' },
+        { id: 'IMG-6989', score: 88, defect: 'Anomaly: Micro-short' },
+        { id: 'IMG-8897', score: 86, defect: 'Anomaly: Weld Splatter' },
+        { id: 'IMG-7653', score: 81, defect: 'Anomaly: Particulate' },
+        { id: 'IMG-4814', score: 63, defect: 'Nominal Surface' },
+        { id: 'IMG-5648', score: 61, defect: 'Nominal Surface' },
+        { id: 'IMG-8797', score: 58, defect: 'Nominal Surface' },
+        { id: 'IMG-8772', score: 56, defect: 'Nominal Surface' }
+      ];
     }
     let q = DEMO.qual;
     container.innerHTML = `
@@ -369,17 +776,16 @@
       <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:12px; margin-top:16px;">
         ${q.items.map(u => {
           let isCrit = u.score >= q.th;
-          let defect = isCrit ? ['Anomaly: Micro-short','Anomaly: Contamination','Anomaly: Burr'][Math.floor(Math.random()*3)] : 'Nominal Surface';
+          let defectName = isCrit ? (u.defect.includes('Nominal') ? 'Anomaly: Burr' : u.defect) : 'Nominal Surface';
           return `
-            <div class="ai-vision-card ${isCrit ? 'critical' : ''}" style="border-color: ${isCrit ? 'var(--critical)' : 'var(--good)'}">
+            <div class="ai-vision-card ${isCrit ? 'critical' : ''}" data-action="inspectCnn" data-id="${u.id}" data-score="${u.score}" data-defect="${defectName}" style="border-color: ${isCrit ? 'var(--critical)' : 'var(--good)'}">
               <div class="ai-vision-img">
-                <div class="ai-bbox"></div>
-                CAMERA_SCAN_${u.id.substring(4)}
+                ${renderCellScanSvg(u.id, u.score, isCrit, defectName)}
               </div>
               <div class="ai-meta">
                 <div class="score" style="color: ${isCrit ? 'var(--critical)' : 'var(--good)'}">${u.score}%</div>
-                <div class="desc">${defect}</div>
-                <div class="desc" style="margin-top:4px;">Action: ${isCrit ? '<b style="color:var(--critical)">AUTO-HOLD</b>' : 'PASS'}</div>
+                <div class="desc">${defectName}</div>
+                <div class="desc" style="margin-top:4px;">Action: ${isCrit ? '<b style="color:var(--critical)">AUTO-HOLD</b>' : '<b style="color:var(--good)">PASS</b>'}</div>
               </div>
             </div>
           `;
@@ -479,7 +885,7 @@
     let data = [base];
     let degFactor = 0.5 + (parseFloat(T.crate) * 0.8);
     for(let i=1; i<=10; i++) { base -= degFactor; data.push(Math.max(0, base)); }
-    drawAiForecastChart('twinChart', data, 70, true);
+    setTimeout(() => drawAiForecastChart('twinChart', data, 70, true), 50);
   }
 
   function drawAiForecastChart(id, data, threshold, isDegradation = false) {
@@ -542,10 +948,24 @@
     `;
   }
 
-  // --- 7. Event Listeners ---
+  // --- 8. Theme ---
+  function applyTheme() {
+    const root = document.documentElement;
+    if(DEMO.theme === 'light') root.setAttribute('data-theme', 'light');
+    else if(DEMO.theme === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    
+    let ico = DEMO.theme === 'light' ? 'sun' : (DEMO.theme === 'dark' ? 'moon' : 'monitor');
+    const btn = $('btnTheme');
+    if(btn) btn.innerHTML = getIcon(ico);
+    try { localStorage.setItem('ctb-theme', DEMO.theme); } catch(e){}
+  }
+
+  // --- 9. Global Event Listeners ---
   document.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action]');
     if (!target) return;
+    
     const action = target.dataset.action;
     
     if (action === 'setPart') { DEMO.part = parseInt(target.dataset.part); render(); }
@@ -563,20 +983,41 @@
     }
     else if (action === 'toggleTheme') { 
       DEMO.theme = DEMO.theme === 'system' ? 'light' : (DEMO.theme === 'light' ? 'dark' : 'system'); 
-      const root = document.documentElement;
-      if(DEMO.theme === 'light') root.setAttribute('data-theme', 'light');
-      else if(DEMO.theme === 'dark') root.setAttribute('data-theme', 'dark');
-      else root.removeAttribute('data-theme');
-      let ico = DEMO.theme === 'light' ? 'sun' : (DEMO.theme === 'dark' ? 'moon' : 'monitor');
-      $('btnTheme').innerHTML = getIcon(ico);
-      try { localStorage.setItem('ctb-theme', DEMO.theme); } catch(err){}
-      render(); 
+      applyTheme(); 
     }
     else if (action === 'toggleFull') {
       if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
       else document.exitFullscreen().catch(()=>{});
     }
     else if (action === 'toggleHelp') { $('helpModal').hidden = !$('helpModal').hidden; }
+    else if (action === 'closeCnnModal') { $('cnnModal').hidden = true; }
+    else if (action === 'inspectCnn') {
+      const id = target.dataset.id;
+      const score = target.dataset.score;
+      const defect = target.dataset.defect;
+      const isCrit = parseInt(score) >= DEMO.qual.th;
+      $('cnnModalTitle').textContent = `Optical Inspection Details — ${id}`;
+      $('cnnModalBody').innerHTML = `
+        <div style="display:flex; gap:16px; margin-bottom:16px;">
+          <div style="width:160px; height:160px; background:#080e18; border-radius:8px; overflow:hidden; border:2px solid ${isCrit?'var(--critical)':'var(--good)'};">
+            ${renderCellScanSvg(id, score, isCrit, defect)}
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px; text-transform:uppercase; color:var(--ink-secondary); font-weight:700;">Classification Result</div>
+            <div style="font-size:24px; font-weight:700; color:${isCrit?'var(--critical)':'var(--good)'}; margin-top:2px;">${score}% Confidence</div>
+            <div style="font-size:14px; font-weight:600; margin-top:6px;">${defect}</div>
+            <p style="font-size:12px; color:var(--ink-muted); margin-top:6px; line-height:1.4;">
+              ${isCrit ? 'Convolutional neural network flags localized surface discontinuity breaching ISO 26262 dimensional tolerances.' : 'Scan conforms to all dimensional, specular, and crimp geometry requirements.'}
+            </p>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button class="btn btn-ghost" data-action="closeCnnModal">Close</button>
+          <button class="btn ${isCrit?'btn-primary':'btn-green'}" data-action="closeCnnModal">${isCrit?'Confirm Hold':'Acknowledge Nominal'}</button>
+        </div>
+      `;
+      $('cnnModal').hidden = false;
+    }
     else if (action === 'resetDemo') {
       clearAllIntervals();
       Object.assign(DEMO, {
@@ -591,6 +1032,8 @@
       });
       render();
     }
+    
+    // View Actions
     else if (action === 'fillLogin') { DEMO.login.user = target.dataset.u; DEMO.login.station = target.dataset.s; DEMO.login.err=''; render(); }
     else if (action === 'doLogin') {
       let u = $('lOp').value, s = $('lSt').value;
@@ -614,7 +1057,7 @@
       DEMO.batch.data.push({t: new Date().toLocaleTimeString(), v: v, temp: t, ok: ok});
       render();
     }
-    else if (action === 'flagAndonBatch') { 
+    else if (action === 'flagAndon') { 
       DEMO.andon.type = 'quality'; DEMO.part = 1; DEMO.idx[1] = 4;
       DEMO.andon.active = true; DEMO.andon.done = false; DEMO.andon.start = new Date();
       DEMO.andon.resp = null; DEMO.andon.end = null;
@@ -642,43 +1085,48 @@
     }
     else if (action === 'resetAndon') { DEMO.andon.active = false; DEMO.andon.done = false; render(); }
     else if (action === 'resampleQual') {
-      DEMO.qual.items = Array.from({length:8}, (_,i) => ({
-        id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*40 + 55)
-      })).sort((a,b) => b.score - a.score);
+      DEMO.qual.items = [
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+85), defect: 'Anomaly: Burr' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+82), defect: 'Anomaly: Micro-short' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+80), defect: 'Anomaly: Weld Splatter' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+75), defect: 'Anomaly: Particulate' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+55), defect: 'Nominal Surface' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+52), defect: 'Nominal Surface' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+50), defect: 'Nominal Surface' },
+        { id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*15+45), defect: 'Nominal Surface' }
+      ].sort((a,b) => b.score - a.score);
       render();
     }
     else if (action === 'setSoc') { DEMO.soc.init = parseFloat(target.dataset.i); DEMO.soc.cur = parseFloat(target.dataset.c); DEMO.soc.time = parseFloat(target.dataset.t); render(); }
   });
 
+  // Global Input Delegation
   document.addEventListener('input', (e) => {
     const el = e.target;
     if (el.id === 'lOp') DEMO.login.user = el.value;
     else if (el.id === 'lSt') DEMO.login.station = el.value;
-    else if (el.id === 'threshSlider') { DEMO.qual.th = el.value; render(); }
-    else if (el.id === 'sensSlider') { DEMO.maint.sens = el.value; render(); }
+    else if (el.id === 'threshSlider') { DEMO.qual.th = parseInt(el.value); render(); }
+    else if (el.id === 'sensSlider') { DEMO.maint.sens = parseFloat(el.value); render(); }
     else if (el.id === 'socInit') { DEMO.soc.init = parseFloat(el.value); render(); }
     else if (el.id === 'socCur') { DEMO.soc.cur = parseFloat(el.value); render(); }
     else if (el.id === 'socTime') { DEMO.soc.time = parseFloat(el.value); render(); }
-    else if (el.id === 'crateSlider') { DEMO.twin.crate = el.value; render(); }
+    else if (el.id === 'crateSlider') { DEMO.twin.crate = parseFloat(el.value); render(); }
   });
 
+  // Hotkeys
   document.addEventListener('keydown', e => {
     if(['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
-    if(e.key === 'Escape') { $('helpModal').hidden = true; }
+    if(e.key === 'Escape') { $('helpModal').hidden = true; $('cnnModal').hidden = true; }
     if(e.key === 'ArrowRight') { let btn = $('btnNext'); if(btn) btn.click(); }
     if(e.key === 'ArrowLeft') { let btn = $('btnPrev'); if(btn && !btn.disabled) btn.click(); }
   });
 
-  // --- Boot ---
-  try { const t = localStorage.getItem('ctb-theme'); if(t) { DEMO.theme = t; } } catch(e){}
-  const root = document.documentElement;
-  if(DEMO.theme === 'light') root.setAttribute('data-theme', 'light');
-  else if(DEMO.theme === 'dark') root.setAttribute('data-theme', 'dark');
-  let ico = DEMO.theme === 'light' ? 'sun' : (DEMO.theme === 'dark' ? 'moon' : 'monitor');
+  // Theme Setup
+  try { const t = localStorage.getItem('ctb-theme'); if(t) DEMO.theme = t; } catch(e){}
+  applyTheme();
   
   $('headerLogo').innerHTML = getIcon('lightning');
   $('btnHelp').innerHTML = getIcon('info');
-  $('btnTheme').innerHTML = getIcon(ico);
   $('btnFull').innerHTML = getIcon('fullscreen');
   
   render();
