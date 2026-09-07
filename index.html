@@ -28,27 +28,25 @@
     --orange-ink: #9a3412;
     --orange-tint: #ffedd5;
     --green: #16a34a;
-    --green-ink: #14532d;
     --good: #22c55e;
     --good-tint: #dcfce7;
     --warning-fill: #f59e0b;
-    --warning-ink: #78350f;
+    --warning-ink: #92400e;
     --warning-tint: #fef3c7;
     --critical: #ef4444;
     --critical-tint: #fee2e2;
-    --series-1: #3b82f6;
-    --series-2: #f97316;
+    --ai-purple: #8b5cf6;
+    --ai-purple-tint: #ede9fe;
     --chart-axis: #94a3b8;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-    --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.08);
-    --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.1);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 8px 20px -4px rgba(0,0,0,0.08);
     color-scheme: light;
   }
   
   [data-theme="dark"] {
-    --bg: #090e17;
-    --surface: #111827;
-    --surface-2: #1f2937;
+    --bg: #0b1120;
+    --surface: #151e2e;
+    --surface-2: #1e293b;
     --ink: #f8fafc;
     --ink-secondary: #cbd5e1;
     --ink-muted: #94a3b8;
@@ -60,7 +58,6 @@
     --orange-ink: #fdba74;
     --orange-tint: #7c2d12;
     --green: #4ade80;
-    --green-ink: #86efac;
     --good: #22c55e;
     --good-tint: #064e3b;
     --warning-fill: #fbbf24;
@@ -68,9 +65,9 @@
     --warning-tint: #78350f;
     --critical: #f87171;
     --critical-tint: #7f1d1d;
-    --series-1: #60a5fa;
-    --series-2: #fb923c;
-    --chart-axis: #64748b;
+    --ai-purple: #a78bfa;
+    --ai-purple-tint: #4c1d95;
+    --chart-axis: #475569;
     color-scheme: dark;
   }
 
@@ -78,158 +75,139 @@
     background: var(--bg); color: var(--ink);
     font-family: 'IBM Plex Sans', sans-serif;
     display: flex; flex-direction: column;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.3s, color 0.3s;
   }
   .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
   h1, h2, h3 { font-family: 'Source Serif 4', serif; margin: 0; }
 
   /* ---------------- App Header ---------------- */
   .appbar {
-    height: 70px; background: linear-gradient(135deg, var(--navy-3), var(--navy-2));
-    color: #fff; padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+    height: 64px; background: linear-gradient(135deg, var(--navy-3), var(--navy-2));
+    color: #fff; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 10;
   }
-  .brand-zone { display: flex; align-items: center; gap: 14px; }
-  .brand-logo { width: 38px; height: 38px; background: var(--orange); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-  .brand-logo svg { width: 22px; height: 22px; }
-  .brand-text h1 { font-size: 19px; font-weight: 700; line-height: 1.1; }
+  .brand-zone { display: flex; align-items: center; gap: 12px; }
+  .brand-logo { width: 32px; height: 32px; background: var(--orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .brand-logo svg { width: 18px; height: 18px; }
+  .brand-text h1 { font-size: 17px; font-weight: 700; line-height: 1.1; }
   .brand-text h1 span { color: #a3e635; }
-  .brand-text .sub { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; font-weight: 600; }
+  .brand-text .sub { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #cbd5e1; font-weight: 600; }
 
-  .live-clock { display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono'; font-size: 14px; color: #cbd5e1; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-  .live-indicator { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+  .live-clock { display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono'; font-size: 13px; color: #cbd5e1; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+  .live-indicator { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-  .appbar-actions { display: flex; align-items: center; gap: 10px; }
-  .icon-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-  .icon-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-1px); }
-  .icon-btn svg { width: 18px; height: 18px; }
-  
-  /* ---------------- Progress Bar ---------------- */
-  .prog-bar { height: 5px; background: var(--border); width: 100%; flex-shrink: 0; }
-  .prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--orange), var(--green)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .appbar-actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .icon-btn:hover { background: rgba(255,255,255,0.2); }
+  .icon-btn svg { width: 16px; height: 16px; }
 
-  /* ---------------- Main Layout (Full Screen) ---------------- */
+  /* ---------------- Main Layout ---------------- */
+  .prog-bar { height: 4px; background: var(--border); width: 100%; flex-shrink: 0; }
+  .prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--orange), var(--green)); transition: width 0.4s ease; }
+
   .main-wrapper { display: flex; flex: 1; overflow: hidden; }
   
-  /* ---------------- Sidebar ---------------- */
-  .sidebar { width: 340px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 5; transition: background 0.3s ease; }
-  .sidebar-tabs { display: flex; padding: 16px 20px; border-bottom: 1px solid var(--border); gap: 8px; }
-  .tab { flex: 1; padding: 12px 10px; border-radius: 10px; border: none; background: transparent; color: var(--ink-muted); font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
-  .tab.active { background: var(--navy-tint); color: var(--navy); border: 1px solid var(--border); }
-  .tab span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; opacity: 0.8; }
+  .sidebar { width: 300px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 5; }
+  .sidebar-tabs { display: flex; padding: 12px 16px; border-bottom: 1px solid var(--border); gap: 6px; }
+  .tab { flex: 1; padding: 10px 8px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--ink-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
+  .tab.active { background: var(--navy-tint); color: var(--navy); border-color: var(--border); }
+  .tab span { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
   
-  .sidebar-steps { flex: 1; overflow-y: auto; padding: 20px; }
-  .step-item { display: flex; gap: 14px; padding: 14px; border-radius: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; margin-bottom: 6px; }
+  .sidebar-steps { flex: 1; overflow-y: auto; padding: 16px; }
+  .step-item { display: flex; gap: 12px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; margin-bottom: 4px; }
   .step-item:hover { background: var(--surface-2); }
-  .step-item.current { background: var(--navy-tint); border-color: var(--border); box-shadow: var(--shadow-sm); transform: translateX(4px); }
-  .step-num { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--ink-muted); transition: all 0.3s; }
-  .step-item.current .step-num { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3); }
+  .step-item.current { background: var(--navy-tint); border-color: var(--border); box-shadow: var(--shadow-sm); transform: translateX(2px); }
+  .step-num { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; color: var(--ink-muted); }
+  .step-item.current .step-num { background: var(--orange); border-color: var(--orange); color: #fff; }
   .step-item.done .step-num { background: var(--navy); border-color: var(--navy); color: #fff; }
-  .step-text b { display: block; font-size: 14.5px; color: var(--ink); margin-bottom: 2px; }
-  .step-text span { display: block; font-size: 12.5px; color: var(--ink-muted); line-height: 1.4; }
-  .step-item.current .step-text b { color: var(--navy); }
+  .step-text b { display: block; font-size: 13.5px; color: var(--ink); margin-bottom: 2px; }
+  .step-text span { display: block; font-size: 11.5px; color: var(--ink-muted); line-height: 1.3; }
 
-  /* ---------------- Content Stage ---------------- */
-  .stage-area { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-  .stage-card { width: 100%; max-width: 1400px; background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; min-height: calc(100vh - 160px); animation: fadeUp 0.4s ease-out; }
+  .stage-area { flex: 1; overflow-y: auto; padding: 32px; display: flex; flex-direction: column; align-items: center; }
+  .stage-card { width: 100%; max-width: 1100px; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; min-height: 550px; animation: fadeUp 0.3s ease-out; }
   
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  .stage-head { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; gap: 20px; align-items: flex-start; }
-  .stage-badge { width: 56px; height: 56px; border-radius: 14px; background: var(--navy-tint); color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .stage-badge svg { width: 28px; height: 28px; }
-  .stage-title .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 6px; display: block; }
-  .stage-title h2 { font-size: 28px; color: var(--ink); margin-bottom: 8px; }
-  .stage-title p { margin: 0; font-size: 15px; color: var(--ink-secondary); line-height: 1.6; max-width: 800px; }
+  .stage-head { padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; gap: 16px; align-items: flex-start; }
+  .stage-badge { width: 44px; height: 44px; border-radius: 10px; background: var(--navy-tint); color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stage-badge svg { width: 22px; height: 22px; }
+  .stage-badge.ai-badge { background: var(--ai-purple-tint); color: var(--ai-purple); }
+  .stage-title .eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; display: block; }
+  .stage-title h2 { font-size: 24px; color: var(--ink); margin-bottom: 6px; }
+  .stage-title p { margin: 0; font-size: 14px; color: var(--ink-secondary); line-height: 1.5; }
 
-  .stage-body { padding: 32px 40px; flex: 1; display: flex; flex-direction: column; gap: 24px; }
+  .stage-body { padding: 28px 32px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
   
-  .stage-foot { padding: 20px 40px; border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 20px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .foot-progress { font-size: 13.5px; font-weight: 600; color: var(--ink-muted); }
+  .stage-foot { padding: 16px 32px; border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 16px 16px; display: flex; justify-content: space-between; align-items: center; }
   
-  /* ---------------- UI Components ---------------- */
-  .btn { appearance: none; border: none; font-family: inherit; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
+  /* ---------------- Resized & Corrected UI Components ---------------- */
+  .btn { appearance: none; border: none; font-family: inherit; font-weight: 600; font-size: 13.5px; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: filter 0.2s; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); filter: brightness(1.05); }
-  .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); }
+  .btn:not(:disabled):hover { filter: brightness(1.08); }
+  .btn-primary { background: var(--orange); color: #fff; }
   .btn-navy { background: var(--navy); color: #fff; }
-  .btn-green { background: var(--green); color: #fff; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
-  .btn-ghost { background: transparent; border: 1.5px solid var(--border-strong); color: var(--ink); }
-  .btn-ghost:hover { background: var(--surface-2); }
-  .btn svg { width: 16px; height: 16px; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-purple { background: var(--ai-purple); color: #fff; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--ink); }
+  .btn svg { width: 14px; height: 14px; }
 
-  .panel { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .panel { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
   .panel-navy { background: var(--navy); color: #fff; border: none; }
   
-  .grid-row { display: flex; gap: 20px; flex-wrap: wrap; }
-  .field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
-  .field label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-secondary); }
-  .field input, .field select { padding: 14px 16px; border-radius: 10px; border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 15px; font-family: inherit; transition: border-color 0.2s; }
-  .field input:focus, .field select:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-tint); }
+  .grid-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
+  .field label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-secondary); }
+  .field input, .field select { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 14px; font-family: inherit; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--orange); }
   
-  .status-banner { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: 12px; font-size: 14.5px; font-weight: 600; animation: fadeUp 0.3s ease-out; }
+  /* Sizing Fix: Status Banners */
+  .status-banner { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; animation: fadeUp 0.2s ease-out; }
   .status-banner.good { background: var(--good-tint); color: var(--good); border: 1px solid rgba(34, 197, 94, 0.2); }
   .status-banner.warn { background: var(--warning-tint); color: var(--warning-ink); border: 1px solid rgba(245, 158, 11, 0.2); }
   .status-banner.bad { background: var(--critical-tint); color: var(--critical); border: 1px solid rgba(239, 68, 68, 0.2); }
   
-  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
   .chip-good { background: var(--good-tint); color: var(--good); }
   .chip-critical { background: var(--critical-tint); color: var(--critical); }
   .chip-draft { background: var(--border); color: var(--ink-secondary); }
   
   table.data-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-  .data-table th { background: var(--surface-2); padding: 14px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-secondary); border-bottom: 1px solid var(--border); }
-  .data-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono'; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .data-table th { background: var(--surface-2); padding: 10px 14px; font-size: 11.5px; text-transform: uppercase; color: var(--ink-secondary); border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 10px 14px; font-size: 13.5px; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono'; }
   .data-table tr:last-child td { border-bottom: none; }
   
   /* Timeline */
   .timeline { list-style: none; padding: 0; margin: 0; }
-  .tl-item { display: flex; gap: 16px; position: relative; padding-bottom: 28px; }
+  .tl-item { display: flex; gap: 14px; position: relative; padding-bottom: 20px; }
   .tl-item:last-child { padding-bottom: 0; }
-  .tl-item::before { content: ""; position: absolute; left: 19px; top: 40px; bottom: 0; width: 2px; background: var(--border-strong); }
+  .tl-item::before { content: ""; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: var(--border-strong); }
   .tl-item:last-child::before { display: none; }
-  .tl-dot { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--navy-tint); color: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 2; border: 3px solid var(--surface); }
-  .tl-body b { display: block; font-size: 15px; margin-bottom: 4px; }
-  .tl-body span { display: block; font-size: 13.5px; color: var(--ink-muted); margin-bottom: 4px; }
-  .tl-time { font-family: 'IBM Plex Mono'; font-size: 12px; color: var(--ink-secondary); background: var(--surface-2); padding: 2px 8px; border-radius: 6px; display: inline-block; }
-
-  /* Interactive Elements */
-  .talkpoint { background: var(--surface-2); border: 1px dashed var(--border-strong); border-radius: 12px; padding: 4px 20px; margin-top: 24px;}
-  .talkpoint summary { padding: 12px 0; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink-secondary); display: flex; align-items: center; gap: 10px; list-style: none; }
+  .tl-dot { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--navy-tint); color: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 2; border: 2px solid var(--surface); }
+  .tl-body b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .tl-body span { display: block; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 2px; }
+  
+  /* Sizing Fix: Talkpoints */
+  .talkpoint { background: transparent; border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 16px; margin-top: auto; }
+  .talkpoint summary { cursor: pointer; font-weight: 600; font-size: 12.5px; color: var(--ink-muted); display: flex; align-items: center; gap: 8px; list-style: none; }
   .talkpoint summary::-webkit-details-marker { display: none; }
-  .talkpoint p { padding: 0 0 16px 26px; margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
+  .talkpoint p { padding: 8px 0 0 0; margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink-secondary); border-top: 1px dashed var(--border); margin-top: 10px; }
 
-  .slider-row { display: flex; align-items: center; gap: 16px; }
-  input[type="range"] { flex: 1; height: 6px; accent-color: var(--orange); }
-  .slider-val { font-family: 'IBM Plex Mono'; font-size: 16px; font-weight: 600; min-width: 60px; text-align: right; }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  input[type="range"] { flex: 1; height: 4px; accent-color: var(--orange); }
+  .slider-val { font-family: 'IBM Plex Mono'; font-size: 14px; font-weight: 600; min-width: 50px; text-align: right; }
 
-  /* Charts */
-  .chart-container { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: var(--surface); position: relative; }
+  /* AI/ML Specific Elements */
+  .ai-vision-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); position: relative; }
+  .ai-vision-img { height: 100px; background: var(--surface-2); position: relative; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink-muted); font-family: monospace; border-bottom: 1px solid var(--border); }
+  .ai-bbox { position: absolute; border: 2px solid var(--critical); background: rgba(239, 68, 68, 0.1); width: 40px; height: 40px; top: 30px; left: 50px; display: none; }
+  .ai-vision-card.critical .ai-bbox { display: block; }
+  .ai-meta { padding: 10px; }
+  .ai-meta .score { font-family: 'IBM Plex Mono'; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .ai-meta .desc { font-size: 11px; color: var(--ink-secondary); font-weight: 600; text-transform: uppercase; }
 
-  /* Modal */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
-  .modal-overlay[hidden] { display: none; }
-  .modal-content { background: var(--surface); width: 100%; max-width: 560px; border-radius: 20px; padding: 32px; box-shadow: var(--shadow-lg); }
-  .modal-content h3 { font-size: 22px; margin-bottom: 20px; }
-  .modal-content ul { line-height: 1.8; font-size: 15px; color: var(--ink-secondary); padding-left: 20px; }
-  .kbd { font-family: 'IBM Plex Mono'; background: var(--surface-2); border: 1px solid var(--border-strong); padding: 2px 6px; border-radius: 6px; font-size: 12px; color: var(--ink); }
-
-  .big-timer { font-family: 'IBM Plex Mono'; font-size: 56px; font-weight: 700; text-align: center; margin: 10px 0; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-  
-  /* Utilities */
-  .pulsing-btn { animation: btnPulse 2s infinite; }
-  @keyframes btnPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-  
-  ul.checklist { list-style:none; padding:0; margin:0; }
-  ul.checklist li { display:flex; gap:10px; margin-bottom:12px; }
-  ul.checklist li svg { width:20px; height:20px; color:var(--good); }
-  ul.checklist li b { display:block; font-size:15px; }
-  ul.checklist li span { font-size:13.5px; color:var(--ink-muted); }
+  .chart-container { width: 100%; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); position: relative; overflow:hidden;}
 </style>
 </head>
 <body>
@@ -250,10 +228,8 @@
   </div>
 
   <div class="appbar-actions">
-    <button class="icon-btn" data-action="openHelp" title="Keyboard Shortcuts" id="btnHelp"></button>
     <button class="icon-btn" data-action="toggleTheme" title="Toggle Theme" id="btnTheme"></button>
-    <button class="icon-btn" data-action="toggleFull" title="Full Screen" id="btnFull"></button>
-    <button class="btn btn-ghost" data-action="resetDemo" style="border-color: rgba(255,255,255,0.2); color: #fff;">Reset Demo</button>
+    <button class="btn btn-ghost" data-action="resetDemo" style="border-color: rgba(255,255,255,0.2); color: #fff; font-size: 12px; padding: 6px 12px;">Reset</button>
   </div>
 </header>
 <div class="prog-bar"><div class="prog-fill" id="mainProgress"></div></div>
@@ -272,8 +248,8 @@
       <div class="stage-head" id="stageHead"></div>
       <div class="stage-body" id="stageBody"></div>
       <div class="stage-foot">
-        <span class="foot-progress" id="footProgress"></span>
-        <div class="foot-btns">
+        <span class="foot-progress" id="footProgress" style="font-size: 12px; color: var(--ink-muted);"></span>
+        <div style="display:flex; gap: 8px;">
           <button class="btn btn-ghost" data-action="prevStep" id="btnPrev">Back</button>
           <button class="btn btn-primary" data-action="nextStep" id="btnNext">Next Step &rarr;</button>
         </div>
@@ -281,23 +257,6 @@
     </div>
   </section>
 </main>
-
-<!-- Help Modal -->
-<div class="modal-overlay" id="helpModal" hidden>
-  <div class="modal-content">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-      <h3 style="margin:0;">Using this Console</h3>
-      <button class="icon-btn" data-action="closeHelp" style="color:var(--ink); background:var(--surface-2); border:none;">✕</button>
-    </div>
-    <ul>
-      <li>Use the <b>Sidebar</b> to jump freely between steps.</li>
-      <li>Expand the <b>Instructor Talking Point</b> at the bottom of each step for discussion prompts.</li>
-      <li>Clicking <b>Flag Andon</b> on an out-of-spec batch reading automatically jumps to the Andon section and starts the timer.</li>
-      <li>Keyboard: Use <span class="kbd">&larr;</span> and <span class="kbd">&rarr;</span> to navigate steps. Press <span class="kbd">Esc</span> to close this modal.</li>
-      <li>Click <b>Reset Demo</b> in the header to clear all data for the next class session.</li>
-    </ul>
-  </div>
-</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -323,18 +282,13 @@ document.addEventListener("DOMContentLoaded", () => {
     check: '<path d="M20 6 9 17l-5-5"/>',
     warn: '<path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5M12 17h.01"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',
-    refresh: '<path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+    cpu: '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
-    moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
-    monitor: '<rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 20h8M12 17v3"/>',
-    fullscreen: '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>'
+    moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>'
   };
   function getIcon(name) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`; }
 
-  // Set static header icons
   $('headerLogo').innerHTML = getIcon('lightning');
-  $('btnHelp').innerHTML = getIcon('info');
-  $('btnFull').innerHTML = getIcon('fullscreen');
 
   // --- Data & State ---
   const DEMO = {
@@ -344,10 +298,9 @@ document.addEventListener("DOMContentLoaded", () => {
     batch: { id: 'B-'+Math.floor(10000+Math.random()*90000), done: false, data: [] },
     tree: { done: false, id: null, dir: 'backward' },
     andon: { active: false, done: false, type: 'quality', start: null, resp: null, esc: null, end: null, log: [], timer: null },
-    qual: { th: 75, items: [] },
+    qual: { th: 80, items: [] },
     maint: { sens: 4.0, mac: 'form4' },
     soc: { init: 62, cur: -15, time: 0.25, cap: 75 },
-    soh: { cur: 71.2, orig: 75 },
     twin: { crate: 1.0 }
   };
 
@@ -355,14 +308,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const BOM_ITEMS = [
     { item:'Electrode foil (Al/Cu)', qty:'4,000 sheets', onHand:'12,400' },
     { item:'Separator film', qty:'4,000 m', onHand:'18,200 m' },
-    { item:'Electrolyte', qty:'620 L', onHand:'1,050 L' },
-    { item:'Can / pouch', qty:'4,000 ea', onHand:'9,600 ea' }
+    { item:'Electrolyte', qty:'620 L', onHand:'1,050 L' }
   ];
   const ANDON_TYPES = {
-    quality: { label:'Quality', example:'Vision system flags a defect', owner:'Line quality tech', targetMin:5, escalate:'shift supervisor @ 15 min' },
-    machine: { label:'Machine fault', example:'PLC over-temperature interlock trips', owner:'Maintenance tech', targetMin:10, escalate:'area engineer @ 30 min' },
-    material: { label:'Material shortage', example:'Component or electrolyte lot runs out', owner:'Material handler', targetMin:15, escalate:'planner/supervisor @ 30 min' },
-    safety: { label:'Safety', example:'E-stop or safety interlock activated', owner:'Any operator / safety officer', targetMin:0, escalate:'plant safety lead, immediately' }
+    quality: { label:'Quality', example:'Vision system flags a defect', targetMin:5 },
+    machine: { label:'Machine fault', example:'PLC over-temperature trip', targetMin:10 }
   };
   const TALK = {
     login: "MES's first job is proving readiness before releasing work. What happens if the equipment check fails?",
@@ -370,10 +320,10 @@ document.addEventListener("DOMContentLoaded", () => {
     batch: "Every reading becomes part of the permanent cell genealogy. Which of these readings is most critical?",
     tree: "This is the exact record a recall pulls. How fast could you do this backward trace with paper logs?",
     andon: "The MTTR clock starts instantly. What would a rising MTTR trend over a week tell the plant manager?",
-    qual: "Low-confidence AI scores route to human review, not automatic scrap. Why is this critical for trust?",
-    maint: "Remaining Useful Life updates dynamically. What is the true cost of over-maintaining vs under-maintaining?",
-    soc: "Coulomb counting drifts over time. Notice how the AI model corrects for capacity degradation seamlessly.",
-    twin: "We run the duty cycle in software before committing the asset. What is the risk of doing this on live batteries?"
+    qual: "Notice how the Computer Vision model provides a confidence score and a bounding box, not just a binary pass/fail. Why is this explicit classification crucial for continuous model retraining?",
+    maint: "The solid line is historical sensor data; the dashed line is the Machine Learning forecast. How does forecasting an anomaly *before* it crosses the threshold change maintenance scheduling?",
+    soc: "Physics-based Coulomb counting (top) assumes a perfect battery. The Neural Network (bottom) accounts for non-linear capacity fade (hidden internal resistance). Over years, which one protects the warranty?",
+    twin: "We are running a Neural Network Degradation Simulator. We can test abusive C-rates in software to find the breaking point without destroying a physical BESS asset."
   };
 
   const STEPS = {
@@ -385,10 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
       { id: 'andon', icon: 'bell', title: 'Andon Escalation', desc: 'Trigger an alert and track the live MTTR response.' }
     ],
     2: [
-      { id: 'qual', icon: 'grid', title: 'Predictive Quality', desc: 'Review AI defect risk scores and adjust thresholds.' },
-      { id: 'maint', icon: 'pulse', title: 'Predictive Maintenance', desc: 'Analyze vibration drift and estimate RUL.' },
-      { id: 'soc', icon: 'calc', title: 'SOC / SOH Calculator', desc: 'Compare manual Coulomb counting vs AI hybrid models.' },
-      { id: 'twin', icon: 'layers', title: 'Digital Twin', desc: 'Simulate degradation under aggressive C-rates.' }
+      { id: 'qual', icon: 'grid', ai: true, title: 'AI Predictive Quality', desc: 'Computer Vision defect detection and confidence scoring.' },
+      { id: 'maint', icon: 'pulse', ai: true, title: 'AI Predictive Maintenance', desc: 'Time-series forecasting for vibration drift and RUL.' },
+      { id: 'soc', icon: 'calc', ai: true, title: 'Neural Net SOC Estimator', desc: 'Coulomb counting vs. AI-corrected degradation modeling.' },
+      { id: 'twin', icon: 'cpu', ai: true, title: 'Digital Twin Simulator', desc: 'Simulate asset degradation under variable C-rates.' }
     ]
   };
 
@@ -396,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function $(id) { return document.getElementById(id); }
   function fmtMMSS(ms){ const s=Math.floor(ms/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
   function getTalk(key) {
-    return `<details class="talkpoint"><summary>${getIcon('info')} Instructor talking point</summary><p>${TALK[key]}</p></details>`;
+    return `<details class="talkpoint"><summary>${getIcon('info')} Instructor Talking Point</summary><p>${TALK[key]}</p></details>`;
   }
 
   // --- Core Render Loop ---
@@ -408,15 +358,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderSidebar() {
     $('tabNav').innerHTML = `
-      <button class="tab ${DEMO.part===1?'active':''}" data-action="setPart" data-part="1"><span>Part 1</span>MES Walkthrough</button>
-      <button class="tab ${DEMO.part===2?'active':''}" data-action="setPart" data-part="2"><span>Part 2</span>AI & Analytics</button>
+      <button class="tab ${DEMO.part===1?'active':''}" data-action="setPart" data-part="1"><span>Part 1</span>MES Base</button>
+      <button class="tab ${DEMO.part===2?'active':''}" data-action="setPart" data-part="2"><span>Part 2</span>AI Models</button>
     `;
     const list = STEPS[DEMO.part];
     const curIdx = DEMO.idx[DEMO.part];
     $('stepNav').innerHTML = list.map((s, i) => {
       let isDone = DEMO[s.id] && DEMO[s.id].done;
       if (s.id==='andon' && DEMO.andon.log.length>0) isDone = true;
-      if (['qual','maint','soc','twin'].includes(s.id)) isDone = true; // Auto done for analytics
+      if (s.ai) isDone = true; // Auto done for analytics
       
       const stateClass = i === curIdx ? 'current' : (isDone ? 'done' : '');
       const numIcon = isDone && i !== curIdx ? getIcon('check') : (i+1);
@@ -434,10 +384,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const s = list[i];
     
     // Header
+    const badgeClass = s.ai ? 'stage-badge ai-badge' : 'stage-badge';
     $('stageHead').innerHTML = `
-      <div class="stage-badge">${getIcon(s.icon)}</div>
+      <div class="${badgeClass}">${getIcon(s.icon)}</div>
       <div class="stage-title">
-        <span class="eyebrow">Module ${DEMO.part===1?'A/B':'C/D'} &middot; Step ${i+1}</span>
+        <span class="eyebrow" style="color: ${s.ai ? 'var(--ai-purple)' : 'var(--orange)'}">Module ${DEMO.part===1?'A/B':'C/D'} &middot; Step ${i+1}</span>
         <h2>${s.title}</h2>
         <p>${s.desc}</p>
       </div>
@@ -456,9 +407,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(s.id === 'twin') drawTwin(body);
 
     // Footer
-    $('footProgress').textContent = `Step ${i+1} of ${list.length}`;
     $('btnPrev').disabled = (i === 0 && DEMO.part === 1);
-    $('btnNext').textContent = (i === list.length-1) ? (DEMO.part===1 ? 'Go to Part 2 \u2192' : 'Restart Demo') : 'Next Step \u2192';
+    $('btnNext').textContent = (i === list.length-1) ? (DEMO.part===1 ? 'Go to AI Models \u2192' : 'Restart Demo') : 'Next Step \u2192';
   }
 
   function updateProgress() {
@@ -469,39 +419,37 @@ document.addEventListener("DOMContentLoaded", () => {
     if(DEMO.batch.done) done++;
     if(DEMO.tree.done) done++;
     if(DEMO.andon.log.length>0) done++;
-    done += 4; // Analytics always count as viewed
+    done += 4; // Analytics
     $('mainProgress').style.width = (done/total*100) + '%';
   }
 
-  // --- Views ---
+  // --- Views (Part 1: Sized Down) ---
 
   function drawLogin(container) {
     const L = DEMO.login;
     let html = '';
     if (!L.done) {
       html += `
-        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+        <div style="display:flex; gap:10px; margin-bottom: 16px;">
           <button class="btn btn-ghost" data-action="testLogin" data-u="OP-2247" data-s="Formation Cycler #4">Auto-fill: Good</button>
           <button class="btn btn-ghost" data-action="testLogin" data-u="OP-1190" data-s="Formation Cycler #4">Auto-fill: Uncertified</button>
-          <button class="btn btn-ghost" data-action="testLogin" data-u="OP-2247" data-s="Winding Cell 6">Auto-fill: Station Down</button>
         </div>
         <div class="grid-row">
           <div class="field"><label>Operator ID</label><input id="lOp" value="${L.user}" class="mono"></div>
           <div class="field"><label>Station</label><select id="lSt">${STATIONS.map(s=>`<option ${s===L.station?'selected':''}>${s}</option>`).join('')}</select></div>
         </div>
-        ${L.err ? `<div class="status-banner bad" style="margin-top:20px;">${getIcon('warn')} ${L.err}</div>` : ''}
-        <div style="margin-top:24px;"><button class="btn btn-primary" data-action="doLogin">Authenticate Login</button></div>
+        ${L.err ? `<div class="status-banner bad" style="margin-top:16px;">${getIcon('warn')} ${L.err}</div>` : ''}
+        <div style="margin-top:16px;"><button class="btn btn-primary" data-action="doLogin">Authenticate Login</button></div>
       `;
     } else {
       html += `
         <div class="panel">
-          <ul class="checklist">
-            <li>${getIcon('check')}<div><b>Operator Certified</b><span>A. Devaraj (OP-2247) - Level 2 Valid</span></div></li>
-            <li>${getIcon('check')}<div><b>Equipment Ready</b><span>${L.station} - Calibrated</span></div></li>
-            <li>${getIcon('check')}<div><b>Session Active</b><span class="mono">${L.time}</span></div></li>
-          </ul>
+          <div style="font-size: 13.5px; line-height: 1.8;">
+            <div style="display:flex; gap:8px;"><span style="color:var(--good)">${getIcon('check')}</span> <b>Operator Certified:</b> A. Devaraj (Level 2)</div>
+            <div style="display:flex; gap:8px;"><span style="color:var(--good)">${getIcon('check')}</span> <b>Equipment Ready:</b> ${L.station} (Calibrated)</div>
+          </div>
         </div>
-        <div class="status-banner good" style="margin-top:20px;">${getIcon('check')} Login validated. Work order release unlocked.</div>
+        <div class="status-banner good" style="margin-top:16px;">${getIcon('check')} Login validated. Work order execution unlocked.</div>
       `;
     }
     container.innerHTML = html + getTalk('login');
@@ -509,8 +457,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function doLogin() {
     let u = $('lOp').value, s = $('lSt').value;
-    if(u !== 'OP-2247') { DEMO.login.err = "Access Denied: Operator not certified for this line."; DEMO.login.user=u; DEMO.login.station=s; }
-    else if(s === 'Winding Cell 6') { DEMO.login.err = "Access Denied: Station awaiting PM sign-off."; DEMO.login.user=u; DEMO.login.station=s; }
+    if(u !== 'OP-2247') { DEMO.login.err = "Access Denied: Operator not certified."; DEMO.login.user=u; }
+    else if(s === 'Winding Cell 6') { DEMO.login.err = "Access Denied: Station down for PM."; DEMO.login.station=s; }
     else { DEMO.login.done = true; DEMO.login.time = new Date().toLocaleTimeString(); DEMO.login.err = ''; }
     render();
   }
@@ -519,30 +467,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const W = DEMO.wo;
     container.innerHTML = `
       <div class="panel">
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <h3 class="mono">WO-88214</h3>
-          <span class="chip ${W.done?'chip-good':'chip-draft'}">${W.done? getIcon('check')+' Released' : 'Draft'}</span>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <h3 class="mono" style="font-size:16px;">WO-88214</h3>
+          <span class="chip ${W.done?'chip-good':'chip-draft'}">${W.done? 'Released' : 'Draft'}</span>
         </div>
-        <div class="grid-row" style="margin-bottom:20px;">
-          <div class="field"><label>Product</label><span style="font-weight:600; font-size:15px;">21700 Cylindrical Cell</span></div>
-          <div class="field"><label>Target</label><span class="mono" style="font-size:15px;">4,000 units</span></div>
-          <div class="field"><label>Line</label><span style="font-size:15px;">${DEMO.login.station}</span></div>
+        <div class="grid-row" style="margin-bottom:16px; font-size: 13px;">
+          <div class="field"><label>Product</label><b>21700 Cylindrical Cell</b></div>
+          <div class="field"><label>Target</label><b class="mono">4,000 units</b></div>
         </div>
-        <button class="btn btn-ghost" data-action="toggleBOM">
-          ${W.showBom?'Hide':'Show'} Bill of Materials
-        </button>
+        <button class="btn btn-ghost" data-action="toggleBOM">${W.showBom?'Hide':'Show'} Bill of Materials</button>
         ${W.showBom ? `
-          <div class="table-wrap" style="margin-top:16px;">
+          <div class="table-wrap" style="margin-top:12px;">
             <table class="data-table">
-              <tr><th>Item Component</th><th>Required</th><th>Available Inventory</th></tr>
+              <tr><th>Component</th><th>Required</th><th>Inventory</th></tr>
               ${BOM_ITEMS.map(i=>`<tr><td>${i.item}</td><td>${i.qty}</td><td>${i.onHand}</td></tr>`).join('')}
             </table>
           </div>
         ` : ''}
       </div>
       ${!W.done 
-        ? `<div style="margin-top:10px;"><button class="btn btn-primary" data-action="releaseWO">Release Order to Floor</button></div>`
-        : `<div class="status-banner good">${getIcon('check')} Order released at ${W.time}. Production routing locked.</div>`
+        ? `<div style="margin-top:12px;"><button class="btn btn-primary" data-action="releaseWO">Release Order to Floor</button></div>`
+        : `<div class="status-banner good">${getIcon('check')} Order released at ${W.time}. Routing locked.</div>`
       }
       ${getTalk('wo')}
     `;
@@ -552,36 +497,34 @@ document.addEventListener("DOMContentLoaded", () => {
   
   function drawBatch(container) {
     const B = DEMO.batch;
-    let oks = B.data.filter(r=>r.ok).length;
     container.innerHTML = `
       <div class="panel" style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <b class="mono" style="font-size:20px;">${B.id}</b>
-          <div style="color:var(--ink-muted); font-size:13px; margin-top:4px;">Validation Spec: Voltage 3.55-3.75 V &nbsp;|&nbsp; Temp &lt; 40&deg;C</div>
+          <b class="mono" style="font-size:16px;">${B.id}</b>
+          <div style="color:var(--ink-muted); font-size:12px; margin-top:2px;">Spec: 3.55-3.75 V | &lt; 40&deg;C</div>
         </div>
         <span class="chip ${B.done?'chip-good':'chip-draft'}">${B.done?'Batch Closed':'In Process'}</span>
       </div>
       
       ${!B.done ? `
-      <div class="grid-row" style="margin-top:20px;">
-        <div class="field"><label>Cell Voltage (V)</label><input id="bv" type="number" step="0.01" value="3.65"></div>
-        <div class="field"><label>Surface Temp (&deg;C)</label><input id="bt" type="number" step="0.1" value="32.0"></div>
+      <div class="grid-row" style="margin-top:16px;">
+        <div class="field"><label>Voltage (V)</label><input id="bv" type="number" step="0.01" value="3.65"></div>
+        <div class="field"><label>Temp (&deg;C)</label><input id="bt" type="number" step="0.1" value="32.0"></div>
       </div>
-      <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="btn btn-navy" data-action="addManualReading">Log Manual Reading</button>
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button class="btn btn-navy" data-action="addManualReading">Log Manual</button>
         <button class="btn btn-ghost" data-action="addRandReading">Auto-generate Sample</button>
-        <button class="btn btn-green" data-action="closeBatch" ${B.data.length===0?'disabled':''}>Close Batch</button>
       </div>` : ''}
       
       ${B.data.length > 0 ? `
-      <div class="table-wrap" style="margin-top:24px;">
+      <div class="table-wrap" style="margin-top:16px;">
         <table class="data-table">
-          <tr><th>Timestamp</th><th>Voltage (V)</th><th>Temp (&deg;C)</th><th>Quality Status</th><th>Corrective Action</th></tr>
+          <tr><th>Time</th><th>V</th><th>&deg;C</th><th>Status</th><th>Action</th></tr>
           ${B.data.map((r,i) => `
             <tr>
               <td>${r.t}</td><td>${r.v}</td><td>${r.temp}</td>
               <td><span class="chip ${r.ok?'chip-good':'chip-critical'}">${r.ok?'In Spec':'Out of Spec'}</span></td>
-              <td>${!r.ok ? `<button class="btn btn-ghost" style="padding:6px 12px; font-size:12px; color:var(--critical); border-color:var(--critical-tint);" data-action="flagAndonBatch">Flag Andon</button>` : '-'}</td>
+              <td>${!r.ok ? `<button class="btn btn-ghost" style="padding:4px 8px; font-size:11px; color:var(--critical); border-color:var(--critical-tint);" data-action="flagAndonBatch">Flag Andon</button>` : '-'}</td>
             </tr>
           `).join('')}
         </table>
@@ -598,14 +541,6 @@ document.addEventListener("DOMContentLoaded", () => {
     render();
   }
 
-  function doFlagAndonBatch() {
-    DEMO.andon.type = 'quality'; DEMO.part = 1; DEMO.idx[1] = 4;
-    DEMO.andon.active = true; DEMO.andon.start = new Date(); DEMO.andon.done = false; 
-    DEMO.andon.resp = null; DEMO.andon.esc = null; DEMO.andon.end = null;
-    startAndonTimer();
-    render();
-  }
-
   function drawTree(container) {
     const T = DEMO.tree;
     const cid = DEMO.batch.id + '-0143';
@@ -613,28 +548,26 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="panel grid-row" style="align-items: flex-end;">
         <div class="field" style="flex:2;">
           <label>Target Cell ID</label>
-          <input class="mono" value="${cid}" readonly style="font-size:18px;">
+          <input class="mono" value="${cid}" readonly>
         </div>
-        <button class="btn btn-primary" data-action="execTrace" style="height:52px; padding:0 32px;">Execute Database Trace</button>
+        <button class="btn btn-primary" data-action="execTrace">Execute Trace</button>
       </div>
       
       ${T.done ? `
-      <div style="display:flex; gap:10px; margin-top:24px; margin-bottom:20px;">
-        <button class="btn ${T.dir==='backward'?'btn-navy':'btn-ghost'}" data-action="setTreeDir" data-dir="backward">&#8592; Backward Trace (Origin)</button>
-        <button class="btn ${T.dir==='forward'?'btn-navy':'btn-ghost'}" data-action="setTreeDir" data-dir="forward">Forward Trace (Destination) &#8594;</button>
+      <div style="display:flex; gap:8px; margin-top:16px; margin-bottom:12px;">
+        <button class="btn ${T.dir==='backward'?'btn-navy':'btn-ghost'}" data-action="setTreeDir" data-dir="backward">&larr; Backward</button>
+        <button class="btn ${T.dir==='forward'?'btn-navy':'btn-ghost'}" data-action="setTreeDir" data-dir="forward">Forward &rarr;</button>
       </div>
-      
       <div class="panel">
         <ul class="timeline">
           ${T.dir === 'backward' ? `
-            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Electrode Lot EL-2209</b><span>Supplier batch SB-7741 QC Passed</span><span class="tl-time">-9 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Coating Roll #C-118</b><span>Processed on Machine Line 1</span><span class="tl-time">-6 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Cell Formation</b><span>${cid} indexed to ${DEMO.batch.id}</span><span class="tl-time">Current</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Lot EL-2209</b><span>Supplier SB-7741</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Roll #C-118</b><span>Machine Line 1</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Formation</b><span>${cid} indexed</span></div></li>
           ` : `
-            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Cell Formation</b><span>${cid} graded Tier A</span><span class="tl-time">Current</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Module Assembly</b><span>Matched via impedance to Module MOD-55031</span><span class="tl-time">+2 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('box')}</div><div class="tl-body"><b>Pack Integration</b><span>Assigned to Pack PK-19042</span><span class="tl-time">+8 hours</span></div></li>
-            <li class="tl-item"><div class="tl-dot">${getIcon('check')}</div><div class="tl-body"><b>Dispatch Shipment</b><span>Deployed to Site NRE-East-4</span><span class="tl-time">+4 days</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('target')}</div><div class="tl-body"><b>Formation</b><span>${cid} Graded A</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('grid')}</div><div class="tl-body"><b>Module MOD-55031</b><span>Assembled</span></div></li>
+            <li class="tl-item"><div class="tl-dot">${getIcon('check')}</div><div class="tl-body"><b>Shipment</b><span>Deployed NRE-East-4</span></div></li>
           `}
         </ul>
       </div>
@@ -648,160 +581,129 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!A.active && !A.done) {
       container.innerHTML = `
         <div class="panel">
-          <div class="grid-row" style="margin-bottom:20px;">
+          <div class="grid-row" style="margin-bottom:16px;">
             ${Object.keys(ANDON_TYPES).map(k => `
               <button class="btn ${A.type===k?'btn-navy':'btn-ghost'}" style="flex:1; justify-content:center;" data-action="setAndonType" data-type="${k}">${ANDON_TYPES[k].label}</button>
             `).join('')}
           </div>
-          <div style="background:var(--surface); padding:30px; border-radius:12px; border:1px solid var(--border); text-align:center;">
-            <p style="color:var(--ink-secondary); font-size:16px; margin-bottom:12px;">Resolution Target: <b>&lt; ${ANDON_TYPES[A.type].targetMin} mins</b></p>
-            <button class="btn btn-primary pulsing-btn" style="background:var(--critical); font-size:18px; padding:16px 32px;" data-action="triggerAndon">
-              ${getIcon('bell')} Pull Andon Cord
-            </button>
+          <div style="text-align:center; padding: 20px;">
+            <p style="font-size:14px; margin-bottom:12px;">Target: <b>&lt; ${ANDON_TYPES[A.type].targetMin} mins</b></p>
+            <button class="btn btn-primary" style="background:var(--critical); font-size:16px;" data-action="triggerAndon">Pull Andon Cord</button>
           </div>
         </div>
-        ${renderAndonLog()}
         ${getTalk('andon')}
       `;
     } else {
       let elapsed = A.end ? (A.end - A.start) : (new Date() - A.start);
       container.innerHTML = `
-        <div class="panel-navy panel" style="text-align:center;">
-          <div style="color:var(--navy-tint); text-transform:uppercase; letter-spacing:0.1em; font-size:14px; font-weight:700;">Live Incident: ${ANDON_TYPES[A.type].label}</div>
-          <div class="big-timer" id="aTimer">${fmtMMSS(elapsed)}</div>
+        <div class="panel-navy panel" style="text-align:center; background: var(--critical);">
+          <div style="font-size:12px; font-weight:700; text-transform:uppercase;">Live Incident: ${ANDON_TYPES[A.type].label}</div>
+          <div style="font-family:'IBM Plex Mono'; font-size:40px; font-weight:700; margin-top:8px;" id="aTimer">${fmtMMSS(elapsed)}</div>
         </div>
         
-        <div style="display:flex; gap:16px; margin: 24px 0;">
-          <div class="panel" style="flex:1; text-align:center; border-color:${A.resp? 'var(--good)' : 'var(--orange)'}; border-width:2px;">
-            <h3 style="margin-bottom:12px;">Step 1: First Response</h3>
-            ${!A.resp ? `<button class="btn btn-primary" data-action="ackAndon">Acknowledge Issue</button>` : `<div style="color:var(--good); font-weight:600; font-size:15px;">${getIcon('check')} Ack at ${A.resp.toLocaleTimeString()}</div>`}
-          </div>
-          <div class="panel" style="flex:1; text-align:center; border-color:${A.esc? 'var(--warning-fill)' : 'var(--border)'}; border-width:2px;">
-            <h3 style="margin-bottom:12px;">Step 2: Escalation</h3>
-            ${A.resp && !A.esc && !A.done ? `<button class="btn btn-ghost" data-action="escAndon">Escalate to Supervisor</button>` : ''}
-            ${A.esc ? `<div style="color:var(--warning-ink); font-weight:600; font-size:15px;">Escalated at ${A.esc.toLocaleTimeString()}</div>` : (!A.resp ? '<span style="color:var(--ink-muted)">Awaiting Acknowledgment</span>':'<span style="color:var(--ink-muted)">Optional</span>')}
+        <div style="display:flex; gap:12px; margin: 16px 0;">
+          <div class="panel" style="flex:1; text-align:center; border-color:${A.resp?'var(--good)':'var(--orange)'}">
+            <h3 style="font-size:14px; margin-bottom:8px;">1. Response</h3>
+            ${!A.resp ? `<button class="btn btn-primary" data-action="ackAndon">Acknowledge</button>` : `<div style="color:var(--good); font-weight:600; font-size:13px;">Ack'd</div>`}
           </div>
         </div>
         
         ${!A.done ? 
-          `<div style="text-align:center;"><button class="btn btn-green" style="font-size:17px; padding:16px 48px;" data-action="resolveAndon">Resolve Incident</button></div>` : 
-          `<div class="status-banner good" style="justify-content:center; font-size:16px;">Incident successfully closed. MTTR logged. <button class="btn btn-ghost" style="margin-left:20px;" data-action="newAndon">Raise New Incident</button></div>`
+          `<div style="text-align:center;"><button class="btn btn-green" data-action="resolveAndon">Resolve Incident</button></div>` : 
+          `<div class="status-banner good" style="justify-content:center;">MTTR logged. <button class="btn btn-ghost" style="margin-left:12px;" data-action="newAndon">Reset</button></div>`
         }
-        ${renderAndonLog()}
       `;
     }
   }
 
   function doTriggerAndon() {
     DEMO.andon.active = true; DEMO.andon.done = false; DEMO.andon.start = new Date();
-    DEMO.andon.resp = null; DEMO.andon.esc = null; DEMO.andon.end = null;
-    startAndonTimer(); render();
-  }
-  function doResolveAndon() {
-    DEMO.andon.end = new Date(); DEMO.andon.done = true; stopAndonTimer();
-    let t = ANDON_TYPES[DEMO.andon.type];
-    let mttr = DEMO.andon.end - DEMO.andon.start;
-    DEMO.andon.log.unshift({ type: t.label, start: DEMO.andon.start, mttr: mttr, target: t.targetMin, pass: (mttr <= t.targetMin*60000) });
+    DEMO.andon.resp = null; DEMO.andon.end = null;
+    if(DEMO.andon.timer) clearInterval(DEMO.andon.timer);
+    DEMO.andon.timer = setInterval(() => { if($('aTimer') && !DEMO.andon.done) $('aTimer').textContent = fmtMMSS(new Date() - DEMO.andon.start); }, 1000);
     render();
   }
-  function startAndonTimer() {
-    stopAndonTimer();
-    DEMO.andon.timer = setInterval(() => { if($('aTimer') && !DEMO.andon.done) $('aTimer').textContent = fmtMMSS(new Date() - DEMO.andon.start); }, 1000);
-  }
-  function stopAndonTimer() { if(DEMO.andon.timer) clearInterval(DEMO.andon.timer); }
-  
-  function renderAndonLog() {
-    if(DEMO.andon.log.length === 0) return '';
-    return `
-      <div class="table-wrap" style="margin-top:24px;">
-        <table class="data-table">
-          <tr><th>Incident Type</th><th>Timestamp</th><th>Recorded MTTR</th><th>System Result</th></tr>
-          ${DEMO.andon.log.map(l => `
-            <tr>
-              <td>${l.type}</td><td>${l.start.toLocaleTimeString()}</td><td class="mono">${fmtMMSS(l.mttr)}</td>
-              <td><span class="chip ${l.pass?'chip-good':'chip-critical'}">${l.pass?'Met Target KPI':'Missed Target'}</span></td>
-            </tr>
-          `).join('')}
-        </table>
-      </div>
-    `;
+  function doResolveAndon() {
+    DEMO.andon.end = new Date(); DEMO.andon.done = true; clearInterval(DEMO.andon.timer);
+    let t = ANDON_TYPES[DEMO.andon.type];
+    let mttr = DEMO.andon.end - DEMO.andon.start;
+    DEMO.andon.log.unshift({ type: t.label, start: DEMO.andon.start, mttr: mttr, pass: (mttr <= t.targetMin*60000) });
+    render();
   }
 
-  // --- Part 2 Views ---
+  // --- Views (Part 2: AI Enhancements) ---
   
   function drawQual(container) {
     if(DEMO.qual.items.length===0) generateQualData();
     let q = DEMO.qual;
-    let holds = q.items.filter(i => i.score >= q.th).length;
     container.innerHTML = `
-      <div class="panel grid-row" style="align-items:center;">
+      <div class="panel grid-row" style="align-items:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
         <div style="flex:1;">
-          <label style="font-weight:700; font-size:12px; color:var(--ink-secondary); text-transform:uppercase;">AI Confidence Threshold for Auto-Hold</label>
-          <div class="slider-row" style="margin-top:10px;">
-            <input type="range" min="20" max="95" value="${q.th}" id="threshSlider">
-            <span class="slider-val">${q.th}%</span>
+          <label style="font-weight:700; font-size:12px; color:var(--ai-purple); text-transform:uppercase;">AI Computer Vision Confidence Threshold</label>
+          <div class="slider-row" style="margin-top:8px;">
+            <input type="range" min="60" max="95" value="${q.th}" id="threshSlider" style="accent-color: var(--ai-purple);">
+            <span class="slider-val" style="color:var(--ai-purple);">${q.th}%</span>
           </div>
         </div>
-        <button class="btn btn-ghost" data-action="resampleQual">${getIcon('refresh')} Resample Units</button>
+        <button class="btn btn-purple" data-action="resampleQual">${getIcon('refresh')} Next Image Batch</button>
       </div>
       
-      <div style="display:flex; gap:20px; margin: 20px 0; font-size:14px; font-weight:600;">
-        <span style="color:var(--good)">&#9632; Pass Line (&lt;${q.th-15}%)</span>
-        <span style="color:var(--warning-fill)">&#9632; Human Review (${q.th-15}-${q.th-1}%)</span>
-        <span style="color:var(--critical)">&#9632; Auto-Hold Action (&ge;${q.th}%)</span>
-      </div>
-      
-      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:16px;">
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:16px; margin-top:20px;">
         ${q.items.map(u => {
-          let state = u.score >= q.th ? 'critical' : (u.score >= q.th-15 ? 'warning' : 'good');
-          let color = state==='critical' ? 'var(--critical)' : (state==='warning' ? 'var(--warning-fill)' : 'var(--good)');
+          let isCrit = u.score >= q.th;
+          let defect = isCrit ? ['Micro-short','Contamination','Burr'][Math.floor(Math.random()*3)] : 'Nominal';
           return `
-            <div style="border:1px solid var(--border); border-radius:12px; padding:20px 16px; background:var(--surface); border-top: 5px solid ${color}; text-align:center;">
-              <div class="mono" style="font-size:13px; color:var(--ink-muted); margin-bottom:8px;">${u.id}</div>
-              <div class="mono" style="font-size:32px; font-weight:700; color:var(--ink);">${u.score}%</div>
+            <div class="ai-vision-card ${isCrit ? 'critical' : ''}" style="border-color: ${isCrit ? 'var(--critical)' : 'var(--good)'}">
+              <div class="ai-vision-img">
+                <div class="ai-bbox"></div>
+                CAMERA_0${Math.floor(Math.random()*9)+1}_SCAN
+              </div>
+              <div class="ai-meta">
+                <div class="score" style="color: ${isCrit ? 'var(--critical)' : 'var(--good)'}">${u.score}%</div>
+                <div class="desc">Class: ${defect}</div>
+                <div class="desc" style="margin-top:4px;">Action: ${isCrit ? '<b style="color:var(--critical)">AUTO-HOLD</b>' : 'PASS'}</div>
+              </div>
             </div>
           `;
         }).join('')}
       </div>
-      <p style="margin-top:20px; font-weight:600; font-size:15px; color:var(--ink-secondary);">Analytics Result: ${holds} of ${q.items.length} units flagged for immediate hold isolation.</p>
       ${getTalk('qual')}
     `;
   }
   
   function generateQualData() {
-    DEMO.qual.items = Array.from({length:12}, (_,i) => ({
-      id: 'C-'+Math.floor(1000+Math.random()*9000),
-      score: Math.floor(Math.random()*90 + 5)
+    DEMO.qual.items = Array.from({length:8}, (_,i) => ({
+      id: 'IMG-'+Math.floor(1000+Math.random()*9000),
+      score: Math.floor(Math.random()*40 + 55)
     })).sort((a,b) => b.score - a.score);
   }
 
   function drawMaint(container) {
     const M = DEMO.maint;
-    const data = [1.2, 1.3, 1.4, 1.7, 1.6, 2.0, 2.3, 2.7, 3.1, 3.5, 3.8, 4.2];
+    // Base historical data + ML forecast
+    const historical = [1.2, 1.3, 1.4, 1.6, 1.7, 1.9, 2.1, 2.4, 2.8, 3.2];
     container.innerHTML = `
-      <div class="panel grid-row">
-        <div class="field">
-          <label>Monitored Asset</label>
-          <select disabled><option>Formation Cycler #4 (Active Drift)</option></select>
-        </div>
+      <div class="panel grid-row" style="align-items:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
         <div style="flex:2;">
-          <label style="font-weight:700; font-size:12px; color:var(--ink-secondary); text-transform:uppercase;">Vibration Alert Threshold (mm/s)</label>
-          <div class="slider-row" style="margin-top:10px;">
-            <input type="range" min="3.0" max="6.0" step="0.1" value="${M.sens}" id="sensSlider">
-            <span class="slider-val">${parseFloat(M.sens).toFixed(1)}</span>
+          <label style="font-weight:700; font-size:12px; color:var(--ai-purple); text-transform:uppercase;">Failure Threshold Definition (mm/s)</label>
+          <div class="slider-row" style="margin-top:8px;">
+            <input type="range" min="3.5" max="6.0" step="0.1" value="${M.sens}" id="sensSlider" style="accent-color: var(--ai-purple);">
+            <span class="slider-val" style="color:var(--ai-purple);">${parseFloat(M.sens).toFixed(1)}</span>
           </div>
         </div>
       </div>
       
-      <div class="chart-container" id="maintChart" style="height:320px; margin: 24px 0;"></div>
-      
-      <div class="panel-navy panel" style="text-align:center;">
-        <h3 style="color:var(--navy-tint); font-size:14px; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px;">AI Estimated Remaining Useful Life (RUL)</h3>
-        <div class="mono" style="font-size:42px; font-weight:700;">${calcRUL(data, M.sens)} Cycles</div>
+      <div class="grid-row" style="margin-top:20px;">
+        <div class="chart-container" id="maintChart" style="height:260px; flex:2;"></div>
+        <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+          <h3 style="font-size:13px; text-transform:uppercase; color:var(--ink-secondary); margin-bottom:8px;">AI Forecasted RUL</h3>
+          <div class="mono" style="font-size:36px; font-weight:700; color:var(--ai-purple);">${calcRUL(historical, M.sens)}</div>
+          <div style="font-size:11px; color:var(--ink-muted); margin-top:8px;">Cycles until threshold breach</div>
+        </div>
       </div>
       ${getTalk('maint')}
     `;
-    setTimeout(() => drawSimpleLineChart('maintChart', data, M.sens), 10);
+    setTimeout(() => drawAiForecastChart('maintChart', historical, M.sens), 10);
   }
   
   function calcRUL(data, threshold) {
@@ -817,28 +719,28 @@ document.addEventListener("DOMContentLoaded", () => {
     let aiSoc = Math.min(100, Math.max(0, manualSoc - 1.8));
     
     container.innerHTML = `
-      <div class="grid-row" style="margin-bottom:20px;">
+      <div class="grid-row" style="margin-bottom:16px;">
         <button class="btn btn-ghost" data-action="setSocArgs" data-i="62" data-c="-40" data-t="0.25">15m Fast Discharge</button>
         <button class="btn btn-ghost" data-action="setSocArgs" data-i="35" data-c="20" data-t="1.0">1h Gentle Charge</button>
-        <button class="btn btn-ghost" data-action="setSocArgs" data-i="80" data-c="-60" data-t="0.5">Deep Discharge Test</button>
       </div>
       
       <div class="grid-row">
         <div class="panel" style="flex:1;">
-          <h3 style="margin-bottom:16px;">Live Telemetry Variables</h3>
-          <div class="field" style="margin-bottom:16px;"><label>Initial SOC (%)</label><input type="number" id="socInit" value="${S.init}"></div>
-          <div class="field" style="margin-bottom:16px;"><label>Current Draw (A)</label><input type="number" id="socCur" value="${S.cur}"></div>
+          <h3 style="margin-bottom:12px; font-size:14px;">Live Telemetry</h3>
+          <div class="field" style="margin-bottom:12px;"><label>Initial SOC (%)</label><input type="number" id="socInit" value="${S.init}"></div>
+          <div class="field" style="margin-bottom:12px;"><label>Current Draw (A)</label><input type="number" id="socCur" value="${S.cur}"></div>
           <div class="field"><label>Duration (Hours)</label><input type="number" id="socTime" step="0.1" value="${S.time}"></div>
         </div>
         
-        <div style="flex:1; display:flex; flex-direction:column; gap:20px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
           <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-            <div style="font-size:13px; font-weight:700; color:var(--ink-secondary); text-transform:uppercase; margin-bottom:8px;">Manual Coulomb Count</div>
-            <div class="mono" style="font-size:48px; font-weight:700;">${manualSoc.toFixed(1)}%</div>
+            <div style="font-size:11px; font-weight:700; color:var(--ink-secondary); text-transform:uppercase; margin-bottom:4px;">Coulomb Counting (Physics-Based)</div>
+            <div class="mono" style="font-size:36px; font-weight:700;">${manualSoc.toFixed(1)}%</div>
           </div>
-          <div class="panel-navy panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; background:var(--orange);">
-            <div style="font-size:13px; font-weight:700; color:rgba(255,255,255,0.8); text-transform:uppercase; margin-bottom:8px;">AI Hybrid Model Correction</div>
-            <div class="mono" style="font-size:48px; font-weight:700;">${aiSoc.toFixed(1)}%</div>
+          <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
+            <div style="font-size:11px; font-weight:700; color:var(--ai-purple); text-transform:uppercase; margin-bottom:4px;">Neural Network State Estimator</div>
+            <div class="mono" style="font-size:36px; font-weight:700; color:var(--ai-purple);">${aiSoc.toFixed(1)}%</div>
+            <div style="font-size:11px; color:var(--ink-secondary); margin-top:4px;">Model identifies <b style="color:var(--critical)">1.8% capacity fade</b> hidden by resistance drift.</div>
           </div>
         </div>
       </div>
@@ -849,44 +751,66 @@ document.addEventListener("DOMContentLoaded", () => {
   function drawTwin(container) {
     const T = DEMO.twin;
     container.innerHTML = `
-      <div class="panel grid-row" style="align-items:center;">
+      <div class="panel grid-row" style="align-items:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
         <div style="flex:1;">
-          <label style="font-weight:700; font-size:12px; color:var(--ink-secondary); text-transform:uppercase;">Simulated C-Rate Injection</label>
+          <label style="font-weight:700; font-size:12px; color:var(--ai-purple); text-transform:uppercase;">Simulator Input: C-Rate Injection</label>
           <div class="slider-row" style="margin-top:10px;">
-            <input type="range" min="0.5" max="3.0" step="0.1" value="${T.crate}" id="crateSlider">
-            <span class="slider-val">${parseFloat(T.crate).toFixed(1)}C</span>
+            <input type="range" min="0.5" max="3.0" step="0.1" value="${T.crate}" id="crateSlider" style="accent-color: var(--ai-purple);">
+            <span class="slider-val" style="color:var(--ai-purple);">${parseFloat(T.crate).toFixed(1)}C</span>
           </div>
         </div>
       </div>
-      <div class="chart-container" id="twinChart" style="height:360px; margin: 24px 0;"></div>
+      <div class="chart-container" id="twinChart" style="height:280px; margin: 20px 0;"></div>
       ${getTalk('twin')}
     `;
     
     let base = 100;
     let data = [base];
     let degFactor = 0.5 + (parseFloat(T.crate) * 0.8);
-    for(let i=1; i<=10; i++) {
-      base -= degFactor;
-      data.push(Math.max(0, base));
-    }
-    setTimeout(() => drawSimpleLineChart('twinChart', data, 70, true), 10);
+    for(let i=1; i<=10; i++) { base -= degFactor; data.push(Math.max(0, base)); }
+    setTimeout(() => drawAiForecastChart('twinChart', data, 70, true), 10);
   }
 
-  // --- Ultra-Simple SVG Chart Renderer ---
-  function drawSimpleLineChart(id, data, threshold, isSoh = false) {
+  // --- Advanced SVG Chart Renderer (AI Forecast visual) ---
+  function drawAiForecastChart(id, data, threshold, isDegradation = false) {
     const el = $(id);
     if(!el) return;
     const w = el.clientWidth - 40, h = el.clientHeight - 40;
-    const maxVal = isSoh ? 100 : Math.max(...data, threshold) * 1.2;
-    const minVal = isSoh ? 50 : 0;
     
-    let pts = data.map((val, i) => {
-      let x = (i / Math.max(1, data.length-1)) * w;
-      let y = h - ((val - minVal) / (maxVal - minVal)) * h;
-      return `${x},${y}`;
-    }).join(' L ');
+    // For maintenance, we forecast *from* the last historical point. For Twin, the whole thing is a forecast.
+    let historical = isDegradation ? [100] : data;
+    let forecast = [];
+    
+    if(!isDegradation) {
+      let slope = (data[data.length-1] - data[data.length-3]) / 2;
+      let lastVal = data[data.length-1];
+      forecast.push(lastVal);
+      for(let i=1; i<=4; i++) { forecast.push(lastVal + (slope * i)); }
+    } else {
+      forecast = data; 
+      historical = [data[0]]; 
+    }
 
-    let thY = h - ((threshold - minVal) / (maxVal - minVal)) * h;
+    const fullData = [...historical.slice(0,-1), ...forecast];
+    const maxVal = isDegradation ? 100 : Math.max(...fullData, threshold) * 1.2;
+    const minVal = isDegradation ? 50 : 0;
+    
+    const getX = (i) => (i / Math.max(1, fullData.length-1)) * w;
+    const getY = (val) => h - ((val - minVal) / (maxVal - minVal)) * h;
+
+    let histPts = historical.map((v, i) => `${getX(i)},${getY(v)}`).join(' L ');
+    let offset = historical.length - 1;
+    let forePts = forecast.map((v, i) => `${getX(i + offset)},${getY(v)}`).join(' L ');
+    
+    // Confidence Interval Polygon
+    let confPoly = '';
+    if(forecast.length > 1) {
+      let upper = forecast.map((v, i) => `${getX(i + offset)},${getY(v + (isDegradation?4:-0.4)*(i/forecast.length))}`);
+      let lower = forecast.map((v, i) => `${getX(i + offset)},${getY(v - (isDegradation?4:-0.4)*(i/forecast.length))}`).reverse();
+      confPoly = `M ${upper.join(' L ')} L ${lower.join(' L ')} Z`;
+    }
+
+    let thY = getY(threshold);
     
     el.innerHTML = `
       <svg width="100%" height="100%" style="overflow:visible;">
@@ -894,16 +818,21 @@ document.addEventListener("DOMContentLoaded", () => {
           <line x1="0" y1="${h}" x2="${w}" y2="${h}" stroke="var(--chart-axis)" stroke-width="2"/>
           <line x1="0" y1="0" x2="0" y2="${h}" stroke="var(--chart-axis)" stroke-width="2"/>
           
-          <line x1="0" y1="${thY}" x2="${w}" y2="${thY}" stroke="var(--critical)" stroke-width="2" stroke-dasharray="6,4"/>
-          <text x="${w+10}" y="${thY+5}" fill="var(--critical)" font-size="14" font-weight="600" font-family="IBM Plex Mono">${parseFloat(threshold).toFixed(1)}</text>
+          <line x1="0" y1="${thY}" x2="${w}" y2="${thY}" stroke="var(--critical)" stroke-width="2" stroke-dasharray="4,4"/>
+          <text x="${w+10}" y="${thY+5}" fill="var(--critical)" font-size="12" font-weight="600" font-family="IBM Plex Mono">${parseFloat(threshold).toFixed(1)}</text>
           
-          <path d="M ${pts}" fill="none" stroke="var(--series-1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Confidence Interval -->
+          ${confPoly ? `<path d="${confPoly}" fill="var(--ai-purple)" opacity="0.15" />` : ''}
           
-          ${data.map((val, i) => {
-            let x = (i / Math.max(1, data.length-1)) * w;
-            let y = h - ((val - minVal) / (maxVal - minVal)) * h;
-            return `<circle cx="${x}" cy="${y}" r="6" fill="var(--surface)" stroke="var(--series-1)" stroke-width="3"/>`;
-          }).join('')}
+          <!-- Forecast Line -->
+          ${forePts ? `<path d="M ${forePts}" fill="none" stroke="var(--ai-purple)" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/>` : ''}
+          
+          <!-- Historical Line -->
+          ${histPts && historical.length > 1 ? `<path d="M ${histPts}" fill="none" stroke="var(--series-1)" stroke-width="3" stroke-linecap="round"/>` : ''}
+          
+          <!-- Data Dots -->
+          ${historical.map((v, i) => `<circle cx="${getX(i)}" cy="${getY(v)}" r="4" fill="var(--surface)" stroke="var(--series-1)" stroke-width="2"/>`).join('')}
+          ${forecast.slice(1).map((v, i) => `<circle cx="${getX(i+offset+1)}" cy="${getY(v)}" r="4" fill="var(--surface)" stroke="var(--ai-purple)" stroke-width="2"/>`).join('')}
         </g>
       </svg>
     `;
@@ -921,14 +850,13 @@ document.addEventListener("DOMContentLoaded", () => {
     try { localStorage.setItem('ctb-theme', DEMO.theme); } catch(e){}
   }
 
-  // --- Global Event Listeners (Replaces Inline Handlers) ---
+  // --- Global Event Delegation ---
   document.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action]');
     if (!target) return;
     
     const action = target.dataset.action;
     
-    // Global Actions
     if (action === 'setPart') { DEMO.part = parseInt(target.dataset.part); render(); }
     else if (action === 'setStep') { DEMO.idx[DEMO.part] = parseInt(target.dataset.step); render(); }
     else if (action === 'prevStep') {
@@ -943,14 +871,9 @@ document.addEventListener("DOMContentLoaded", () => {
       else { $('btnReset').click(); }
     }
     else if (action === 'toggleTheme') { DEMO.theme = DEMO.theme === 'system' ? 'light' : (DEMO.theme === 'light' ? 'dark' : 'system'); applyTheme(); render(); }
-    else if (action === 'toggleFull') {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-      else document.exitFullscreen().catch(()=>{});
-    }
     else if (action === 'openHelp') $('helpModal').hidden = false;
     else if (action === 'closeHelp') $('helpModal').hidden = true;
     else if (action === 'resetDemo') {
-      stopAndonTimer();
       Object.assign(DEMO, {
         part: 1, idx: {1:0, 2:0},
         login: { done: false, user: 'OP-2247', station: 'Formation Cycler #4', err: '', time: null },
@@ -958,37 +881,34 @@ document.addEventListener("DOMContentLoaded", () => {
         batch: { id: 'B-'+Math.floor(10000+Math.random()*90000), done: false, data: [] },
         tree: { done: false, id: null, dir: 'backward' },
         andon: { active: false, done: false, type: 'quality', start: null, resp: null, esc: null, end: null, log: [], timer: null },
-        qual: { th: 75, items: [] },
-        maint: { sens: 4.0, mac: 'form4' },
-        soc: { init: 62, cur: -15, time: 0.25, cap: 75 },
-        soh: { cur: 71.2, orig: 75 },
-        twin: { crate: 1.0 }
+        qual: { th: 80, items: [] }, maint: { sens: 4.0, mac: 'form4' },
+        soc: { init: 62, cur: -15, time: 0.25, cap: 75 }, twin: { crate: 1.0 }
       });
       render();
     }
     
-    // View-Specific Actions
+    // View Actions
     else if (action === 'testLogin') { DEMO.login.user = target.dataset.u; DEMO.login.station = target.dataset.s; DEMO.login.err=''; render(); }
     else if (action === 'doLogin') { doLogin(); }
     else if (action === 'toggleBOM') { DEMO.wo.showBom = !DEMO.wo.showBom; render(); }
     else if (action === 'releaseWO') { DEMO.wo.done = true; DEMO.wo.time = new Date().toLocaleTimeString(); render(); }
     else if (action === 'addManualReading') { doAddReading(false); }
     else if (action === 'addRandReading') { doAddReading(true); }
-    else if (action === 'closeBatch') { DEMO.batch.done = true; render(); }
-    else if (action === 'flagAndonBatch') { doFlagAndonBatch(); }
+    else if (action === 'flagAndonBatch') { 
+      DEMO.andon.type = 'quality'; DEMO.part = 1; DEMO.idx[1] = 4;
+      doTriggerAndon();
+    }
     else if (action === 'execTrace') { DEMO.tree.done = true; render(); }
     else if (action === 'setTreeDir') { DEMO.tree.dir = target.dataset.dir; render(); }
     else if (action === 'setAndonType') { DEMO.andon.type = target.dataset.type; render(); }
     else if (action === 'triggerAndon') { doTriggerAndon(); }
     else if (action === 'ackAndon') { DEMO.andon.resp = new Date(); render(); }
-    else if (action === 'escAndon') { DEMO.andon.esc = new Date(); render(); }
     else if (action === 'resolveAndon') { doResolveAndon(); }
-    else if (action === 'newAndon') { DEMO.andon.active = false; render(); }
+    else if (action === 'newAndon') { DEMO.andon.active = false; DEMO.andon.done = false; render(); }
     else if (action === 'resampleQual') { generateQualData(); render(); }
     else if (action === 'setSocArgs') { DEMO.soc.init = parseFloat(target.dataset.i); DEMO.soc.cur = parseFloat(target.dataset.c); DEMO.soc.time = parseFloat(target.dataset.t); render(); }
   });
 
-  // Global Input Listener (for sliders and text boxes)
   document.addEventListener('input', (e) => {
     const el = e.target;
     if (el.id === 'lOp') DEMO.login.user = el.value;
@@ -1001,7 +921,6 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (el.id === 'crateSlider') { DEMO.twin.crate = el.value; render(); }
   });
 
-  // Keyboard Navigation
   document.addEventListener('keydown', e => {
     if(['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
     if(e.key === 'Escape') $('helpModal').hidden = true;
