@@ -79,8 +79,6 @@
   }
   .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
   h1, h2, h3 { font-family: 'Source Serif 4', serif; margin: 0; }
-  
-  /* Critical SVG Fix */
   svg { flex-shrink: 0; max-width: 100%; }
 
   /* ---------------- App Header ---------------- */
@@ -164,7 +162,7 @@
   .field input, .field select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 14px; font-family: inherit; }
   .field input:focus, .field select:focus { outline: none; border-color: var(--orange); }
   
-  /* Fix: Status Banners now compact */
+  /* Compact Status Banners */
   .status-banner { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; animation: fadeUp 0.2s ease-out; }
   .status-banner.good { background: var(--good-tint); color: var(--good); border: 1px solid rgba(34, 197, 94, 0.2); }
   .status-banner.warn { background: var(--warning-tint); color: var(--warning-ink); border: 1px solid rgba(245, 158, 11, 0.2); }
@@ -193,7 +191,7 @@
   .tl-body b { display: block; font-size: 13.5px; margin-bottom: 2px; }
   .tl-body span { display: block; font-size: 12px; color: var(--ink-muted); margin-bottom: 2px; }
   
-  /* Fix: Talkpoints now compact */
+  /* Compact Talkpoints */
   .talkpoint { background: transparent; border: 1px dashed var(--border-strong); border-radius: 6px; padding: 8px 12px; margin-top: auto; }
   .talkpoint summary { cursor: pointer; font-weight: 600; font-size: 12px; color: var(--ink-muted); display: flex; align-items: center; gap: 6px; list-style: none; }
   .talkpoint summary::-webkit-details-marker { display: none; }
@@ -250,10 +248,10 @@
   </div>
 
   <div class="appbar-actions">
-    <button class="icon-btn" onclick="window.toggleHelp()" title="Keyboard Shortcuts" id="btnHelp"></button>
-    <button class="icon-btn" onclick="window.toggleTheme()" title="Toggle Theme" id="btnTheme"></button>
-    <button class="icon-btn" onclick="window.toggleFull()" title="Full Screen" id="btnFull"></button>
-    <button class="btn btn-ghost" onclick="window.resetDemo()" style="border-color: rgba(255,255,255,0.2); color: #fff; font-size: 12px; padding: 6px 12px;">Reset</button>
+    <button class="icon-btn" data-action="toggleHelp" title="Keyboard Shortcuts" id="btnHelp"></button>
+    <button class="icon-btn" data-action="toggleTheme" title="Toggle Theme" id="btnTheme"></button>
+    <button class="icon-btn" data-action="toggleFull" title="Full Screen" id="btnFull"></button>
+    <button class="btn btn-ghost" data-action="resetDemo" style="border-color: rgba(255,255,255,0.2); color: #fff; font-size: 12px; padding: 6px 12px;">Reset</button>
   </div>
 </header>
 <div class="prog-bar"><div class="prog-fill" id="mainProgress"></div></div>
@@ -274,8 +272,8 @@
       <div class="stage-foot">
         <span class="foot-progress" id="footProgress" style="font-size: 12px; color: var(--ink-muted); font-weight:600;"></span>
         <div style="display:flex; gap: 8px;">
-          <button class="btn btn-ghost" onclick="window.prevStep()" id="btnPrev">Back</button>
-          <button class="btn btn-primary" onclick="window.nextStep()" id="btnNext">Next Step &rarr;</button>
+          <button class="btn btn-ghost" data-action="prevStep" id="btnPrev">Back</button>
+          <button class="btn btn-primary" data-action="nextStep" id="btnNext">Next Step &rarr;</button>
         </div>
       </div>
     </div>
@@ -287,7 +285,7 @@
   <div class="modal-content">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3>Using this Console</h3>
-      <button class="icon-btn" onclick="window.toggleHelp()" style="color:var(--ink); background:var(--surface-2); border:none; width:28px; height:28px;">✕</button>
+      <button class="icon-btn" data-action="toggleHelp" style="color:var(--ink); background:var(--surface-2); border:none; width:28px; height:28px;">✕</button>
     </div>
     <ul>
       <li>Use the <b>Sidebar</b> to jump freely between steps.</li>
@@ -318,7 +316,6 @@
     cpu: '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
     moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
-    monitor: '<rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 20h8M12 17v3"/>',
     fullscreen: '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>',
     refresh: '<path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>'
   };
@@ -395,8 +392,8 @@
 
   function renderSidebar() {
     $('tabNav').innerHTML = `
-      <button class="tab ${DEMO.part===1?'active':''}" onclick="window.setPart(1)"><span>Part 1</span>MES Base</button>
-      <button class="tab ${DEMO.part===2?'active':''}" onclick="window.setPart(2)"><span>Part 2</span>AI Models</button>
+      <button class="tab ${DEMO.part===1?'active':''}" data-action="setPart" data-part="1"><span>Part 1</span>MES Base</button>
+      <button class="tab ${DEMO.part===2?'active':''}" data-action="setPart" data-part="2"><span>Part 2</span>AI Models</button>
     `;
     const list = STEPS[DEMO.part];
     const curIdx = DEMO.idx[DEMO.part];
@@ -408,7 +405,7 @@
       const stateClass = i === curIdx ? 'current' : (isDone ? 'done' : '');
       const numIcon = isDone && i !== curIdx ? getIcon('check') : (i+1);
       return `
-        <div class="step-item ${stateClass}" onclick="window.setStep(${i})">
+        <div class="step-item ${stateClass}" data-action="setStep" data-step="${i}">
           <div class="step-num">${numIcon}</div>
           <div class="step-text"><b>${s.title}</b><span>${s.desc}</span></div>
         </div>`;
@@ -466,38 +463,29 @@
     if (!L.done) {
       html += `
         <div style="display:flex; gap:10px; margin-bottom: 16px;">
-          <button class="btn btn-ghost" onclick="window.testLogin('OP-2247', 'Formation Cycler #4')">Auto-fill: Good</button>
-          <button class="btn btn-ghost" onclick="window.testLogin('OP-1190', 'Formation Cycler #4')">Auto-fill: Uncertified</button>
+          <button class="btn btn-ghost" data-action="fillLogin" data-u="OP-2247" data-s="Formation Cycler #4">Auto-fill: Good</button>
+          <button class="btn btn-ghost" data-action="fillLogin" data-u="OP-1190" data-s="Formation Cycler #4">Auto-fill: Uncertified</button>
         </div>
         <div class="grid-row">
           <div class="field"><label>Operator ID</label><input id="lOp" value="${L.user}" class="mono"></div>
           <div class="field"><label>Station</label><select id="lSt">${STATIONS.map(s=>`<option ${s===L.station?'selected':''}>${s}</option>`).join('')}</select></div>
         </div>
         ${L.err ? `<div class="status-banner bad" style="margin-top:16px;">${getIcon('warn')} ${L.err}</div>` : ''}
-        <div style="margin-top:16px;"><button class="btn btn-primary" onclick="window.doLogin()">Authenticate Login</button></div>
+        <div style="margin-top:16px;"><button class="btn btn-primary" data-action="doLogin">Authenticate Login</button></div>
       `;
     } else {
       html += `
         <div class="panel">
-          <ul class="checklist">
-            <li>${getIcon('check')} <div><b>Operator Certified</b><span>A. Devaraj (Level 2)</span></div></li>
-            <li>${getIcon('check')} <div><b>Equipment Ready</b><span>${L.station} (Calibrated)</span></div></li>
-          </ul>
+          <div style="font-size: 13.5px; line-height: 1.8;">
+            <div style="display:flex; gap:8px;"><span style="color:var(--good)">${getIcon('check')}</span> <b>Operator Certified:</b> A. Devaraj (Level 2)</div>
+            <div style="display:flex; gap:8px;"><span style="color:var(--good)">${getIcon('check')}</span> <b>Equipment Ready:</b> ${L.station} (Calibrated)</div>
+          </div>
         </div>
         <div class="status-banner good" style="margin-top:16px;">${getIcon('check')} Login validated. Work order execution unlocked.</div>
       `;
     }
     container.innerHTML = html + getTalk('login');
   }
-
-  window.testLogin = (u, s) => { DEMO.login.user = u; DEMO.login.station = s; DEMO.login.err=''; render(); };
-  window.doLogin = () => {
-    let u = $('lOp').value, s = $('lSt').value;
-    if(u !== 'OP-2247') { DEMO.login.err = "Access Denied: Operator not certified."; DEMO.login.user=u; }
-    else if(s === 'Winding Cell 6') { DEMO.login.err = "Access Denied: Station down for PM."; DEMO.login.station=s; }
-    else { DEMO.login.done = true; DEMO.login.time = new Date().toLocaleTimeString(); DEMO.login.err = ''; }
-    render();
-  };
 
   function drawWO(container) {
     const W = DEMO.wo;
@@ -507,11 +495,11 @@
           <h3 class="mono" style="font-size:16px;">WO-88214</h3>
           <span class="chip ${W.done?'chip-good':'chip-draft'}">${W.done? 'Released' : 'Draft'}</span>
         </div>
-        <div class="grid-row" style="margin-bottom:16px;">
+        <div class="grid-row" style="margin-bottom:16px; font-size: 13px;">
           <div class="field"><label>Product</label><b>21700 Cylindrical Cell</b></div>
           <div class="field"><label>Target</label><b class="mono">4,000 units</b></div>
         </div>
-        <button class="btn btn-ghost" onclick="DEMO.wo.showBom=!DEMO.wo.showBom; render()">${W.showBom?'Hide':'Show'} Bill of Materials</button>
+        <button class="btn btn-ghost" data-action="toggleBOM">${W.showBom?'Hide':'Show'} Bill of Materials</button>
         ${W.showBom ? `
           <div class="table-wrap" style="margin-top:12px;">
             <table class="data-table">
@@ -522,13 +510,12 @@
         ` : ''}
       </div>
       ${!W.done 
-        ? `<div style="margin-top:12px;"><button class="btn btn-primary" onclick="window.releaseWO()">Release Order to Floor</button></div>`
+        ? `<div style="margin-top:12px;"><button class="btn btn-primary" data-action="releaseWO">Release Order to Floor</button></div>`
         : `<div class="status-banner good">${getIcon('check')} Order released at ${W.time}. Routing locked.</div>`
       }
       ${getTalk('wo')}
     `;
   }
-  window.releaseWO = () => { DEMO.wo.done = true; DEMO.wo.time = new Date().toLocaleTimeString(); render(); };
 
   function getRandVal(base, variance) { return (base + (Math.random()*2-1)*variance).toFixed(2); }
   
@@ -549,8 +536,8 @@
         <div class="field"><label>Temp (&deg;C)</label><input id="bt" type="number" step="0.1" value="32.0"></div>
       </div>
       <div style="display:flex; gap:8px; margin-top:16px;">
-        <button class="btn btn-navy" onclick="window.addReading(false)">Log Manual</button>
-        <button class="btn btn-ghost" onclick="window.addReading(true)">Auto-generate Sample</button>
+        <button class="btn btn-navy" data-action="logManual">Log Manual</button>
+        <button class="btn btn-ghost" data-action="logRandom">Auto-generate Sample</button>
       </div>` : ''}
       
       ${B.data.length > 0 ? `
@@ -561,7 +548,7 @@
             <tr>
               <td>${r.t}</td><td>${r.v}</td><td>${r.temp}</td>
               <td><span class="chip ${r.ok?'chip-good':'chip-critical'}">${r.ok?'In Spec':'Out of Spec'}</span></td>
-              <td>${!r.ok ? `<button class="btn btn-ghost" style="padding:4px 8px; font-size:11px; color:var(--critical); border-color:var(--critical-tint);" onclick="window.flagAndonBatch()">Flag Andon</button>` : '-'}</td>
+              <td>${!r.ok ? `<button class="btn btn-ghost" style="padding:4px 8px; font-size:11px; color:var(--critical); border-color:var(--critical-tint);" data-action="flagAndon">Flag Andon</button>` : '-'}</td>
             </tr>
           `).join('')}
         </table>
@@ -569,17 +556,6 @@
       ${getTalk('batch')}
     `;
   }
-  window.addReading = (rand) => {
-    let v = rand ? getRandVal(3.65, 0.2) : $('bv').value;
-    let t = rand ? getRandVal(35, 8) : $('bt').value;
-    let ok = (v >= 3.55 && v <= 3.75 && t < 40);
-    DEMO.batch.data.push({t: new Date().toLocaleTimeString(), v: v, temp: t, ok: ok});
-    render();
-  };
-  window.flagAndonBatch = () => {
-    DEMO.andon.type = 'quality'; DEMO.part = 1; DEMO.idx[1] = 4;
-    window.triggerAndon();
-  };
 
   function drawTree(container) {
     const T = DEMO.tree;
@@ -590,13 +566,13 @@
           <label>Target Cell ID</label>
           <input class="mono" value="${cid}" readonly>
         </div>
-        <button class="btn btn-primary" onclick="DEMO.tree.done=true; render()">Execute Trace</button>
+        <button class="btn btn-primary" data-action="execTrace">Execute Trace</button>
       </div>
       
       ${T.done ? `
       <div style="display:flex; gap:8px; margin-top:16px; margin-bottom:12px;">
-        <button class="btn ${T.dir==='backward'?'btn-navy':'btn-ghost'}" onclick="DEMO.tree.dir='backward'; render()">&larr; Backward</button>
-        <button class="btn ${T.dir==='forward'?'btn-navy':'btn-ghost'}" onclick="DEMO.tree.dir='forward'; render()">Forward &rarr;</button>
+        <button class="btn ${T.dir==='backward'?'btn-navy':'btn-ghost'}" data-action="setTreeDir" data-dir="backward">&larr; Backward</button>
+        <button class="btn ${T.dir==='forward'?'btn-navy':'btn-ghost'}" data-action="setTreeDir" data-dir="forward">Forward &rarr;</button>
       </div>
       <div class="panel">
         <ul class="timeline">
@@ -623,12 +599,12 @@
         <div class="panel">
           <div class="grid-row" style="margin-bottom:16px;">
             ${Object.keys(ANDON_TYPES).map(k => `
-              <button class="btn ${A.type===k?'btn-navy':'btn-ghost'}" style="flex:1; justify-content:center;" onclick="DEMO.andon.type='${k}'; render()">${ANDON_TYPES[k].label}</button>
+              <button class="btn ${A.type===k?'btn-navy':'btn-ghost'}" style="flex:1; justify-content:center;" data-action="setAndonType" data-type="${k}">${ANDON_TYPES[k].label}</button>
             `).join('')}
           </div>
           <div style="text-align:center; padding: 20px;">
             <p style="font-size:14px; margin-bottom:12px;">Target: <b>&lt; ${ANDON_TYPES[A.type].targetMin} mins</b></p>
-            <button class="btn btn-primary" style="background:var(--critical); font-size:16px;" onclick="window.triggerAndon()">Pull Andon Cord</button>
+            <button class="btn btn-primary" style="background:var(--critical); font-size:16px;" data-action="triggerAndon">Pull Andon Cord</button>
           </div>
         </div>
         ${getTalk('andon')}
@@ -638,43 +614,32 @@
       container.innerHTML = `
         <div class="panel-navy panel" style="text-align:center; background: var(--critical);">
           <div style="font-size:12px; font-weight:700; text-transform:uppercase;">Live Incident: ${ANDON_TYPES[A.type].label}</div>
-          <div class="big-timer" id="aTimer">${fmtMMSS(elapsed)}</div>
+          <div style="font-family:'IBM Plex Mono'; font-size:40px; font-weight:700; margin-top:8px;" id="aTimer">${fmtMMSS(elapsed)}</div>
         </div>
         
         <div style="display:flex; gap:12px; margin: 16px 0;">
           <div class="panel" style="flex:1; text-align:center; border-color:${A.resp?'var(--good)':'var(--orange)'}">
             <h3 style="font-size:14px; margin-bottom:8px;">1. Response</h3>
-            ${!A.resp ? `<button class="btn btn-primary" onclick="DEMO.andon.resp=new Date(); render()">Acknowledge</button>` : `<div style="color:var(--good); font-weight:600; font-size:13px;">Ack'd</div>`}
+            ${!A.resp ? `<button class="btn btn-primary" data-action="ackAndon">Acknowledge</button>` : `<div style="color:var(--good); font-weight:600; font-size:13px;">Ack'd</div>`}
           </div>
         </div>
         
         ${!A.done ? 
-          `<div style="text-align:center;"><button class="btn btn-green" onclick="window.resolveAndon()">Resolve Incident</button></div>` : 
-          `<div class="status-banner good" style="justify-content:center;">MTTR logged. <button class="btn btn-ghost" style="margin-left:12px;" onclick="DEMO.andon.active=false; DEMO.andon.done=false; render()">Reset</button></div>`
+          `<div style="text-align:center;"><button class="btn btn-green" data-action="resolveAndon">Resolve Incident</button></div>` : 
+          `<div class="status-banner good" style="justify-content:center;">MTTR logged. <button class="btn btn-ghost" style="margin-left:12px;" data-action="resetAndon">Reset</button></div>`
         }
       `;
     }
   }
 
-  window.triggerAndon = () => {
-    DEMO.andon.active = true; DEMO.andon.done = false; DEMO.andon.start = new Date();
-    DEMO.andon.resp = null; DEMO.andon.end = null;
-    clearAllIntervals();
-    DEMO.andon.timer = setInterval(() => { if($('aTimer') && !DEMO.andon.done) $('aTimer').textContent = fmtMMSS(new Date() - DEMO.andon.start); }, 1000);
-    render();
-  };
-  window.resolveAndon = () => {
-    DEMO.andon.end = new Date(); DEMO.andon.done = true; clearAllIntervals();
-    let t = ANDON_TYPES[DEMO.andon.type];
-    let mttr = DEMO.andon.end - DEMO.andon.start;
-    DEMO.andon.log.unshift({ type: t.label, start: DEMO.andon.start, mttr: mttr, pass: (mttr <= t.targetMin*60000) });
-    render();
-  };
-
   // --- Views (Part 2: AI Enhancements) ---
   
   function drawQual(container) {
-    if(DEMO.qual.items.length===0) generateQualData();
+    if(DEMO.qual.items.length===0) {
+      DEMO.qual.items = Array.from({length:8}, (_,i) => ({
+        id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*40 + 55)
+      })).sort((a,b) => b.score - a.score);
+    }
     let q = DEMO.qual;
     container.innerHTML = `
       <div class="panel grid-row" style="align-items:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
@@ -685,7 +650,7 @@
             <span class="slider-val" style="color:var(--ai-purple);">${q.th}%</span>
           </div>
         </div>
-        <button class="btn btn-purple" onclick="generateQualData(); render()">${getIcon('refresh')} Next Image Batch</button>
+        <button class="btn btn-purple" data-action="resampleQual">${getIcon('refresh')} Next Image Batch</button>
       </div>
       
       <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:12px; margin-top:16px;">
@@ -710,17 +675,18 @@
       ${getTalk('qual')}
     `;
   }
-  
-  function generateQualData() {
-    DEMO.qual.items = Array.from({length:8}, (_,i) => ({
-      id: 'IMG-'+Math.floor(1000+Math.random()*9000),
-      score: Math.floor(Math.random()*40 + 55)
-    })).sort((a,b) => b.score - a.score);
-  }
 
   function drawMaint(container) {
     const M = DEMO.maint;
     const historical = [1.2, 1.3, 1.4, 1.6, 1.7, 1.9, 2.1, 2.4, 2.8, 3.2];
+    
+    let slope = (historical[historical.length-1] - historical[historical.length-3]) / 2;
+    let remStr = "0";
+    if(slope > 0 && historical[historical.length-1] < M.sens) {
+      let remaining = (M.sens - historical[historical.length-1]) / slope;
+      remStr = "+" + Math.floor(remaining * 1000).toLocaleString();
+    }
+
     container.innerHTML = `
       <div class="panel grid-row" style="align-items:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
         <div style="flex:2;">
@@ -736,20 +702,13 @@
         <div class="chart-container" id="maintChart" style="height:220px; flex:2;"></div>
         <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
           <h3 style="font-size:12px; text-transform:uppercase; color:var(--ink-secondary); margin-bottom:8px;">AI Forecasted RUL</h3>
-          <div class="mono" style="font-size:32px; font-weight:700; color:var(--ai-purple);">${calcRUL(historical, M.sens)}</div>
+          <div class="mono" style="font-size:32px; font-weight:700; color:var(--ai-purple);">${remStr}</div>
           <div style="font-size:11px; color:var(--ink-muted); margin-top:4px;">Cycles until threshold breach</div>
         </div>
       </div>
       ${getTalk('maint')}
     `;
-    drawAiForecastChart('maintChart', historical, M.sens, false);
-  }
-  
-  function calcRUL(data, threshold) {
-    let slope = (data[data.length-1] - data[data.length-3]) / 2;
-    if(slope <= 0 || data[data.length-1] >= threshold) return "0";
-    let remaining = (threshold - data[data.length-1]) / slope;
-    return "+" + Math.floor(remaining * 1000).toLocaleString();
+    setTimeout(() => drawAiForecastChart('maintChart', historical, M.sens, false), 50);
   }
 
   function drawSoc(container) {
@@ -759,8 +718,8 @@
     
     container.innerHTML = `
       <div class="grid-row" style="margin-bottom:16px;">
-        <button class="btn btn-ghost" onclick="window.setSoc(62,-40,0.25)">15m Fast Discharge</button>
-        <button class="btn btn-ghost" onclick="window.setSoc(35,20,1.0)">1h Gentle Charge</button>
+        <button class="btn btn-ghost" data-action="setSoc" data-i="62" data-c="-40" data-t="0.25">15m Fast Discharge</button>
+        <button class="btn btn-ghost" data-action="setSoc" data-i="35" data-c="20" data-t="1.0">1h Gentle Charge</button>
       </div>
       
       <div class="grid-row">
@@ -786,14 +745,13 @@
       ${getTalk('soc')}
     `;
   }
-  window.setSoc = (i,c,t) => { DEMO.soc.init=i; DEMO.soc.cur=c; DEMO.soc.time=t; render(); };
 
   function drawTwin(container) {
     const T = DEMO.twin;
     container.innerHTML = `
       <div class="panel grid-row" style="align-items:center; border-color: var(--ai-purple); background: var(--ai-purple-tint);">
         <div style="flex:1;">
-          <label style="font-weight:700; font-size:11px; color:var(--ai-purple); text-transform:uppercase;">Neural Net Simulator: C-Rate Injection</label>
+          <label style="font-weight:700; font-size:12px; color:var(--ai-purple); text-transform:uppercase;">Neural Net Simulator: C-Rate Injection</label>
           <div class="slider-row" style="margin-top:8px;">
             <input type="range" min="0.5" max="3.0" step="0.1" value="${T.crate}" id="crateSlider" style="accent-color: var(--ai-purple);">
             <span class="slider-val" style="color:var(--ai-purple);">${parseFloat(T.crate).toFixed(1)}C</span>
@@ -808,17 +766,16 @@
     let data = [base];
     let degFactor = 0.5 + (parseFloat(T.crate) * 0.8);
     for(let i=1; i<=10; i++) { base -= degFactor; data.push(Math.max(0, base)); }
-    drawAiForecastChart('twinChart', data, 70, true);
+    setTimeout(() => drawAiForecastChart('twinChart', data, 70, true), 50);
   }
 
   // --- Advanced SVG Chart Renderer (AI Forecast visual) ---
   function drawAiForecastChart(id, data, threshold, isDegradation = false) {
-    const el = $(id);
+    const el = document.getElementById(id);
     if(!el) return;
     
-    // To ensure synchronous rendering right after innerHTML, we don't use setTimeout.
-    const w = el.clientWidth - 40 || 800; // fallback widths if flexbox hasn't computed yet
-    const h = el.clientHeight - 40 || 200;
+    const w = el.clientWidth > 0 ? el.clientWidth - 40 : 800;
+    const h = el.clientHeight > 0 ? el.clientHeight - 40 : 200;
     
     let historical = isDegradation ? [100] : data;
     let forecast = [];
@@ -873,55 +830,122 @@
     `;
   }
 
-  // --- Handlers & Listeners ---
-  window.setPart = (p) => { DEMO.part = p; render(); };
-  window.setStep = (s) => { DEMO.idx[DEMO.part] = s; render(); };
-  window.prevStep = () => {
-    let i = DEMO.idx[DEMO.part];
-    if(i > 0) { DEMO.idx[DEMO.part]--; render(); }
-    else if(DEMO.part === 2) { DEMO.part = 1; DEMO.idx[1] = STEPS[1].length-1; render(); }
-  };
-  window.nextStep = () => {
-    let i = DEMO.idx[DEMO.part], len = STEPS[DEMO.part].length;
-    if(i < len-1) { DEMO.idx[DEMO.part]++; render(); }
-    else if(DEMO.part === 1) { DEMO.part = 2; DEMO.idx[2] = 0; render(); }
-    else { window.resetDemo(); }
-  };
-
-  window.toggleHelp = () => { $('helpModal').hidden = !$('helpModal').hidden; };
-  window.toggleFull = () => {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-    else document.exitFullscreen().catch(()=>{});
-  };
-  
-  window.resetDemo = () => {
-    clearAllIntervals();
-    Object.assign(DEMO, {
-      part: 1, idx: {1:0, 2:0},
-      login: { done: false, user: 'OP-2247', station: 'Formation Cycler #4', err: '', time: null },
-      wo: { done: false, showBom: false, time: null },
-      batch: { id: 'B-'+Math.floor(10000+Math.random()*90000), done: false, data: [] },
-      tree: { done: false, id: null, dir: 'backward' },
-      andon: { active: false, done: false, type: 'quality', start: null, resp: null, esc: null, end: null, log: [], timer: null },
-      qual: { th: 80, items: [] }, maint: { sens: 4.0, mac: 'form4' },
-      soc: { init: 62, cur: -15, time: 0.25, cap: 75 }, twin: { crate: 1.0 }
-    });
-    render();
-  };
-
-  window.toggleTheme = () => {
-    DEMO.theme = DEMO.theme === 'system' ? 'light' : (DEMO.theme === 'light' ? 'dark' : 'system');
+  // --- Theme Initializer ---
+  function applyTheme() {
     const root = document.documentElement;
     if(DEMO.theme === 'light') root.setAttribute('data-theme', 'light');
     else if(DEMO.theme === 'dark') root.setAttribute('data-theme', 'dark');
     else root.removeAttribute('data-theme');
     
     let ico = DEMO.theme === 'light' ? 'sun' : (DEMO.theme === 'dark' ? 'moon' : 'monitor');
-    $('btnTheme').innerHTML = getIcon(ico);
+    const btn = $('btnTheme');
+    if(btn) btn.innerHTML = getIcon(ico);
     try { localStorage.setItem('ctb-theme', DEMO.theme); } catch(e){}
-    render();
-  };
+  }
 
+  // --- Global Event Delegation ---
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('[data-action]');
+    if (!target) return;
+    
+    const action = target.dataset.action;
+    
+    // Header & Layout Actions
+    if (action === 'setPart') { DEMO.part = parseInt(target.dataset.part); render(); }
+    else if (action === 'setStep') { DEMO.idx[DEMO.part] = parseInt(target.dataset.step); render(); }
+    else if (action === 'prevStep') {
+      let i = DEMO.idx[DEMO.part];
+      if(i > 0) { DEMO.idx[DEMO.part]--; render(); }
+      else if(DEMO.part === 2) { DEMO.part = 1; DEMO.idx[1] = STEPS[1].length-1; render(); }
+    }
+    else if (action === 'nextStep') {
+      let i = DEMO.idx[DEMO.part], len = STEPS[DEMO.part].length;
+      if(i < len-1) { DEMO.idx[DEMO.part]++; render(); }
+      else if(DEMO.part === 1) { DEMO.part = 2; DEMO.idx[2] = 0; render(); }
+      else { $('btnReset').click(); }
+    }
+    else if (action === 'toggleTheme') { DEMO.theme = DEMO.theme === 'system' ? 'light' : (DEMO.theme === 'light' ? 'dark' : 'system'); applyTheme(); render(); }
+    else if (action === 'toggleFull') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+      else document.exitFullscreen().catch(()=>{});
+    }
+    else if (action === 'toggleHelp') { $('helpModal').hidden = !$('helpModal').hidden; }
+    else if (action === 'resetDemo') {
+      clearAllIntervals();
+      Object.assign(DEMO, {
+        part: 1, idx: {1:0, 2:0},
+        login: { done: false, user: 'OP-2247', station: 'Formation Cycler #4', err: '', time: null },
+        wo: { done: false, showBom: false, time: null },
+        batch: { id: 'B-'+Math.floor(10000+Math.random()*90000), done: false, data: [] },
+        tree: { done: false, id: null, dir: 'backward' },
+        andon: { active: false, done: false, type: 'quality', start: null, resp: null, esc: null, end: null, log: [], timer: null },
+        qual: { th: 80, items: [] }, maint: { sens: 4.0, mac: 'form4' },
+        soc: { init: 62, cur: -15, time: 0.25, cap: 75 }, twin: { crate: 1.0 }
+      });
+      render();
+    }
+    
+    // View Actions
+    else if (action === 'fillLogin') { DEMO.login.user = target.dataset.u; DEMO.login.station = target.dataset.s; DEMO.login.err=''; render(); }
+    else if (action === 'doLogin') {
+      let u = $('lOp').value, s = $('lSt').value;
+      if(u !== 'OP-2247') { DEMO.login.err = "Access Denied: Operator not certified."; DEMO.login.user=u; }
+      else if(s === 'Winding Cell 6') { DEMO.login.err = "Access Denied: Station down for PM."; DEMO.login.station=s; }
+      else { DEMO.login.done = true; DEMO.login.time = new Date().toLocaleTimeString(); DEMO.login.err = ''; }
+      render();
+    }
+    else if (action === 'toggleBOM') { DEMO.wo.showBom = !DEMO.wo.showBom; render(); }
+    else if (action === 'releaseWO') { DEMO.wo.done = true; DEMO.wo.time = new Date().toLocaleTimeString(); render(); }
+    else if (action === 'logManual') {
+      let v = $('bv').value, t = $('bt').value;
+      let ok = (v >= 3.55 && v <= 3.75 && t < 40);
+      DEMO.batch.data.push({t: new Date().toLocaleTimeString(), v: v, temp: t, ok: ok});
+      render();
+    }
+    else if (action === 'logRandom') {
+      let v = (3.65 + (Math.random()*2-1)*0.2).toFixed(2);
+      let t = (35 + (Math.random()*2-1)*8).toFixed(2);
+      let ok = (v >= 3.55 && v <= 3.75 && t < 40);
+      DEMO.batch.data.push({t: new Date().toLocaleTimeString(), v: v, temp: t, ok: ok});
+      render();
+    }
+    else if (action === 'flagAndon') { 
+      DEMO.andon.type = 'quality'; DEMO.part = 1; DEMO.idx[1] = 4;
+      DEMO.andon.active = true; DEMO.andon.done = false; DEMO.andon.start = new Date();
+      DEMO.andon.resp = null; DEMO.andon.end = null;
+      clearAllIntervals();
+      DEMO.andon.timer = setInterval(() => { if($('aTimer') && !DEMO.andon.done) $('aTimer').textContent = fmtMMSS(new Date() - DEMO.andon.start); }, 1000);
+      render();
+    }
+    else if (action === 'execTrace') { DEMO.tree.done = true; render(); }
+    else if (action === 'setTreeDir') { DEMO.tree.dir = target.dataset.dir; render(); }
+    else if (action === 'setAndonType') { DEMO.andon.type = target.dataset.type; render(); }
+    else if (action === 'triggerAndon') {
+      DEMO.andon.active = true; DEMO.andon.done = false; DEMO.andon.start = new Date();
+      DEMO.andon.resp = null; DEMO.andon.end = null;
+      clearAllIntervals();
+      DEMO.andon.timer = setInterval(() => { if($('aTimer') && !DEMO.andon.done) $('aTimer').textContent = fmtMMSS(new Date() - DEMO.andon.start); }, 1000);
+      render();
+    }
+    else if (action === 'ackAndon') { DEMO.andon.resp = new Date(); render(); }
+    else if (action === 'resolveAndon') {
+      DEMO.andon.end = new Date(); DEMO.andon.done = true; clearAllIntervals();
+      let t = ANDON_TYPES[DEMO.andon.type];
+      let mttr = DEMO.andon.end - DEMO.andon.start;
+      DEMO.andon.log.unshift({ type: t.label, start: DEMO.andon.start, mttr: mttr, pass: (mttr <= t.targetMin*60000) });
+      render();
+    }
+    else if (action === 'resetAndon') { DEMO.andon.active = false; DEMO.andon.done = false; render(); }
+    else if (action === 'resampleQual') {
+      DEMO.qual.items = Array.from({length:8}, (_,i) => ({
+        id: 'IMG-'+Math.floor(1000+Math.random()*9000), score: Math.floor(Math.random()*40 + 55)
+      })).sort((a,b) => b.score - a.score);
+      render();
+    }
+    else if (action === 'setSoc') { DEMO.soc.init = parseFloat(target.dataset.i); DEMO.soc.cur = parseFloat(target.dataset.c); DEMO.soc.time = parseFloat(target.dataset.t); render(); }
+  });
+
+  // Global Input Delegation
   document.addEventListener('input', (e) => {
     const el = e.target;
     if (el.id === 'lOp') DEMO.login.user = el.value;
@@ -934,29 +958,23 @@
     else if (el.id === 'crateSlider') { DEMO.twin.crate = el.value; render(); }
   });
 
+  // Hotkeys
   document.addEventListener('keydown', e => {
     if(['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
-    if(e.key === 'Escape') $('helpModal').hidden = true;
-    if(e.key === 'ArrowRight') window.nextStep();
-    if(e.key === 'ArrowLeft') window.prevStep();
+    if(e.key === 'Escape') { $('helpModal').hidden = true; }
+    if(e.key === 'ArrowRight') { let btn = $('btnNext'); if(btn) btn.click(); }
+    if(e.key === 'ArrowLeft') { let btn = $('btnPrev'); if(btn && !btn.disabled) btn.click(); }
   });
 
-  // Init Theme setup
-  (function initTheme() {
-    try { 
-      const t = localStorage.getItem('ctb-theme'); 
-      if(t) DEMO.theme = t; 
-    } catch(e){}
-    const root = document.documentElement;
-    if(DEMO.theme === 'light') root.setAttribute('data-theme', 'light');
-    else if(DEMO.theme === 'dark') root.setAttribute('data-theme', 'dark');
-    let ico = DEMO.theme === 'light' ? 'sun' : (DEMO.theme === 'dark' ? 'moon' : 'monitor');
-    $('btnTheme').innerHTML = getIcon(ico);
-  })();
-
+  // Boot
+  applyTheme();
+  try { const t = localStorage.getItem('ctb-theme'); if(t) { DEMO.theme = t; applyTheme(); } } catch(e){}
+  
+  $('btnHelp').innerHTML = getIcon('info');
+  $('btnFull').innerHTML = getIcon('fullscreen');
+  
   render();
 
-});
 </script>
 </body>
 </html>
